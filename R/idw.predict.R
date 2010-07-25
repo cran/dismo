@@ -1,0 +1,42 @@
+# Author: Robert J. Hijmans
+# contact: r.hijmans@gmail.com
+# Date : Febrary 2010
+# Version 0.1
+# Licence GPL v3
+
+
+
+if (!isGeneric("predict")) {
+	setGeneric("predict", function(object, ...)
+		standardGeneric("predict"))
+}	
+
+setMethod('predict', signature(object='InvDistWeightModel'), 
+	function(object, x, ext=NULL, filename='', mask=FALSE, progress='text', ...) {
+	
+		if ( extends(class(x), 'Raster'))  {
+			if (! mask) {
+				x = raster(x)
+			}
+			if (! is.null(ext)) { 
+				x = crop(x, ext) 
+			}
+			if (mask) {
+				xx <- interpolate(x, object@model[[1]], progress=progress, debug.level=0)
+				xx <- mask(xx, x, filename=filename, progress=progress, ...)
+			} else {
+				xx <- interpolate(x, object@model[[1]], filename=filename, progress=progress, ...)
+			}				
+		} else {
+			if (! inherits(x, 'SpatialPoints') )  {
+				x = data.frame(x[,1:2])
+				colnames(x) = c('x', 'y')
+				coordinates(x) = ~ x + y
+			}
+			xx <- predict(object@model[[1]], x, debug.level=0)
+			xx <- xx@data[,1]
+		}
+		return(xx)
+	}
+)
+

@@ -1,0 +1,5 @@
+import("rJava")
+importFrom("graphics", plot, points, pairs, boxplot)
+importFrom("stats", density)
+importFrom("raster", predict)
+exportPattern("^[^\\.]")
