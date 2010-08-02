@@ -25,7 +25,7 @@ Make a RasterLayer with a prediction based on a model object of class Bioclim, D
   \tab  \code{ext} \tab An \link[raster]{extent} object to limit the prediction to a sub-region of \code{x}. Or an object that can be coerced to an Extent object by \code{\link[raster]{extent}}; such as a Raster* or Spatial* object \cr
   \tab  \code{filename}  \tab Output filename for a new raster; if NA the result is not written to a file but returned with the RasterLayer object, in the data slot \cr
   \tab \code{progress} \tab Character. Valid values are "" (no progress bar), "text", "tcltk", and "windows" (on that platform only) \cr
-  \tab  \code{...}  \tab Additional arguments for file writing (see below)\cr
+  \tab  \code{...}  \tab Additional model specific arguments and arguments for file writing (see below)\cr
 }
 
 The following additional arguments can be passed, to replace default values, when writing the results to a file
@@ -35,8 +35,12 @@ The following additional arguments can be passed, to replace default values, whe
   \tab \code{overwrite} \tab Logical. If TRUE, "filename" will be overwritten if it exists \cr
  }
 
-For Maxent models, there is an additional argument \code{'args'} used to pass arguments (options) to the maxent software. See  \code{ \link[dismo]{maxent}} for more information.
-}}
+
+For \link[dismo]{maxent} models, there is an additional argument \code{'args'} used to pass arguments (options) to the maxent software. See the help page for \code{ \link[dismo]{maxent}} for more information.
+ 
+For \link[dismo]{bioclim} models, there is an additional argument \code{'tails'} which you can use to ignore the left or right tail of the percentile distribution for a variable. If supplied, tails should be a character vector with a length equal to the number of variables used in the model. Valid values are "both" (the default), "low" and "high". For example, if you have a variable x with an observed distribution between 10 and 20 and you are predicting the bioclim value for a value 25, the default result would be zero (outside of all observed values); but if you use tail='low', the high (right) tail is ignored and the value returned will be 1.
+ 
+ }}
 
 \value{
 A RasterLayer or, if \code{x} is a matrix), a vector. 

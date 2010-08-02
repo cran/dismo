@@ -10,9 +10,9 @@
 \title{Maxent}
 
 \description{
-The Maxent (Maximum Entropy) species distribution model (see references below). The function uses presence and 'background' data for a number of locations, and the values of a number of predictors (independent variables) for those locations. The result is a predictive model that can be used to predict the suitability of other locations, for example to predict the entire range of a species, or its potential range in another region, or under changed conditions. 
+The Maxent (Maximum Entropy) species distribution model (see references below). The function uses presence and 'background' data for a number of locations, and the values of a number of predictors (independent variables) for those locations. The result is a model object that can be used to predict the suitability of other locations, for example, to predict the entire range of a species. 
 
-This function uses the maxent species distribution model software, which is a java program that you can download from \url{http://www.cs.princeton.edu/~schapire/maxent/}. Put the file 'maxent.jar' in the 'java' folder of this package. That is the folder returned by \code{system.file("java", package="dismo")}. Please note that this program (maxent.jar) can not be redistributed or used for commercial purposes.
+This function uses the maxent species distribution model software, which is a java program that you can download from \url{http://www.cs.princeton.edu/~schapire/maxent/}. Put the file 'maxent.jar' in the 'java' folder of this package. That is the folder returned by \code{system.file("java", package="dismo")}. You need maxent version 3.3.3 or higher. Please note that this program (maxent.jar) can not be redistributed or used for commercial or for-profit purposes.
 }
 
 \usage{
@@ -38,7 +38,7 @@ Additional arguments:
 }
 
 \value{
-A RasterLayer object. Sometimes with the side effect of a file on disk.
+A RasterLayer object or a vector. 
 }
 
 \seealso{
@@ -88,30 +88,42 @@ points(occ)
 
 # The below is equivalent (except that we use 
 # k-fold partitioning of the data for testing purposes
+
 # extract values
 pv <- data.frame(xyValues(predictors, occ))
-fold <- kfold(pv, k=5)
-pvtrain <- pv[fold != 1, ]
-pvtest <- pv[fold == 1, ]
+fp <- kfold(pv, k=5)
+pvtrain <- pv[fp != 1, ]
+pvtest <- pv[fp == 1, ]
+head(pvtest)
+
 # background data
 bg <- randomPoints(predictors, 5000)
 av <- data.frame(xyValues(predictors, bg))
-fold <- kfold(av, k=5)
-avtrain <- av[fold != 1, ]
-avtest <- av[fold == 1, ]
+fb <- kfold(av, k=5)
+avtrain <- av[fb != 1, ]
+avtest <- av[fb == 1, ]
+
 # combine train presence and background data
 train <- rbind(pvtrain, avtrain)
 # vector indicating presence or absence
 p <- c(rep(1, nrow(pvtrain)), rep(0, nrow(avtrain)))
+
 # fit maxent model
 me2 <- maxent(x=train, p=p)
 
 # predict to testing points 
 testp <- predict(me, pvtest) 
+head(testp)
 testa <- predict(me, avtest) 
+
+#evaluate
 e = evaluate(p=testp, a=testa)
 e
 plot(e, 'ROC')
+
+#more direct way to use 'evaluate'
+e2 = evaluate(me, p=pvtest, a=avtest)
+e3 = evaluate(me, p=occ[fp==1,], a=bg[fb==1,], x=predictors)
 }
 }
 

@@ -41,7 +41,10 @@ geocode <- function(x, boxes='', extent=NULL) {
 		} 
 		status <- xmlValue(getNodeSet(doc, "//GeocodeResponse//status")[[1]])
 		if (status != "OK") {
-			stop(status, '\n')
+			cat(status, ':', r, '\n')
+			w <- matrix(NA, ncol=ncol(res), nrow=1)
+			res <- rbind(res, w)
+			next
 		}
 		
 		p <- xmlToList(doc)
@@ -87,9 +90,6 @@ geocode <- function(x, boxes='', extent=NULL) {
 
 # geocode(c('San Jose, Mexico', 'San Jose'), boxonly=T)
 
- 
- 
- 		
 #			loc <- getNodeSet(doc, "//location")
 #			i <- length(loc)
 #			location <- matrix(ncol=2, nrow=i)

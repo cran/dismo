@@ -5,7 +5,10 @@
 
 
 evaluateROCR <- function(model, p, a, x) {
-	if (require(ROCR)) {
+	if (! require(ROCR)) {
+		stop('ROCR package not found')
+	}
+	
 	if (!missing(x)) {
 		p <- predict(model, data.frame(xyValues(x, p)))
 		a <- predict(model, data.frame(xyValues(x, a)))
@@ -23,7 +26,6 @@ evaluateROCR <- function(model, p, a, x) {
 	labels = c( rep(1, length(p)), rep(0, length(a)) )
 	pred <- prediction( predictions, labels)
 	return(pred)
-	}
 }
 
 

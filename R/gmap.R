@@ -8,17 +8,18 @@
 
 gmap <- function (x, exp=1, type='terrain', filename='', ...) {
 
-	if (! raster:::.requireRgdal() ) { stop('rgdal not available') }
+	if (! require(rgdal)) { stop('rgdal not available') }
 	
 	if (! type %in% c('roadmap', 'satellite', 'hybrid', 'terrain')) {
 		warning("type should be: roadmap, satellite, hybrid, or terrain.") 
+		type <- 'roadmap'
 	}
 
 	mxzoom <- function (latrange, lonrange, size = c(640, 640)) {
 	# function from in R package 'RgoogleMaps' 
 	# by Markus Loecher, Sense Networks <markus at sensenetworks.com>
 		SinPhi = sin(latrange * pi/180)
-		normX = lonrange/180
+		normX = lonrange / 180
 		normY = (0.5 * log(abs((1 + SinPhi)/(1 - SinPhi))))/pi
 		MaxZoom.lon <- floor(1 + log2(abs(size[1]/256/diff(normX))))
 		MaxZoom.lat <- floor(1 + log2(abs(size[2]/256/diff(normY))))
@@ -71,10 +72,18 @@ gmap <- function (x, exp=1, type='terrain', filename='', ...) {
 
 	gurl <- "http://maps.google.com/staticmap?"
 		
-	
-
+	if (is.character(x)) {
+		x <- geocode(x, boxes='one')
+		if (any(is.na(x))) {
+			stop('location not found')
+		}
+		x <- extent(as.vector(x))
+		
+	} else {
 		prj <- projection(x, asText=TRUE)
+		
 		if ( isLonLat(prj) ) {
+		
 			x <- extent(x)
 		} else {
 			if ( prj == "NA" ) {
@@ -94,7 +103,8 @@ gmap <- function (x, exp=1, type='terrain', filename='', ...) {
 			} else {
 				x <- extent( projectExtent(x, "+proj=longlat +datum=WGS84") )
 			}
-		} 
+		}
+	}
 		e <- x * exp
 		e@xmin <- max(-180, e@xmin)
 		e@xmax <- min(180, e@xmax)
@@ -151,12 +161,6 @@ gmap <- function (x, exp=1, type='terrain', filename='', ...) {
 #e = extent( -121.9531 , -120.3897 , 35.36 , 36.61956 )
 #r = gmap(e)
 #plot(r)
-
-#projmerc <- function(p) {
-#    p <- p * pi / 180
-#    p[, 2] <- log(tan(p[, 2]) + (1/cos(p[, 2])))
-#    return( p * 6378137 )
-#}
 
 
 Mercator <- function (p, inverse = FALSE) {

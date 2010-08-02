@@ -46,8 +46,7 @@ setMethod ('show' , 'MaxEnt',
 #		print(object@results)
 #		cat('\n')
 		if (file.exists(paste(object@path, "/maxent.html", sep=''))) {
-			url = paste("file:///", object@path, "/maxent.html", sep='')
-			browseURL(url, browser = getOption("browser"))
+			browseURL( paste("file:///", object@path, "/maxent.html", sep='') )
 		} else {
 			cat('output html file no longer exists\n')
 		}
@@ -61,8 +60,8 @@ if (!isGeneric("maxent")) {
 }	
 
 .getMeVersion <- function() {
-	mxe <- .jnew("mebridge") 
-	v <- try(.jcall(mxe, "S", "meversion", "" ) )
+	mxe <- .jnew("mebridge1") 
+	v <- try(.jcall(mxe, "S", "meversion") )
 	if (class(v) == 'try-error') {
 		stop('"dismo" needs a more recent version of Maxent (>= 3.3.3) \nPlease download it here: http://www.cs.princeton.edu/~schapire/maxent/')
 	} else {
@@ -181,8 +180,9 @@ setMethod('maxent', signature(x='data.frame', p='vector'),
 
 		jar <- paste(system.file(package="dismo"), "/java/maxent.jar", sep='')
 		if (!file.exists(jar)) {
-			stop('file missing:', jar, '.\nPlease download it here: http://www.cs.princeton.edu/~schapire/maxent/')
+			stop('file missing:\n', jar, '.\nPlease download it here: http://www.cs.princeton.edu/~schapire/maxent/')
 		}
+		
 		MEversion <- .getMeVersion()
 		if (substr(MEversion, 1, 3) == 'unk') {
 			stop('dismo needs a more recent version of Maxent (>= 3.3.3) \nPlease download it here: http://www.cs.princeton.edu/~schapire/maxent/')
@@ -225,12 +225,20 @@ setMethod('maxent', signature(x='data.frame', p='vector'),
 		write.table(pv, file=pfn, sep=',', row.names=FALSE)
 		write.table(av, file=afn, sep=',', row.names=FALSE)
 
-		mxe <- .jnew("mebridge") 
+		if (MEversion == '3.3.3' | MEversion == '3.3.3a') { 
+			mxe <- .jnew("mebridge1") 
+		} else {
+			mxe <- .jnew("mebridge2") 		
+			args <- c("-z", args)
+		}
 	
 		if (is.null(factors)) {
-			.jcall(mxe, "V", "fit", c("autorun", "-e", afn, "-o", dirout, "-s", pfn, args)) 
+			str <- .jcall(mxe, "S", "fit", c("autorun", "-e", afn, "-o", dirout, "-s", pfn, args)) 
 		} else {
-			.jcall(mxe, "V", "fit", c("autorun", "-e", afn, "-o", dirout, "-s", pfn, args), .jarray(factors))
+			str <- .jcall(mxe, "S", "fit", c("autorun", "-e", afn, "-o", dirout, "-s", pfn, args), .jarray(factors))
+		}
+		if (!is.null(str)) {
+			stop("args not understood:\n", str)
 		}
 		
 		me@lambdas <- unlist( readLines( paste(dirout, '/species.lambdas', sep='') ) )

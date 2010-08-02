@@ -10,28 +10,47 @@ if (!isGeneric("predict")) {
 }	
 
 setMethod('predict', signature(object='Bioclim'), 
-function(object, x, ext=NULL, filename='', progress='text', ...) {
+function(object, x, tails=NULL, ext=NULL, filename='', progress='text', ...) {
 
-	percRank <- function(x, y) {
+	percRank <- function(x, y, tail) {
 		x <- sort(as.vector(na.omit(x)))
 		y <- data.frame(y)
 		b <- apply(y, 1, FUN=function(z)sum(x<z))
 		t <- apply(y, 1, FUN=function(z)sum(x==z))
 		r <- (b + 0.5 * t)/length(x)
 		i <- which(r > 0.5)
-		r[i] <- 1-r[i]
+		if (tail=='both') {
+			r[i] <- 1-r[i]
+		} else if (tail == 'high') {
+			r[! i] <- 0.5
+			r[i] <- 1-r[i]			
+		} else { # tail == low
+			r[i] <- 0.5
+		}
 		r * 2
 	}
 
+	ln <- colnames(object@presence)
 
+	if (is.null(tails) ) {
+		tails <- rep('both', times=length(ln))
+	} else {
+		if (length(tails) != length(ln)) {
+			stop('length of "tails" is', length(tails), '. This does not match the number of variables in the model which is', length(ln))
+		}
+		test <- all(tails %in% c('low', 'high', 'both'))
+		if (!test) stop('"tails" should be a character vector with values "low", "high", and/or "both"')
+	}
+	 
+	
 	if (! (extends(class(x), 'Raster')) ) {
 		if (! all(colnames(object@presence) %in% colnames(x)) ) {
 			stop('missing variables in x ')
 		}
-		ln <- colnames(object@presence)
 		bc <- matrix(ncol=length(ln), nrow=nrow(x))
+		
 		for (i in 1:ncol(bc)) {
-			bc[,i] <- percRank(object@presence[,ln[i]], x[,ln[i]])
+			bc[,i] <- percRank(object@presence[,ln[i]], x[,ln[i]], tails[i])
 		}
 		return( apply(bc, 1, min) )
 
@@ -62,7 +81,6 @@ function(object, x, ext=NULL, filename='', progress='text', ...) {
 			}
 		}
 
-		ln <- colnames(object@presence)
 		tr <- blockSize(out, n=nlayers(x)+2)
 		pb <- pbCreate(tr$n, type=progress)	
 		for (i in 1:tr$n) {
@@ -74,7 +92,7 @@ function(object, x, ext=NULL, filename='', progress='text', ...) {
 			k <- (apply(t(vals) >= object@min, 2, all) & apply(t(vals) <= object@max, 2, all))
 			k[is.na(k)] <- FALSE
 			for (j in 1:length(ln)) {
-				bc[k,j] <- percRank( object@presence[ ,ln[j]], vals[k, ln[j]] )
+				bc[k,j] <- percRank( object@presence[ ,ln[j]], vals[k, ln[j]], tails[j] )
 			}
 
 			res <- apply(bc, 1, min)

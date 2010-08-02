@@ -3,7 +3,7 @@
 # Version 1
 # Licence GPL v3
 
-prepareData <- function(p, b, x, factors) {
+prepareData <- function(x, p, b, factors) {
 	p <- xyValues(x, p)
 	b <- xyValues(x, b)
 	pb <- data.frame(  cbind(pb=c(rep(1, nrow(p)), rep(0, nrow(b))), rbind(p, b)) )

@@ -1,7 +1,5 @@
 \name{prepareData}
 
-\docType{methods}
-
 \alias{prepareData}
 
 \title{
@@ -13,16 +11,19 @@ Simple helper function to prepare data for model fitting
 }
 
 \usage{
-prepareData(p, b, x, factors) 
+prepareData(x, p, b, factors) 
 }
 
 \arguments{
-\item{p}{presence points}
-\item{b}{background points}
 \item{x}{Raster* object}
+\item{p}{presence points}
+\item{b}{background (or absence) points}
 \item{factors}{vectors indicating which variables are factors (names or numbers)}
 }
 
+\value{
+data.frame with \code{nlayers(x)+1} columns and \code{nrow(p) + nrow(b)} rows. The first column, 'pb' indicates whether a record represents presence '1' or background '0' values. The other columns have the values from the Raster* object.
+}
 
 \author{
 Robert J. Hijmans

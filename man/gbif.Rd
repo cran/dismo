@@ -20,8 +20,7 @@ gbif(genus, species="", geo=TRUE, sp=FALSE, removeZeros=TRUE, download=TRUE, get
   \item{species}{Character. species name. Use '*' to download the entire genus}
   \item{geo}{Logical. If \code{TRUE}, only records that have a georeference (longitude and latitude values) will be downloaded}
   \item{sp}{Logical. If \code{TRUE}, \code{geo} will be set to \code{TRUE} and a \link[sp]{SpatialPointsDataFrame} will be returned}
-  \item{removeZeros}{Logical. If \code{TRUE}, all records that have a latiude OR longitude of zero will be removed if \code{geo==TRUE}, or set to \code{NA} if \code{geo==FALSE}}.
-  If \code{FALSE}, only records that have a latiude AND longitude that are zero will be removed / set to \code{NA}.
+  \item{removeZeros}{Logical. If \code{TRUE}, all records that have a latiude OR longitude of zero will be removed if \code{geo==TRUE}, or set to \code{NA} if \code{geo==FALSE}. If \code{FALSE}, only records that have a latiude AND longitude that are zero will be removed / set to \code{NA}}.
   \item{download}{Logical. If \code{TRUE}, records will be downloaded, else only the number of records will be shown}
   \item{getAlt}{Logical. If \code{TRUE}, elevation data (4 character variables) will be processed into a single new numerical variable}
   \item{feedback}{Integer. Lower values give less feedback (0-no messages; 3-all messages)}
@@ -35,6 +34,14 @@ data frame
 
 \references{
 \url{http://data.gbif.org/occurrences/}
+}
+
+\examples{
+#gbif('Batrachoseps', '*' , geo=F, down=F)
+#gbif('Batrachoseps', '*' , geo=T, down=F)
+#gbif('Batrachoseps', 'luciae', geo=T, down=F)
+#g <- gbif('Batrachoseps', 'luciae', geo=T)
+#plot(g$lon, g$lat)
 }
 
 \author{
