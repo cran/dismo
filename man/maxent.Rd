@@ -70,11 +70,16 @@ occ <- read.table(occurence, header=TRUE, sep=',')[,-1]
 
 # witholding a 20% sample for testing 
 fold <- kfold(occ, k=5)
+occtest <- occ[fold == 1, ]
 occtrain <- occ[fold != 1, ]
 
 # fit model, biome is a categorical variable
-me <- maxent(predictors, occ, factors='biome')
-# me2 <- maxent(predictors, occ, factors='biome', args=c("-J", "-P"))
+me <- maxent(predictors, occtrain, factors='biome')
+# see the maxent results in a browser:
+# me
+
+# use "args"
+# me2 <- maxent(predictors, occtrain, factors='biome', args=c("-J", "-P"))
 
 # plot showing importance of each variable
 plot(me)
@@ -86,44 +91,30 @@ r <- predict(me, predictors, progress='text')
 plot(r)
 points(occ)
 
-# The below is equivalent (except that we use 
-# k-fold partitioning of the data for testing purposes
-
-# extract values
-pv <- data.frame(xyValues(predictors, occ))
-fp <- kfold(pv, k=5)
-pvtrain <- pv[fp != 1, ]
-pvtest <- pv[fp == 1, ]
-head(pvtest)
-
+#testing
 # background data
-bg <- randomPoints(predictors, 5000)
-av <- data.frame(xyValues(predictors, bg))
-fb <- kfold(av, k=5)
-avtrain <- av[fb != 1, ]
-avtest <- av[fb == 1, ]
+bg <- randomPoints(predictors, 1000)
 
-# combine train presence and background data
-train <- rbind(pvtrain, avtrain)
-# vector indicating presence or absence
-p <- c(rep(1, nrow(pvtrain)), rep(0, nrow(avtrain)))
+#simplest way to use 'evaluate'
+e1 = evaluate(me, p=occtest, a=bg, x=predictors)
 
-# fit maxent model
-me2 <- maxent(x=train, p=p)
+# alternative 1
+# extract values
+pvtest <- data.frame(xyValues(predictors, occtest))
+avtest <- data.frame(xyValues(predictors, bg))
 
+e2 = evaluate(me, p=pvtest, a=avtest)
+
+# alternative 2 
 # predict to testing points 
 testp <- predict(me, pvtest) 
 head(testp)
 testa <- predict(me, avtest) 
 
-#evaluate
-e = evaluate(p=testp, a=testa)
-e
-plot(e, 'ROC')
+e3 = evaluate(p=testp, a=testa)
+e3
+plot(e3, 'ROC')
 
-#more direct way to use 'evaluate'
-e2 = evaluate(me, p=pvtest, a=avtest)
-e3 = evaluate(me, p=occ[fp==1,], a=bg[fb==1,], x=predictors)
 }
 }
 

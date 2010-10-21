@@ -44,7 +44,7 @@ A matrix of lon/lat data can be transformed with the Mercator function used in t
 p <- spTransform(x, "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs")
 }
 
-\author{Robert Hijmans, largely based on code by Markus Loecher, Sense Networks <markus at sensenetworks.com>}
+\author{Robert Hijmans, largely based on code by Markus Loecher, Sense Networks <markus at sensenetworks.com> in the RgoogleMaps package}
 
 \examples{
 \dontrun{
@@ -77,7 +77,7 @@ plot(r, interpolate=TRUE)
 # transform points to Mercator for plotting on top of map:
 pt <- matrix(c(-121, 36), ncol=2)
 ptm <- Mercator(pt)
-points(ptm, cex=3)
+points(ptm, cex=3, pch=20, col='blue')
 Mercator(ptm, inverse=TRUE)
 
 # transform Spatial objects to Mercator for plotting on top of map

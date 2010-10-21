@@ -24,40 +24,54 @@
 
 
 \title{Species distribution modeling with \R}
-\author{Robert J. Hijmans}
+\author{Robert J. Hijmans and Jane Elith}
 \maketitle
 
 
 \chapter{Introduction}
 
-This document is an introduction to species distribution modeling with \R. Species distribution modeling (SDM) is also known under other names including envelope-modeling and (environemtal or ecological) niche-modeling. In SDM, the following steps are usally taken: (1) locations of occurrence (and perhaps non-occurrence) of a species (or other phenomenon) are compiled. (2) values of environmental predictor variables (such as climate) at these locations are determined. (3) the envrionmental values are used as to fit a model predicting presence/absence, or another measure, such as abundance, associated with the points. (4) The model is used to predict the likelihood of presence at all locations of an area of interest (and perhaps in a future climate).
+This document is an introduction to species distribution modeling with \R. Species distribution modeling (SDM) is also known under other names including envelope-modeling and (environmental or ecological) niche-modeling. In SDM, the following steps are usually taken: (1) locations of occurrence (and perhaps non-occurrence) of a species (or other phenomenon) are compiled. (2) values of environmental predictor variables (such as climate) at these locations are determined. (3) the environmental values are used  to fit a model predicting likelihood of presence, or another measure such as abundance for the species. (4) The model is used to predict the likelihood of presence at all locations of an area of interest (and perhaps in a future climate).
 
-This document is not a general introduction to species distribution modeling itself. We assume that you are familiar with most of the concepts in this field. If in doubt, you could consult Richard Pearson's introduction to the subject: \url{http://biodiversityinformatics.amnh.org/index.php?section_id=111}. More advanced readers may want to consult the recent review of the field by Elith and Leathwick (2009).
+We do not provide a general introduction to species distribution modeling itself. We assume that you are familiar with most of the concepts in this field. If in doubt, you could consult Richard Pearson's introduction to the subject: \url{http://biodiversityinformatics.amnh.org/index.php?section_id=111}, or the book by Janet Franklin (2009). You can also consult a recent review of the field by Elith and Leathwick (2009). 
 
-We also assume that you are already familiar with the \R language and environment. It would be particularly useful if you already had some experience with statistical model fitting (e.g. the glm function) and with the '\verb@raster@' package.
+We also assume that you are already familiar with the \R language and environment. It would be particularly useful if you already had some experience with statistical model fitting (e.g. the glm function) and with the '\verb@raster@' package. If you are not experienced with these, we recommend you read some tutorials or introductions. See, for instance, the Documentation section on the CRAN webpage (http://cran.r-project.org/) and the vignette for the '\verb@raster@' package. When we present code we will give some hints on how to understand the code, if we think it might be confusing. We will do more of this earlier on in this document, so if you are relatively inexperienced with \R and would like to ease into it, read in the presented order.   
 
-SDM have been implemented in \R in many different ways. Here we focus on the functions in from the '\verb@dismo@' and the '\verb@raster@' packages (but we also refer to other packages such as '\verb@BIOMOD@)'. If you want to test, or build on, some of the examples presented here, make sure you have the latest versions of these libraries, and their dependencies, installed. If you are using a recent version of \R, you can do that with: 
+SDM have been implemented in \R in many different ways. Here we focus on the functions in the '\verb@dismo@' and the '\verb@raster@' packages (but we also refer to other packages such as '\verb@BIOMOD@)'. If you want to test, or build on, some of the examples presented here, make sure you have the latest versions of these libraries, and their dependencies, installed. If you are using a recent version of \R, you can do that with: 
 
-\verb@install.packages(c('rJava', 'XML', 'sp', 'rgdal', 'raster'))@
-
-\verb@install.packages("dismo", repos="http://R-Forge.R-project.org")@
+\verb@install.packages(c('rJava', 'XML', 'sp', 'raster', 'dismo', 'rgdal'))@
 
 
-\chapter{Data preparation}
+\includegraphics{sdm.png}
 
-Data preparation is often the most time consuming part of a species distribution modeling project. You need to collect a sufficient number of occurence records that document presence (and perhaps absence) of the species of you interest. A particularly important concern in species distribution modeling is whether, apart from the species identification, the coordinates of the location data are accurate enough (and whether uncertainty about the coordinates is known or not). You also need to have accurate and relevant spatial predictor variables at a sufficiently high spatial resolution. 
-
-\section{Occurence data}
-
-Importing occurrence data into \R is easy. But collecting, georeferencing, and cross-checking coordinate data is tedious. While we'll show you some useful data prepration steps you can do in \R, it is necessary to use additinal tools as well. Discussions about species distribution modeling often focus on comparing modeling methods, but if you are dealing with species with few and uncertain records, your focus probably ought to be on improving the quality of the occurence data. All methods do better if your occurence data is unbiased and free of error (Graham et al., 2007) and you have have a relatively large number of records (Wisz et al., 2008).
+Figure (source:   )
 
 
-\subsection{Importing occurence data}
+
+\part{Data preparation}
+
+Data preparation is often the most time consuming part of a species distribution modeling project. You need to collect a sufficient number of occurrence records that document presence (and perhaps absence) of the species of you interest. You also need to have accurate and relevant spatial predictor variables at a sufficiently high spatial resolution. We first discuss some aspects of assembling and cleaning species records, followed by a discussion of aspects of choosing and using the predictor variables.  A particularly important concern in species distribution modeling is that the species data are sufficiently accurate to adequately represent the species' distribution. For instance,the species should be correctly identified, the coordinates of the location data need to be accurate enough to allow the general species/environment to be established, and the sample unbiased, or accompanied by information on known biases. Further information on this general topic can be found in (citations, ..). 
+
+\chapter{Species occurrence data}
+
+
+Importing occurrence data into \R is easy. But collecting, georeferencing, and cross-checking coordinate data is tedious. While we'll show you some useful data preparation steps you can do in \R, it is necessary to use additional tools as well. Discussions about species distribution modeling often focus on comparing modeling methods, but if you are dealing with species with few and uncertain records, your focus probably ought to be on improving the quality of the occurrence data. All methods do better if your occurrence data is unbiased and free of error (Graham et al., 2007) and you have have a relatively large number of records (Wisz et al., 2008).
+
+
+\section{Importing occurrence data}
 
 In most cases you will a file with point locality data representing the known distribution of a species. Here is an example of using \verb@read.table@ to read records that are stored in a text file. We are using a example file that is installed with the dismo package, and for that reason we use a complex way to construct the filename, but you can replace that with your own filename (remember to use forward slashes!)
 
+to do:
+introduce conventions:
+ R code italics and preceded by >
+comments preceded by a hash (\#)
+
+if you haven't used the paste command before, it's worth familiarizing yourself with it (type ?paste in the command window). It's very useful.   
+system.file inserts the file path to where it has installed dismo.
+
 <<sdm1>>=
 library(dismo)
+#this loads the dismo library
 filename <- paste(system.file(package="dismo"), '/ex/bradypus.csv', sep='')
 filename
 bradypus <- read.table(filename, header=TRUE, sep=',')
@@ -66,19 +80,21 @@ bradypus <- bradypus[,2:3]
 head(bradypus)
 @
 
-You can also read such data directly out of Excel or from a database (see e.g. the \verb@RODBC@ package). No matter how you do it, the objective is to get a matrix (or a \verb@data.frame@) with at least 2 columns to hold the coordinates (typically longitude and latitude). In many cases you will have additional columns, e.g., a column to indicate the species if you are modeling multiple species; and a column to indicate whether this is a 'presence' or an 'absence' record (a much used convention is to code presence with a 1 and absence with a 0). 
+You can also read such data directly out of Excel or from a database (see e.g. the \verb@RODBC@ package). No matter how you do it, the objective is to get a matrix (or a \verb@data.frame@) with at least 2 columns to hold the coordinates (typically longitude and latitude). A typical convention is to organize the coordinates columns so that longitude (x) is first and latitude, second. In many cases you will have additional columns, e.g., a column to indicate the species if you are modeling multiple species; and a column to indicate whether this is a 'presence' or an 'absence' record (a much used convention is to code presence with a 1 and absence with a 0). 
 
 If you do not have any species distribution data you can get started by downloading data from the Global Biodiversity Inventory Facility (GBIF) (\url{http://www.gbif.org/}). In the dismo package there is a function '\verb@gbif@' that you can use for this. The data used below were downloaded using the \texttt{gbif} function like this: 
 
 \verb@acaule = gbif('solanum', 'acaule', geo=FALSE)@
-\newline
+ \newline
+
+If you want to understand the order of the arguments given here to \verb@gbif@ or find out what else you can specify to this command, check out the help file (remember you can't access help files if the library is not loaded)
 
 Many records may not have coordinates. Out of the 699 records that gbif returned (March 2010), there were only 54 records with coordinates. 
 
 <<sdm2>>=
 data(acaule)
 dim(acaule)
-acgeo = subset(acaule, !is.na(lat) & !is.na(lon))
+acgeo <- subset(acaule, !is.na(lat) & !is.na(lon))
 dim(acgeo)
 acgeo[1:4, c(1:5,7:10)]
 @
@@ -92,21 +108,32 @@ plot(wrld_simpl, xlim=c(-130,10), ylim=c(-60,60))
 points(acgeo$lon, acgeo$lat, col='red')
 @
 
-The "wrld\_simpl" dataset contains rough country outlines. You can use other datasets of polygons (or lines or points) as well. For example, you can read a shapfile into \R using the \texttt{readOGR} function in the \texttt{rgdal} package or the \texttt{readShapePoly} function in the \texttt{maptools} package.
+The "wrld\_simpl" dataset contains rough country outlines. You can use other datasets of polygons (or lines or points) as well. For example, you can read your own shapefile into \R using the \texttt{readOGR} function in the \texttt{rgdal} package or the \texttt{readShapePoly} function in the \texttt{maptools} package.
 
 
-\subsection{Cross-checking}
+\section{Data cleaning}
 
-\textit{Solanum acaule} is a species that occurs in the higher parts of the Andes mountains of Peru and Bolivia. Do you see any errors on the map? There are three records that have plausible latitudes, but longitudes of zero, which is clearly wrong, as this puts them in the Atlantic Ocean, south of West Africa. The gbif function (with default arguments) removes records that have (0, 0) as coordinates, but not if one of the coordinates is zero. 
+Data 'cleaning' is particularly important for data sourced from species distribution data warehouses such as GBIF. Such efforts do not specifically gather data for the purpose of species distribution modeling, so you need to understand the data and clean them appropriately, for your application. Here we provide an example.  
+
+\textit{Solanum acaule} is a species that occurs in the higher parts of the Andes mountains of Peru and Bolivia. Do you see any errors on the map? There are three records that have plausible latitudes, but longitudes that are clearly wrong, as they are in the Atlantic Ocean, south of West Africa. It looks like they have a longitude that is zero (because they appear to be exactly South of London). In many data-bases you will find values that are 'zero' where 'no data' was intended.
+
+The gbif function (with default arguments) removes records that have (0, 0) as coordinates, but not if one of the coordinates is zero. Let's see if we find them by searching for records with longitudes of zero (later we show you how to click on and identify outliers (to do))
 
 Let's have a look at these records:
 <<sdm3>>=
-lonzero = subset(acaule, lon==0)
+lonzero = subset(acgeo, lon==0)
 lonzero[, 1:13]
 @
 
-The records are from Bolivia (BOL), Peru (PER) and Argentina (ARG), confirming that coordinates are in error (it could have been that the coordinates were correct for a location in the Ocean, perhaps referring to a location a fish was caught rather than a place where S. acaule was collected). Interestingly, another data quality issue is revealed: each record occurs twice. This could happen because plant samples are often split and send to multiple herbariums. But in this case it seems that a single GBIF data provider (IPK) has these record duplicated in its database. 
+The records are from Bolivia (BOL), Peru (PER) and Argentina (ARG), confirming that coordinates are in error (it could have been that the coordinates were correct for a location in the Ocean, perhaps referring to a location a fish was caught rather than a place where S. acaule was collected). 
 
+
+\subsection{duplicate records}
+Interestingly, another data quality issue is revealed above: each record occurs twice. This could happen because plant samples are often split and send to multiple herbariums. But in this case it seems that a single GBIF data provider (IPK) has these record duplicated in its database. 
+
+To do: provide code for checking for duplicates. Two issues: exact duplicates (lat / long identical) and duplicates on a per grid cell basis. 
+
+\section{cross-checking}
 It is important to cross-check coordinates by visual and other means. One approach is to compare the country (and lower level administrative subdivisions) of the site as specified by the records, with the country implied by the coordinates (Hijmans et al., 1999). In the example below we use the 'coordinates' function from the '\verb@sp@' package to create a SpatialPointsDataFrame, and then the 'overlay' function, also from '\verb@sp@', to do a point-in-polygon query with the countries polygons.
 
 <<sdm4>>=
@@ -125,7 +152,7 @@ Note that the polygons that we used in the example above are not very precise, a
 acgeo  = acgeo[coordinates(acgeo)[,'lon'] < 0, ]
 @
 
-\subsection{Georeferencing}
+\section{Georeferencing}
 
 If you have records with locality descriptions but no coordinates, you should consider georeferencing these. Not all the records can be georeferenced. Sometimes even the country is unknown (country=="UNK"). Here we select only records that do not have coordinates, but that do have a locality description.
 
@@ -139,7 +166,7 @@ Among the first records is an old acquaintance. The record, with catalog number 
 
 We recommend using a tool like BioGeomancer: \url{http://bg.berkeley.edu/latest} (Guralnick et al., 2006) to georeference textual locality descriptions. An important feature of BioGeomancer is that it attempts to capture the uncertainty associated with each georeference (Wieczorek et al., 2004). The dismo package has a function \texttt{biogeomancer} that you can use for this, and that we demonstrate below, but its use is generally not recommended because you really need a detailed map interface for accurate georeferencing. 
 
-Here is an example for one of the records with longitude = 0. We put the biogeomacer function into a 'try' function, to assure elegant error handling if the computer is not connected to the Internet.
+Here is an example for one of the records with longitude = 0. We put the biogeomancer function into a 'try' function, to assure elegant error handling if the computer is not connected to the Internet.
 
 <<sdm7>>=
 args(biogeomancer)
@@ -148,18 +175,20 @@ b
 lonzero$lat[3]
 @
 
-Note that the uncertainty (expressed in meters) is quite high, and that the latitude is rather different from the original latitude (whereas the original latitude might in fact be correct). 
+Note that the uncertainty (expressed in meters) is quite high, and that the latitude is rather different from the original latitude (whereas the original latitude might in fact be correct). With this much uncertainty, it is likely that you would choose not to use this point unless further information that allowed more refinement could be found.
 
 
 \section{Sampling bias}
 
+ (Phillips et al., 2009)
 
 
-\section{Random points}
 
-Many of the early species distribution models, such as Bioclim and Domain are known as 'profile' methods because they only use 'presence' data. Other methods also use 'absence' data or 'background' data. Logistic regression is the classical approach to analyzing presence and absence data (and it is still much used, often implemented in a generalized linear modeling (GLM) framework; and the 'maxent' algorithm is also closely related to logistic regression). If you have a large dataset with presence/absence from a well designed survey, you should use a method that can use these data (i.e. do not use a modeling method that only considers presence data). If you only have presence data, you can still use a method that needs absence data, by substiting absence data with background data. 
+\chapter{Absence and background points}
 
-Background data, also referred to as 'random absence' is, in many cases, not \textit{that} different from 'true absence' data. If you have a species with a  range that is relatively small compared to they study area, there will only a few background points where the species is actually present. Moreover, the species might be absent (not observable) at these sites at a given time of sampling (depending on scale, detectability, ...). In fact, if you are modeling at, say, a 1 km\super{2} resolution, all species that are present within a grid cell will also be absent somewhere within that cell. Background data establishes the environmental domain of the study, presence data should establish under which conditions a species is more likely to be present than on average. 'True' absence data can be less noisy, and help detect more subtle interactions in variables that determine distribution and/or biogeographic barriers. However, absence data can also be biased and incomplete and in such cases probably less useful than presence data.
+Many of the early species distribution models, such as Bioclim and Domain are known as 'profile' methods because they only use 'presence' data. Hence they are known as presence-only methods. Other methods also use 'absence' data or 'background' data. Logistic regression is the classical approach to analyzing presence and absence data (and it is still much used, often implemented in a generalized linear modeling (GLM) framework; and the 'maxent' algorithm is also closely related to logistic regression). If you have a large dataset with presence/absence from a well designed survey, you should use a method that can use these data (i.e. do not use a modeling method that only considers presence data). If you only have presence data, you can still use a method that needs absence data, by substituting absence data with background data. 
+
+Background data, also referred to as 'random absence'or 'pseudo-absence' (though sometimes with varying meanings) may not always be  \textit{that} different from 'true absence' data. If you have a species with a range that is relatively small compared to the study area, there will only a few background points where the species is actually present. Moreover, the species might be absent (not observable) at these sites at a given time of sampling (depending on scale, detectability, ...). Despite the potential similarities between background and absence data, some researchers reserve a special definition for background data. For these (e.g. Phillips et al. 2009), background data are not attempting to guess at absence locations, but rather to characterize environments in the study region. In this sense, background is the same, irrespective of where the species has been found. Background data establishes the environmental domain of the study, whilst presence data should establish under which conditions a species is more likely to be present than on average. 'True' absence data has value. In conjunction with presence records, it establishes where surveys have been done, and the prevalence of the species given the survey effort. That information is lacking for presence-only data, a fact that can cause substantial difficulties for modeling presence-only data well.  However, absence data can also be biased and incomplete, as discussed in the literature on detectability (refercences).
 
 dismo has a function to sample random points (background data) from a study area. You can use a 'mask' to exclude area with no data \texttt{NA}, e.g. areas not on land. You can use an 'extent' to further restrict the area from which random locations are drawn.
 
@@ -179,12 +208,15 @@ plot(e, add=TRUE, col='red')
 points(bg2, cex=0.5)
 @
 
+**here could add info on random sampling "biased" by cell area. 
+
+**I think here or later we need a bit of commentary on how to choose the background extent for modeling. (i.e. pertinent to what is being answered, ecologically relevant to the species and the presence sample).. 
 
 
-\chapter{Raster data}
+\chapter{Environmental data}
 
+\section{Raster data}
 
-\section{Predictor variables}
 
 In species distribution modeling, predictor variables are typically organized as raster (grid) type files. Each predictor should be a 'raster' representing a variable of interest. Variables can include climatic, soil and terrain, vegetation, land use, and other variables. These data are typically stored in files in some kind of GIS format. Almost all relevant formats can be used (including ESRI grid, geoTiff, netCDF, IDRISI, and ASCII). Avoid ASCII files if you can, as they tend to considerably slow down processing speed. For any particular study the layers all should have the same spatial extent, resolution, and origin (if necessary, see the '\texttt{raster}' package to prepare your predictor variable data). The set of predictor variables (raster) can be used to make a '\texttt{RasterStack}', which can be thought of as a collection of '\texttt{RasterLayer}' objects (see the \texttt{raster} package for more info). 
 
@@ -193,6 +225,7 @@ Here we make a list of files that are installed with the dismo package and then 
 <<sdm9, fig=TRUE>>=
 files <- list.files(path=paste(system.file(package="dismo"), 
 				'/ex', sep=''), pattern='grd', full.names=TRUE )
+#this (above) finds all the files with extension "grd" in the examples ("ex") directory for the dismo package.
 files
 predictors <- stack(files)
 predictors
@@ -212,12 +245,11 @@ points(acgeo, col='blue', pch='x', cex=0.5)
 The example above uses data representing 'bioclimatic variables' from the WorldClim database (\url{http://www.worldclim.org}, Hijmans et al., 2004) and 'terrestiral biome' data from the WWF
 (\url{http://www.worldwildlife.org/science/data/item1875.html}, Olsen et al., 2001). You can go to these websites if you want higher resolution data. You can also use the \texttt{getData} function from the \texttt{raster} package to download WorldClim climate data (as well as other geographic data).
 
-Variable selection is obviously important, particularly of the objective of a study is explanation. See, e.g., Austin and Smith (1987), Austin (2002). In SDM, the objective tends to be prediction, in which case variable selection might be less important (as long as there are enough variables with different spatial patterns); but this is an area that needs further research. 
 
 
 \section{Extracting values from rasters}
 
-We now have a set of predictor variables (rasters) and occurence points. The next step is to extract the values of the predictors at the locations of the points. (This step can be skipped for the modeling methods that are implemented in the dismo package). This is very straightfoward thing to do using the xyValues function from the raster package. In the example below we use that function first for the \textit{Bradypus} occurence points, then for 500 random background points. We combine these into a single \texttt{data.frame} in which the first column (variable 'pb') indicates whether this is a presence or a background point. 'biome' is catagorical variable (called a 'factor' in \R) and it is important to explicitly define it that way (so that it won't be treated like any other numerical variable).
+We now have a set of predictor variables (rasters) and occurrence points. The next step is to extract the values of the predictors at the locations of the points. (This step can be skipped for the modeling methods that are implemented in the dismo package). This is very straightfoward thing to do using the xyValues function from the raster package. In the example below we use that function first for the \textit{Bradypus} occurrence points, then for 500 random background points. We combine these into a single \texttt{data.frame} in which the first column (variable 'pb') indicates whether this is a presence or a background point. 'biome' is categorical variable (called a 'factor' in \R) and it is important to explicitly define it that way (so that it won't be treated like any other numerical variable).
 
 <<sdm12, fig=TRUE>>=
 presvals <- xyValues(predictors, bradypus)
@@ -233,9 +265,17 @@ pairs(sdmdata[,2:5], cex=0.1, fig=TRUE)
 @
 
 
-\chapter{Model fitting, prediction, and evaluation}
+\section{Variable selection}
 
-\section{Model fitting}
+Variable selection is obviously important, particularly if the objective of a study is explanation. See, e.g., Austin and Smith (1987), Austin (2002). The early applications of species modeling tended to focus on explanation (Elith and Leathwick 2009). Nowadays, the objective of SDM tends to be prediction, in which case variable selection might be less important (as long as there are enough variables with different spatial patterns); but this is an area that needs further research. 
+
+(to do: checking for correlations between predictors. How to choose a subset from a potentially large candidate set. Where to start (with the ecology of the species, rather than with the first data that can be found on the web!). Something about grid cell sizes, its relevance to the data content of the raster, what to do if you have some fine scale and some coarser scale data, how to deal with categorical variables with heaps of classes. The idea of presenting a new version of a variable that is more ecologically relevant to the species (e.g., looking at forest within x km of a grid cell, for a species that might have a home range of x) - using focal stats in raster). 
+
+
+
+\part{Model fitting, prediction, and evaluation}
+
+\chapter{Model fitting}
 
 Model fitting is quite similar accross the modeling methods that exist in \R. Most methods take a '\texttt{formula}' identifying the dependent and independent variables, accompanied with a \texttt{data.frame} that holds these variables. Details on specific methods are provided further down on this document, in the sections on specific modeling methods. 
 
@@ -259,9 +299,9 @@ pairs(bc)
 @
 
 
-\section{Model prediction}
+\chapter{Model prediction}
 
-Different modeling methods return differt type of 'model' objects (typically they have the same name as the modeling method used). All of these 'model' objects, irrespective of their exact class, can be used to with the \texttt{predict} function to make predictions for any combination of values of the independent variables. This is illusrated in the example below where we make predictions with model object 'm1' for three records with values for variables bio1, bio5 and bio12 (the variables used in the example above to create object m1)
+Different modeling methods return different type of 'model' objects (typically they have the same name as the modeling method used). All of these 'model' objects, irrespective of their exact class, can be used to with the \texttt{predict} function to make predictions for any combination of values of the independent variables. This is illusrated in the example below where we make predictions with model object 'm1' for three records with values for variables bio1, bio5 and bio12 (the variables used in the example above to create object m1)
 
 <<sdm14, echo=TRUE>>=
 bio1 = c(40, 150, 200)
@@ -275,9 +315,9 @@ predict(bc, pd)
 
 
 
-\section{Model evaluation}
+\chapter{Model evaluation}
 
-Traditional measures of fit used in regression, such as r\super{2} and textit{p}-values have little place in species distribution modeling. For some methods these metrics do not apply. But even if they do, they should normally not be used as all the classic assumptions on which they are based (independence of data, normality of distributions) are typically strongly violated. In stead, most modelers rely on cross-validation. This consists of creating a model with one 'training' data set, and testing it with another data set of known occurences. Typically, training and testing data are created through random sampling (without replacement) from a single data set. Only in a few cases, e.g. Elith et al., 2006, training and test data are from different sources and pre-defined.
+Traditional measures of fit used in regression, such as r\super{2} and \textit{p}-values have little place in species distribution modeling. For some methods these metrics do not apply. But even if they do, they should normally not be used as all the classic assumptions on which they are based (independence of data, normality of distributions) are typically strongly violated. In stead, most modelers rely on cross-validation. This consists of creating a model with one 'training' data set, and testing it with another data set of known occurrences. Typically, training and testing data are created through random sampling (without replacement) from a single data set. Only in a few cases, e.g. Elith et al., 2006, training and test data are from different sources and pre-defined.
 
 Different measures can be used to evaluate the quality of a prediction (Fielding and Bell, 1997), perhaps depending on the goal of the study. Many measueres are 'threshold dependent'. That means that a threshold must be set first (e.g. 0.5). Predicted values above that threshold indicate a prediction of 'presence', and values below the threshold indicate 'absence'. Some measures emphasize the weight of false absences, others give more weight to false presences. Cohen's \textit{kappa} is an example of a threshold dependent model evaluation statistic.
 
@@ -336,7 +376,7 @@ plot(e, 'ROC')
 @
 
 
-\section{Data partitioning}
+\chapter{Data partitioning}
 
 The \texttt{kfold} function facilitates data partitioning. It creates a vector that assinges each row in the data matrix to a a group (between 1 to k).
 
@@ -379,11 +419,14 @@ sapply( e, function(x){ x@t[which.max(x@TPR + x@TNR)] } )
 
 
 
-\chapter{Modeling methods}
+\part{Modeling methods}
+
+\chapter{Types of algorithms \& data used in examples}
 
 A large number of algorithms have been used in species distribution modeling. They can be classified as 'profile', 'regression', and 'machine learning' methods. Profile methods only consider 'presence' data, not absence or background data. Regression and machine learning methods use both presence and absence or background data. The distinction between regression and machine learning methods is not sharp, but it is perhaps still useful as way to classify models. Below we discuss examples of these different types of models. 
 
-We will use the same data for all models, except that some models cannot use categorical variables. So we drop that from the predictors stack.
+We will use the same data to illustrate all models, except that some models cannot use categorical variables. So for those models we drop the categorical variables from the predictors stack.
+
 <<sdm30, echo=TRUE>>=
 pred_nf <- dropLayer(predictors, 'biome')
 @
@@ -395,7 +438,7 @@ pres_train <- bradypus[group != 1, ]
 pres_test <- bradypus[group == 1, ]
 @
 
-To speed up processing, let's retstruct the predictions to a more restricuted area (defined by a rectangular extent):
+To speed up processing, let's restrict the predictions to a more restricted area (defined by a rectangular extent):
 <<sdm32, echo=TRUE>>=
 ext = extent(-90, -32, -33, 23)
 @
@@ -421,17 +464,17 @@ points(pres_test, pch='+', col='blue')
 @
 
 
-\section{Profile methods}
+\chapter{Profile methods}
 
 The three methods described here, Bioclim, Domain, and Mahal. These methods are implemented in the dismo package. The procedures to use these models is therefore the same for all three.  
 
 
-\subsection{Bioclim}
+\section{Bioclim}
 
-The BIOCLIM algorithm has been extensively used for species distribution modeling. BIOCLIM is a classic 'climate-envelope-model'. Although it generally does not perform as good as some other modeling methods (Elith et al. 2006, Hijmans and Graham, 2006), it is still used, among other reasons because the algorithm is easy to understand and thus useful in teaching species distribution modeling. The BIOCLIM algorithm computes the similarity of a location by comparing the values of environmental variables at any location to a percentile distribution of the values at known locations of occurence ('training sites'). The closer to the 50th percentile (the median), the more suitable the location is. The tails of the distribution are not distinguished, that is, 10 percentile is treated as equivalent to 90 percentile. In the 'dismo' implementation, the values of the upper tail values are transformed to the lower tail, and the minimum percentile score across all the environmental variables is used (i.e. BIOCLIM using an approach like Liebig's law of the minimum). This value is substracted from 1 and then mutliplied with two so that the results are between 0 and 1. The reason for scaling this way is that the results become more like that of other distributon modeling methods and are thus easier to interpret. The value 1 will rarely be observed as it would require a location that has the median value of the training data for all the variables considered. The value 0 is very common as it is assinged to all cells with a value of an environmental variable that is outside the percentile distribution (the range of the training data) for at least one of the variables.
+The BIOCLIM algorithm has been extensively used for species distribution modeling. BIOCLIM is a classic 'climate-envelope-model'. Although it generally does not perform as good as some other modeling methods (Elith et al. 2006), particularly in the context of climate change (Hijmans and Graham, 2006), it is still used, among other reasons because the algorithm is easy to understand and thus useful in teaching species distribution modeling. The BIOCLIM algorithm computes the similarity of a location by comparing the values of environmental variables at any location to a percentile distribution of the values at known locations of occurrence ('training sites'). The closer to the 50th percentile (the median), the more suitable the location is. The tails of the distribution are not distinguished, that is, 10 percentile is treated as equivalent to 90 percentile. In the 'dismo' implementation, the values of the upper tail values are transformed to the lower tail, and the minimum percentile score across all the environmental variables is used (i.e. BIOCLIM using an approach like Liebig's law of the minimum). This value is substracted from 1 and then mutliplied with two so that the results are between 0 and 1. The reason for scaling this way is that the results become more like that of other distributon modeling methods and are thus easier to interpret. The value 1 will rarely be observed as it would require a location that has the median value of the training data for all the variables considered. The value 0 is very common as it is assinged to all cells with a value of an environmental variable that is outside the percentile distribution (the range of the training data) for at least one of the variables.
 
 
-Earlier on, we fitted a Bioclim model using data.frame with each row representing the environmental data at known sites of presence of a species. Here we fit a bioclim model simly using the predictors, and the occurence points.
+Earlier on, we fitted a Bioclim model using data.frame with each row representing the environmental data at known sites of presence of a species. Here we fit a bioclim model simly using the predictors, and the occurrence points.
 
 <<sdm35, fig=TRUE>>=
 bc <- bioclim(pred_nf, pres_train)
@@ -462,13 +505,13 @@ points(pres_train, pch='+')
 Please note the order of the arguments in the predict function. In the example above, we used \texttt{predict(pred\_nf, bc)} (first the RasterStack, then the model object), which is  little bit less effecient than predict(bc, pred\_nf) (first the model, than the RasterStack). The reason for using the order we have used, is that this will work for all models, whereas the other option only works for the models defined in the dismo package, such as Bioclim, Domain, and Maxent, but not for models defined in other packages (random forest, boosted regression trees, glm, etc.).
 
 
-\subsection{Domain}
+\section{Domain}
 
-The Domain algorithm (Carpenter et al. 1993) that has been extensively used for species distribution modeling. It did not perform very well in a model comparison (Elith et al. 2006) and very poorly when assessing climate change effects (Hijmans and Graham, 2006). The Domain algorithm computes the Gower distance between environmental variables at any location and those at any of the known locations of occurence ('training sites'). 
+The Domain algorithm (Carpenter et al. 1993) that has been extensively used for species distribution modeling. It did not perform very well in a model comparison (Elith et al. 2006) and very poorly when assessing climate change effects (Hijmans and Graham, 2006). The Domain algorithm computes the Gower distance between environmental variables at any location and those at any of the known locations of occurrence ('training sites'). 
 
 
-The distance between the environment at point A and those of the known occurences for a single climate variable is calculated as
-the absolute difference in the values of that variable divided by the range of the variable across all known occurence points (i.e., the distance is scaled by the range of observations). For each variable the minimum distance beteen a site and any of the training points is taken. The Gower distance is then the mean of these distances over all environmental variables. The Domain algorithm assigns to a place the distance to the closest known occurence (in environmental space). 
+The distance between the environment at point A and those of the known occurrences for a single climate variable is calculated as
+the absolute difference in the values of that variable divided by the range of the variable across all known occurrence points (i.e., the distance is scaled by the range of observations). For each variable the minimum distance beteen a site and any of the training points is taken. The Gower distance is then the mean of these distances over all environmental variables. The Domain algorithm assigns to a place the distance to the closest known occurrence (in environmental space). 
 
 To integrate over environmental variables, the distance to any of the variables is used. This distance is substracted from one, and (in this R implementation) values below zero are truncated so that the scores are between 0 (low) and 1 (high).
 
@@ -488,7 +531,7 @@ points(pres_train, pch='+')
 @
 
 
-\subsection{Mahalanobis}
+\section{Mahalanobis}
 
 The \texttt{mahal} function implements a species distribution model based on the Mahalanobis distance (Mahalanobis, 1936). Mahalanobis distance takes into account the correlations of the variables in the data set, and it is not dependent on the scale of measurements.
 
@@ -507,7 +550,7 @@ plot(wrld_simpl, add=TRUE, border='dark grey')
 points(pres_train, pch='+')
 @
 
-\section{Regression models}
+\chapter{Regression models}
 
 The remaining models need to be fit presence textif{and} absence (background) data. With the exception of 'maxent', we cannot fit the model with a RasterStack and points. Instead, we need to extract the environmental data values ourselves, and fit the models with these values. 
 
@@ -527,7 +570,7 @@ testbackg[ ,'biome'] = factor(testbackg[ ,'biome'], levels=1:14)
 
 
 
-\subsection{Generalized Linear Models}
+\section{Generalized Linear Models}
 
 A generalized linear model (GLM) is a generalization of ordinary least squares regression. Models are fit using maximum likelihood and by allowing the linear model to be related to the response variable via a link function and by allowing the magnitude of the variance of each measurement to be a function of its predicted value. Depending on how a GLM is specified it can be equivalent to (mulitple) linear regression, logistic regression or Poisson regression. See Guisan et al (2002) for an overview of the use of GLM in species distribution modeling.
 
@@ -564,19 +607,19 @@ points(backg_train, pch='-', cex=0.25)
 @
 
 
-\subsection{Generalized Additive Models}
+\section{Generalized Additive Models}
 
 Generalized additive models (GAMs; Hastie and Tibshirani, 1990; Wood, 2006) are an extension to GLMs. In GAMs, the linear predictor is the sum of smoothing functions. This makes GAMs very flexible, and they can fit very complex functions. It also makes them very similar to machine learning methods. In \R, GAMs are implemented in the 'mgcv' package. The 'grasp' package implements species distribution modeling with gam (Lehman et al., 2002). 
 
 
 
-\section{Machine learning methods}
+\chapter{Machine learning methods}
 
 There is a variety of machine learning (sometimes referred to data mining) methods in \R. For a long time there have been packages to do Artifical Neural Networks (ANN) and Classification and Regressin Trees (CART). More recent methods include Random Forests, Boosted Regression Trees, and Support Vector Machines. Through the dismo package you can also use the Maxent program, that implements the most widely used method (maxent) in species distribution modeling. Breiman (2001a) provides a accesible introduction to machine learning, and how it contrasts with 'classical statistics' (model based probabilistic inference). Hastie et al., 2009 provide what is probably the most extensive overview of these methods.
 
 All the model fitting methods discussed here can be tuned in several ways. We do not explore that, and only show the general approach. If you want to use one of the methods, then you should consult the \R help pages (and other sources) to find out how to best implement the model fitting procedure.
 
-\subsection{Maxent}
+\section{Maxent}
 
 The Maxent (Maximum Entropy) species distribution model (Phillips et al., 2004, 2006) is a stand alone Java program. Dismo has a function 'maxent' that communicates with this program. To use it you must first download the program from \url{http://www.cs.princeton.edu/~schapire/maxent/}. Put the file 'maxent.jar' in the 'java' folder of the 'dismo' package. That is the folder returned by \texttt{system.file("java", package="dismo")}. Please note that this program (\texttt{maxent.jar}) can not be redistributed or used for commercial purposes. 
 
@@ -611,14 +654,14 @@ if (file.exists(jar)) {
 @
 
 
-\subsection{Boosted Regression Trees}
+\section{Boosted Regression Trees}
 
 Boosted Regression Trees (BRT) is, unfortunately, known by a large number of different names. It was developed by Friedman (2001), who referred to it as a "Gradient Boosting Machine" (GBM). It is also known as "Gradient Boost", "Stochastic Gradient Boosting", "Gradient Tree Boosting". The method is implemented in the '\texttt{gbm}' package in \R. 
 
 The article by Elith, Leathwick and Hastie (2009) describes the use of BRT in the context of species distribution modeling. Their article is accompanied by a number of R functions and a tutorial. The functions have been slightly adjusted and incorporated into the 'dismo' package. These funcitons extend the funcitons in the '\texttt{gbm}' package, with the goal to make these easier to apply to ecological data, and to enhance interpretation.  The adapted tutorial is available as a vignette to the dismo package. You can access it via the index of the help pages, or with this command: \texttt{vignette('gbm', 'dismo')}
 
 
-\subsection{Random Forest}
+\section{Random Forest}
 
 The Random Forest (Breiman, 2001b) method is an extention of Classification and regression trees (CART; Breiman et al., 1984). In \R it is implemented in the function 'randomForest' in a package with the same name. The function randomForest can take a formula or, in two seperate argumetns, a data.frame with the predictor variables, and a vector with the response. If the response variable is a factor (categorical), randomForest will do classification, otherwise it will do regression. Whereas with species distribution modeling we are often interested in classification (species is present or not), it is my experience that using regression provides better results. rf1 does regression, rf2 and rf3 do classification (they are exactely the same models). See the function tuneRF for optimizing the model fitting procedure.
 
@@ -646,13 +689,13 @@ points(backg_train, pch='-', cex=0.25)
 
 
 
-\subsection{Support Vector Machines}
+\section{Support Vector Machines}
 
 Support Vector Machines (SVMs; Vapnik, 1998) apply a simple linear method to the data but in a high-dimensional feature space non-linearly
 related to the input space, but in practice, it does not involve any computations in that high-dimensional space. This simplicity combined with state of the art performance on many learning problems (classification, regression, and novelty detection) has contributed to the popularity of the SVM (Karatzoglou et al., 2006). They were first used in species distribution modeling by Guo et al. (2005). 
 
 There are a number of implementations of svm in \R. The most useful implementations in our context are probably function 'ksvm' in package 'kernlab'
-and the 'svm' function in pakcage 'e1071'. 'ksvm' includes many different SVM formulations and kernels and provides useful options and features like a method for plotting, but it lacks a proper model selection tool. The 'svm' function in package 'e1071' includes a model selection tool: the 'tune'function (Karatzoglou et al., 2006)
+and the 'svm' function in pakcage 'e1071'. 'ksvm' includes many different SVM formulations and kernels and provides useful options and features like a method for plotting, but it lacks a proper model selection tool. The 'svm' function in package 'e1071' includes a model selection tool: the 'tune' function (Karatzoglou et al., 2006)
 
 <<sdm61, fig=TRUE, width=9, height=6>>=
 library(kernlab)
@@ -674,56 +717,59 @@ points(backg_train, pch='-', cex=0.25)
 
 The remainder of this document is to be completed.
 
-\subsection{Other methods}
+\section{Other methods}
 
 Neural networks, ...
 
 \chapter{More...}
 
-\section{Multi-species models}
 
-\subsection{mars}
+\part{Multi-species models}
 
-\subsection{gdm}
+\section{mars}
 
-
-\section{Model transfer}
-
-\subsection{space}
-
-\subsection{time: climate change}
+\section{gdm}
 
 
-\section{Model averaging}
+\part{Model transfer in space and time}
+
+\chapter{Transfer in space}
+
+\chapter{Transfer in time: climate change}
+
+
+\part{Model averaging, uncertainty}
+
 
 See the BIOMOD for on multi-model inference.
 
+Dealing with uncertainty
 
-\section{Dealing with uncertainty}
 
 
-\chapter{Geographic models}
+\part{Geographic models}
+
 
 The 'geographic models' described here are not commonly used in species distribution modeling. They are an attempt to formalize methods to draw 'expert range maps'. They can also be interpreted as null-models. To be completed. 
 
-\section{Geographic models (presence-only)}
+\chapter{Geographic models (presence-only)}
 
-\subsection{Distance}
+\section{Distance}
 
-\subsection{Convex hulls}
+\section{Convex hulls}
 
-\subsection{Circles}
-
-
-\section{Geographic models (presence-absence)}
-
-\subsection{Inverse distance}
-
-\subsection{Voronoi hulls}
+\section{Circles}
 
 
+\chapter{Geographic models (presence-absence)}
 
-\chapter{References}
+\section{Inverse distance}
+
+\section{Voronoi hulls}
+
+
+
+\part{References}
 
 \begin{hangparas}{3em}{1}
 
@@ -749,6 +795,8 @@ The 'geographic models' described here are not commonly used in species distribu
 \noindent Ferrier, S. and A. Guisan, 2006. Spatial modelling of biodiversity at the community level. Journal of Applied Ecology 43:393-40
 
 \noindent Fielding, A.H. and J.F. Bell, 1997. A review of methods for the assessment of prediction errors in conservation presence/absence models. Environmental Conservation 24: 38-49
+
+\noindent Franklin, J. 2009. Mapping Species Distributions: Spatial Inference and Prediction. Cambridge University Press, Cambridge, UK.
 
 \noindent Friedman, J.H., 2001. Greedy function approximation: a gradient boosting machine. The Annals of Statistics 29: 1189-1232. \url{http://www-stat.stanford.edu/~jhf/ftp/trebst.pdf)}
 
@@ -780,7 +828,9 @@ The 'geographic models' described here are not commonly used in species distribu
 
 \noindent Olson, D.M, E. Dinerstein, E.D. Wikramanayake, N.D. Burgess, G.V.N. Powell, E.C. Underwood, J.A. D'amico, I. Itoua, H.E. Strand, J.C. Morrison, C.J. Loucks, T.F. Allnutt, T.H. Ricketts, Y. Kura, J.F. Lamoreux, W.W.Wettengel, P. Hedao, and K.R. Kassem. 2001. Terrestrial Ecoregions of the World: A New Map of Life on Earth. BioScience 51:933-938
 
-\noindent Phillips, S.J., R.P. Anderson, R.E. Schapire, 2006. Maximum entropy modeling of species geographic distributions. Ecological Modelling 190: 231-259.
+\noindent Phillips, S.J., R.P. Anderson, R.E. Schapire, 2006. Maximum entropy modeling of species geographic distributions. Ecological Modelling 190:231-259.
+
+\noindent Phillips, S. J., M. Dudik, J. Elith, C. H. Graham, A. Lehmann, J. Leathwick, and S. Ferrier. 2009. Sample selection bias and presence-only distribution models: implications for background and pseudo-absence data. Ecological Applications 19:181-197.
 
 \noindent Vapnik, V., 1998. Statistical Learning Theory. Wiley, New York.
 
@@ -796,4 +846,5 @@ The 'geographic models' described here are not commonly used in species distribu
 
 
 \end{document}
+
 

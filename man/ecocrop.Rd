@@ -2,6 +2,7 @@
 
 \alias{ecocrop}
 \alias{getCrop}
+\alias{ECOcrops}
 
 \title{Ecocrop model}
 
@@ -12,6 +13,7 @@ Very simple mechanistic model for plants.
 \usage{
 ecocrop(crop, tmin, tavg, prec, rainfed=TRUE, ...) 
 getCrop(name)
+data(ECOcrops)
 }
  
 

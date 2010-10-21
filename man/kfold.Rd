@@ -30,22 +30,22 @@ Robert J. Hijmans
 }
 
 \examples{
-if (require(disdat)) {
-data(NSWtrain)
-# a single species
-srsp1 <- subset(NSWtrain, spid=='srsp1')
-kfold(srsp1, k = 5)
 
-# all species
-k = kfold(NSWtrain, k=5, by=NSWtrain$spid)
+#library(disdat)
+#data(NSWtrain)
+## a single species
+#srsp1 <- subset(NSWtrain, spid=='srsp1')
+#kfold(srsp1, k = 5)
 
-k[NSWtrain$spid=='srsp1']
-# each group has the same number of records 
-#(except for adjustments if the number of records divided by k is not an integer) 
-table(k[NSWtrain$spid=='srsp1'])
+## all species
+#k = kfold(NSWtrain, k=5, by=NSWtrain$spid)
 
-k[NSWtrain$spid=='ousp5']
-}
+#k[NSWtrain$spid=='srsp1']
+## each group has the same number of records 
+##(except for adjustments if the number of records divided by k is not an integer) 
+#table(k[NSWtrain$spid=='srsp1'])
+#k[NSWtrain$spid=='ousp5']
+
 }
 
 \keyword{spatial}
