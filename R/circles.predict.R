@@ -15,7 +15,7 @@ setMethod('predict', signature(object='CirclesRange'),
 			if (! is.null(ext)) { 
 				x = crop(x, ext) 
 			}
-			xx = polygonsToRaster(object@circles, raster(x), field=-1, overlap='sum', mask=FALSE, updateRaster=FALSE, updateValue="NA", getCover=FALSE, silent=TRUE, progress=progress)
+			xx = rasterize(object@circles, raster(x), field=-1, fun='sum', mask=FALSE, update=FALSE, updateValue="NA", getCover=FALSE, silent=TRUE, progress=progress)
 			if (mask) {
 				xx <- mask(xx, x)
 			}

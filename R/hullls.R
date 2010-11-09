@@ -43,5 +43,5 @@
 #}
 
 #predict.hull <- function(r, hullmodel, ...) {
-#	polygonsToRaster(hullmodel, r, field=-1, overlap='sum', ...)
+#	rasterize(hullmodel, r, field=-1, overlap='sum', ...)
 #}

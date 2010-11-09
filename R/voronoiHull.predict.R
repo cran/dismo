@@ -17,10 +17,10 @@ setMethod('predict', signature(object='VoronoiHull'),
 			}
 			
 			if (mask) {
-				xx = polygonsToRaster(object@hull, raster(x), field=-1, overlap='max', mask=FALSE, updateRaster=FALSE, updateValue="NA", getCover=FALSE, silent=TRUE, progress=progress)
+				xx = rasterize(object@hull, raster(x), field=-1, fun='max', mask=FALSE, update=FALSE, updateValue="NA", getCover=FALSE, silent=TRUE, progress=progress)
 				xx <- mask(xx, x, filename=filename, progress=progress, ...)
 			} else {
-				xx = polygonsToRaster(object@hull, raster(x), filename=filename, field=-1, overlap='max', mask=FALSE, updateRaster=FALSE, updateValue="NA", getCover=FALSE, silent=TRUE, progress=progress, ...)
+				xx = rasterize(object@hull, raster(x), filename=filename, field=-1, fun='max', mask=FALSE, update=FALSE, updateValue="NA", getCover=FALSE, silent=TRUE, progress=progress, ...)
 			}
 			xx <- calc(xx, fun=fun, filename=filename, progress=progress, ...)
 			return(xx)

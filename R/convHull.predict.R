@@ -23,7 +23,7 @@ setMethod('predict', signature(object='ConvexHull'),
 				x = crop(x, ext) 
 			}
 			
-			xx = polygonsToRaster(object@hull, raster(x), field=-1, overlap='sum', mask=FALSE, updateRaster=FALSE, updateValue="NA", getCover=FALSE, silent=TRUE, progress=progress)
+			xx = rasterize(object@hull, raster(x), field=-1, fun='sum', mask=FALSE, update=FALSE, updateValue="NA", getCover=FALSE, silent=TRUE, progress=progress)
 			if (mask) {
 				xx <- mask(xx, x)
 			}

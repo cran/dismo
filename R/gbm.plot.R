@@ -27,7 +27,7 @@ function(gbm.object,                # a gbm object - could be one from gbm.step
 {
 
   if (! require(gbm) ) { stop ('you need to install the gbm package to run this function') }
-  if (! require(splines) ) { stop ('you need to install the gbm package to run this function') }
+  if (! require(splines) ) { stop ('you need to install the splines package to run this function') }
 
 	gbm.call <- gbm.object$gbm.call
 	gbm.x <- gbm.call$gbm.x
@@ -84,6 +84,9 @@ function(gbm.object,                # a gbm object - could be one from gbm.step
 
 # now do the actual plots
 
+	op <- par(no.readonly = TRUE) 
+	par(mfrow = plot.layout)
+
 	for (j in c(1:n.plots)) {
 
 		if (plot.count == max.plots) {
@@ -91,7 +94,6 @@ function(gbm.object,                # a gbm object - could be one from gbm.step
 			n.pages <- n.pages + 1
 		}
 
-		par(mfrow = plot.layout)
 #		if (plot.count == 0) {
 #			x11(width = 11, height = 8)
 #		}
@@ -138,5 +140,7 @@ function(gbm.object,                # a gbm object - could be one from gbm.step
 			}
 		}
 	}
+	par(op)
+
 }
 
