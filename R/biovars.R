@@ -56,48 +56,48 @@ setMethod('biovars', signature(prec='vector', tmin='vector', tmax='vector'),
 
 
 setMethod('biovars', signature(prec='Raster', tmin='Raster', tmax='Raster'), 
-	function(prec, tmin, tmax, filename='', output='stack', ...) {
+	function(prec, tmin, tmax, filename='', ...) {
 
 	if (nlayers(prec) != 12) stop('nlayers(prec) is not 12')
 	if (nlayers(tmin) != 12) stop('nlayers(tmin) is not 12')
 	if (nlayers(tmax) != 12) stop('nlayers(tmax) is not 12')
 	
 	compare(prec, tmin, tmax)
+
+	out <- brick(raster(prec))
+	out@data@nlayers  <- 19
 	
-
-	if (filename == '') { filename <- 'bio' }
-	if (output == 'brick') {
-		b <- brick(raster(prec))
-	} else {
-		fn <- paste(basename(filename), '_', 1:19, sep='')
-		r <- list()
-		r[1] <- raster(prec)
-		for (i in 2:19) { 
-			r[i] <- r[[1]]
+	filename <- trim(filename)
+	if (!.canProcessInMemory(out, 18)) {
+		if (filename == '') { 
+			filename <- rasterTmpFile()
 		}
-	}
-	for (r in 1:nrow(prec)) {
+	} 
+	if (filename == "") {
+		v <- matrix(nrow=ncell(out), ncol=19)
+	} else {
+		out <- writeStart(out, filename, ...)
+	}	
 
-		prec <- getValues(prec, r)
-		tmin <- getValues(tmin, r)
-		tmax <- getValues(tmax, r)
+	tr <- blockSize(out, n=nlayers(out)+36)
+	pb <- pbCreate(tr$n, type=progress)	
+	for (i in 1:tr$n) {
+		prec <- getValues(prec, tr$row[i])
+		tmin <- getValues(tmin, tr$row[i])
+		tmax <- getValues(tmax, tr$row[i])
 		p <- biovars(prec, tmin, tmax, ...)
-		
-		if (output == 'brick') {
-			b <- setValues(b, p)
-			b <- writeRaster(b, filename=filename)
+		if (filename != "") {
+			out <- writeValues(out, p, ...)
 		} else {
-			for (i in 1:19) { 
-				r[[i]] <- setValues(r[[i]], p[,i])
-				r[[i]] <- writeRaster(r[[i]], fn[[i]], filename=fn[i], ...)
-			}
+			v[tr$row[i]:(tr$row[i]+tr$nrows[i]-1),] <- p
 		}
 	}
-	if (output == 'brick') {
-		return(b)
+	if (filename == "") {
+		out <- setValues(out, v)
 	} else {
-		return(stack(fn))
-	}
+		out <- writeStop(out)
+	}	
+	return(out)
 }
 )
 
@@ -110,7 +110,23 @@ setMethod('biovars', signature(prec='matrix', tmin='matrix', tmax='matrix'),
 		if (nrow(prec) != nrow(tmin) | nrow(tmin) != nrow(tmax) ) {
 			stop('prec, tmin and tmax should have same length')
 		}
-	
+		
+		if (ncol(prec) != ncol(tmin) | ncol(tmin) != ncol(tmax) ) {
+			stop('prec, tmin and tmax should have same number of variables (columns)')
+		}
+		
+		# can't have missing values in a row
+		nas <- apply(prec, 1, function(x){ any(is.na(x)) } )
+		nas <- nas | apply(tmin, 1, function(x){ any(is.na(x)) } )
+		nas <- nas | apply(tmax, 1, function(x){ any(is.na(x)) } )
+		p <- matrix(nrow=nrow(prec), ncol=19)
+		colnames(p) = paste('bio', 1:19, sep='')
+		if (all(nas)) { return(p) }
+		
+		prec[nas,] <- NA
+		tmin[nas,] <- NA
+		tmax[nas,] <- NA
+		
 		window <- function(x)  { 
 			lng <- length(x)
 			x <- c(x,  x[1:3])
@@ -119,10 +135,8 @@ setMethod('biovars', signature(prec='matrix', tmin='matrix', tmax='matrix'),
 			apply(m, MARGIN=1, FUN=sum)
 		}
 		
-		p <- matrix(nrow=nrow(prec), ncol=19)
-		colnames(p) = paste('bio', 1:19, sep='')
-
 		tavg <- (tmin + tmax) / 2
+		
 # P1. Annual Mean Temperature 
 		p[,1] <- apply(tavg,1,mean)
 # P2. Mean Diurnal Range(Mean(period max-min)) 
@@ -155,27 +169,35 @@ setMethod('biovars', signature(prec='matrix', tmin='matrix', tmax='matrix'),
 		p[,17] <- apply(wet, 1, min)
 		tmp <- t(apply(tavg, 1, window)) / 3
 		
+		if (all(is.na(wet))) {
+			p[,8] <- NA		
+			p[,9] <- NA		
+		} else {
 # P8. Mean Temperature of Wettest Quarter 
-		wetqrt <- cbind(1:nrow(p), apply(wet, 1, which.max))
-		p[,8] <- tmp[wetqrt]
-
+			wetqrt <- cbind(1:nrow(p), as.integer(apply(wet, 1, which.max)))
+			p[,8] <- tmp[wetqrt]
 # P9. Mean Temperature of Driest Quarter 
-		dryqrt <- cbind(1:nrow(p), apply(wet, 1, which.min))
-		p[,9] <- tmp[dryqrt]
-
+			dryqrt <- cbind(1:nrow(p), as.integer(apply(wet, 1, which.min)))
+			p[,9] <- tmp[dryqrt]
+		}
 # P10 Mean Temperature of Warmest Quarter 
 		p[,10] <- apply(tmp, 1, max)
 
 # P11 Mean Temperature of Coldest Quarter
 		p[,11] <- apply(tmp, 1, min) 
 
+		if (all(is.na(tmp))) {
+			p[,18] <- NA		
+			p[,19] <- NA
+		} else {
 # P18. Precipitation of Warmest Quarter 
-		hot <- cbind(1:nrow(p),apply(tmp, 1, which.max))
-		p[,18] <- wet[hot]
-
+			hot <- cbind(1:nrow(p), as.integer(apply(tmp, 1, which.max)))
+			p[,18] <- wet[hot]
 # P19. Precipitation of Coldest Quarter 
-		cold <- cbind(1:nrow(p), apply(tmp, 1, which.min))
-		p[,19] <- wet[cold]
+			cold <- cbind(1:nrow(p), as.integer(apply(tmp, 1, which.min)))
+			p[,19] <- wet[cold]
+		}
+		
 		return(p)	
 	}
 )
