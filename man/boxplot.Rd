@@ -2,7 +2,6 @@
 
 \docType{methods}
 
-\alias{boxplot}
 \alias{boxplot,ModelEvaluation-method}
 
 
@@ -15,15 +14,12 @@ Make a box plot of model evaluation data, i.e., the model predictions for known 
 }
 
 
-\usage{
-boxplot(x, ...)
-}
+\details{
+Arguments:
 
-\arguments{
-\item{x}{Object of class ModelEvaluation}
-\item{...}{Additional arguments that can be passed to \link[graphics]{boxplot}}
+\code{x} Object of class ModelEvaluation
+\code{...} Additional arguments that can be passed to \link[graphics]{boxplot}
 }
-
 
 
 \seealso{

@@ -29,18 +29,17 @@ maxent(x, p, ...)
 
 \details{
 Additional arguments:
-\tabular{lll}{
+\tabular{rll}{
 \tab \code{a} \tab Background points. Only used if \code{p} is not missing, and not a vector.  \cr
 \tab \code{factors} \tab Which (if any) variables should be considered as categorical? Either by (layer)name or by index. Only used when argument \code{x} is a Raster* object because it is not needed in other cases as you can set the appropriate class to the variables in the data.frame \cr 
-\tab \code{args} \tab Additional argument that can be passed to Maxent. See the Maxent help. For this function, only the arguments relevant to model fitting are used. (e.g. there is no point in using args='outputformat=raw' when *fitting* the model; but you can use these in the \code{predict} functions. Some others (e.g. outputfiletype) do not apply at all to the R implementation (the "predict" function has its own arguments for that)
-\cr
-
+\tab \code{args} \tab Additional argument that can be passed to Maxent. See the Maxent help. For this function, only the arguments relevant to model fitting are used. (e.g. there is no point in using args='outputformat=raw' when *fitting* the model; but you can use these in the \code{predict} functions. Some others (e.g. outputfiletype) do not apply at all to the R implementation (the "predict" function has its own arguments for that) \cr
+}
 
 if you want to give maxent (the Java virtual machine that runs it) more memory, you do that by running something like this (for 1 GB) \bold{before} you load the dismo library.
 
 \code{options(java.parameters = "-Xmx1g" )} 
 }
-}
+
 
 \value{
 A RasterLayer object or a vector. 
@@ -67,7 +66,7 @@ if (file.exists(jar)) {
 
 # get predictor variables
 predictors <- stack(list.files(path=paste(system.file(package="dismo"), '/ex', sep=''), pattern='grd', full.names=TRUE ))
-plot(predictors)
+#plot(predictors)
 
 # file with presence points
 occurence <- paste(system.file(package="dismo"), '/ex/bradypus.csv', sep='')

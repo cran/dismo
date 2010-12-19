@@ -12,11 +12,6 @@ if (!isGeneric("predict")) {
 
 
 
-.maxentLambdaFile <- function(d)  {
-	return(d)
-}
-
-
 setMethod('predict', signature(object='MaxEnt'), 
 	function(object, x, ext=NULL, filename='', progress='text', args="", ...) {
 
@@ -122,6 +117,16 @@ setMethod('predict', signature(object='MaxEnt'),
 			
 			
 			x <- x[,variables,drop=FALSE]
+			if (class(x) == 'data.frame') {
+				for (i in 1:ncol(x)) {
+					if (class(x[,i]) == 'factor') {
+						x[,i] <- as.numeric(as.character(x[,i]))
+					} else if (class(x[,i]) == 'character') {
+						x[,i] <- as.numeric(x[,i])
+					}
+				}
+			}
+			
 			out <- rep(NA, times=nrow(x))
 			
 			x <- na.omit(x)
