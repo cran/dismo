@@ -22,9 +22,9 @@ function(object, x, tails=NULL, ext=NULL, filename='', progress='text', ...) {
 		if (tail=='both') {
 			r[i] <- 1-r[i]
 		} else if (tail == 'high') {
-			r[! i] <- 0.5
+			r[which(r < 0.5)] <- 0.5
 			r[i] <- 1-r[i]			
-		} else { # tail == low
+		} else { # if tail == low
 			r[i] <- 0.5
 		}
 		r * 2
@@ -36,7 +36,7 @@ function(object, x, tails=NULL, ext=NULL, filename='', progress='text', ...) {
 		tails <- rep('both', times=length(ln))
 	} else {
 		if (length(tails) != length(ln)) {
-			stop('length of "tails" is', length(tails), '. This does not match the number of variables in the model which is', length(ln))
+			stop('length of "tails" is: ', length(tails), '.\nThis does not match the number of variables in the model which is: ', length(ln))
 		}
 		test <- all(tails %in% c('low', 'high', 'both'))
 		if (!test) stop('"tails" should be a character vector with values "low", "high", and/or "both"')
@@ -83,13 +83,19 @@ function(object, x, tails=NULL, ext=NULL, filename='', progress='text', ...) {
 
 		tr <- blockSize(out, n=nlayers(x)+2)
 		pb <- pbCreate(tr$n, type=progress)	
+		
+		mincomp <- object@min
+		mincomp[tails=='high'] <- -Inf
+		maxcomp <- object@max
+		maxcomp[tails=='low'] <- Inf
+		
 		for (i in 1:tr$n) {
 			rr <- firstrow + tr$row[i] - 1
 			vals <- getValuesBlock(x, row=rr, nrows=tr$nrows[i], firstcol, ncols)
 			bc <- matrix(0, ncol=ncol(vals), nrow=nrow(vals))
 			na <- as.vector(attr(na.omit(vals), 'na.action'))
 			bc[na] <- NA
-			k <- (apply(t(vals) >= object@min, 2, all) & apply(t(vals) <= object@max, 2, all))
+			k <- (apply(t(vals) >= mincomp, 2, all) & apply(t(vals) <= maxcomp, 2, all))
 			k[is.na(k)] <- FALSE
 			for (j in 1:length(ln)) {
 				bc[k,j] <- percRank( object@presence[ ,ln[j]], vals[k, ln[j]], tails[j] )

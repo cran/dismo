@@ -13,7 +13,7 @@
 	d <- matrix(nrow=nrow(xy), ncol=nrow(xy))
 	if (lonlat) {
 		for (i in 1:nrow(xy)) { 
-			d[,i] <- pointDistance(xy[i,], xy, type='GreatCircle', r=r)
+			d[,i] <- pointDistance(xy[i,], xy, longlat=TRUE, r=r)
 		}
 	} else {
 		for (i in 1:nrow(xy)) { 

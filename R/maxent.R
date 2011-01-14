@@ -63,10 +63,11 @@ if (!isGeneric("maxent")) {
 	mxe <- .jnew("mebridge1") 
 	v <- try(.jcall(mxe, "S", "meversion") )
 	if (class(v) == 'try-error') {
-		stop('"dismo" needs a more recent version of Maxent (>= 3.3.3) \nPlease download it here: http://www.cs.princeton.edu/~schapire/maxent/')
-	} else {
-		return(v)
+		stop('"dismo" needs a more recent version of Maxent (3.3.3b or later) \nPlease download it here: http://www.cs.princeton.edu/~schapire/maxent/')
+	} else if (v < '3.3.3b') { 
+		stop("please update your maxent program to version 3.3.3b or later. This version is no longer supported. \nYou can download it here: http://www.cs.princeton.edu/~schapire/maxent/'")
 	}
+	return(v)
 }
 
 
@@ -184,9 +185,6 @@ setMethod('maxent', signature(x='data.frame', p='vector'),
 		}
 		
 		MEversion <- .getMeVersion()
-		if (substr(MEversion, 1, 3) == 'unk') {
-			stop('dismo needs a more recent version of Maxent (>= 3.3.3) \nPlease download it here: http://www.cs.princeton.edu/~schapire/maxent/')
-		}
 
 		x <- cbind(p, x)
 		x <- na.omit(x)
@@ -225,13 +223,9 @@ setMethod('maxent', signature(x='data.frame', p='vector'),
 		write.table(pv, file=pfn, sep=',', row.names=FALSE)
 		write.table(av, file=afn, sep=',', row.names=FALSE)
 
-		if (MEversion == '3.3.3' | MEversion == '3.3.3a') { 
-			mxe <- .jnew("mebridge1") 
-		} else {
-			mxe <- .jnew("mebridge2") 		
-			args <- c("-z", args)
-		}
-	
+		mxe <- .jnew("mebridge2")	
+		args <- c("-z", args)
+		
 		if (is.null(factors)) {
 			str <- .jcall(mxe, "S", "fit", c("autorun", "-e", afn, "-o", dirout, "-s", pfn, args)) 
 		} else {

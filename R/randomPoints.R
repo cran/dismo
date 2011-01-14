@@ -10,7 +10,7 @@
 # too many cells when going towards the poles
 # as suggested by Jane Elith
 	y <- yFromRow(r, 1:nrow(r)) # get y coordinates for all rows
-	dx <- pointDistance(cbind(0, y), cbind(xres(r), y), type='GreatCircle')  # size of each cell in longitude directoin
+	dx <- pointDistance(cbind(0, y), cbind(xres(r), y), longlat=TRUE)  # size of each cell in longitude directoin
 	dx <- dx / max(dx) # standardize to 1
 
 	row <- sample.int(nrow(r), n, replace = TRUE, prob = dx) # sample from rows using weights
@@ -39,7 +39,7 @@
 # what is the latitude?
 	y <- yFromRow(r, rows)
 # what is the 'width' of a cell?
-	dx <- pointDistance(cbind(0, y), cbind(xres(r), y), type='GreatCircle')  
+	dx <- pointDistance(cbind(0, y), cbind(xres(r), y), longlat=TRUE)  
 
 	cells <- sample(cells, n, prob=dx)
 	return(cells)
@@ -101,7 +101,7 @@ randomPoints <- function(mask, n, p, ext=NULL, extf=1.1, excludep=TRUE, tryf=5, 
 			# what is the latitude?
 			y <- yFromRow(mask2, rows)
 			# what is the 'width' of a cell?
-			dx <- pointDistance(cbind(0, y), cbind(xres(mask2), y), type='GreatCircle')  
+			dx <- pointDistance(cbind(0, y), cbind(xres(mask2), y), longlat=TRUE)  
 			cells <- sample(cells, nn, prob=dx)
 	
 		} else {

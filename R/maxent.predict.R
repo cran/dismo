@@ -28,15 +28,12 @@ setMethod('predict', signature(object='MaxEnt'),
 		write.table(object@lambdas, file=lambdas, row.names=FALSE, col.names=FALSE, quote=FALSE)
 		
 		MEversion <- .getMeVersion()
-		if (MEversion == '3.3.3' | MEversion == '3.3.3a') { 
-			mxe <- .jnew("mebridge1") 
-		} else {
-			mxe <- .jnew("mebridge2") 		
-			args <- c("-z", args)
-			str <- .jcall(mxe, "S", "testPredictArgs", lambdas, args) 
-			if (!is.null(str)) {
-				stop("args not understood:\n", str)
-			}
+
+		mxe <- .jnew("mebridge2") 		
+		args <- c("-z", args)
+		str <- .jcall(mxe, "S", "testPredictArgs", lambdas, args) 
+		if (!is.null(str)) {
+			stop("args not understood:\n", str)
 		}
 
 		filename <- trim(filename)
