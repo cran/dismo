@@ -77,7 +77,8 @@ function(object, x, tails=NULL, ext=NULL, filename='', progress='text', ...) {
 			inmem <- FALSE
 			if  (filename == '') {
 				filename <- rasterTmpFile()
-				if (getOption('verbose')) { cat('writing raster to:', filename)	}						
+				if (getOption('verbose')) { cat('writing raster to:', filename)	}		
+				out <- writeStart(out, filename, ...)
 			}
 		}
 

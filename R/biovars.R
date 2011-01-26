@@ -82,12 +82,12 @@ setMethod('biovars', signature(prec='Raster', tmin='Raster', tmax='Raster'),
 	tr <- blockSize(out, n=nlayers(out)+36)
 	pb <- pbCreate(tr$n, type=progress)	
 	for (i in 1:tr$n) {
-		prec <- getValues(prec, tr$row[i])
-		tmin <- getValues(tmin, tr$row[i])
-		tmax <- getValues(tmax, tr$row[i])
-		p <- biovars(prec, tmin, tmax, ...)
+		prc <- getValues(prec, tr$row[i])
+		tmn <- getValues(tmin, tr$row[i])
+		tmx <- getValues(tmax, tr$row[i])
+		p <- biovars(prc, tmn, tmx, ...)
 		if (filename != "") {
-			out <- writeValues(out, p, ...)
+			out <- writeValues(out, p, tr$row[i])
 		} else {
 			v[tr$row[i]:(tr$row[i]+tr$nrows[i]-1),] <- p
 		}

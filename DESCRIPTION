@@ -1,8 +1,8 @@
 Package: dismo
 Type: Package
 Title: Species distribution modeling
-Version: 0.5-14
-Date: 14-January-2011
+Version: 0.5-15
+Date: 26-January-2011
 Depends: R (>= 2.10.0), methods, raster (>= 1.6-15), rJava (>= 0.5-0)
 Suggests: rgdal, gbm, splines, XML, ROCR, deldir, gstat, randomForest,
         kernlab, maptools
@@ -16,6 +16,6 @@ License: GPL (>= 3)
 LazyLoad: yes
 Repository: CRAN
 Repository/R-Forge/Project: dismo
-Repository/R-Forge/Revision: 256
-Date/Publication: 2011-01-20 13:07:38
-Packaged: 2011-01-18 21:55:17 UTC; rforge
+Repository/R-Forge/Revision: 259
+Date/Publication: 2011-01-31 07:36:44
+Packaged: 2011-01-27 21:51:28 UTC; rforge

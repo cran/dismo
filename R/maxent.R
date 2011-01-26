@@ -106,7 +106,7 @@ setMethod('maxent', signature(x='SpatialGridDataFrame', p='ANY'),
 		stop('data should be  a matrix, data.frame, or SpatialPoints* object')
 	}
 	if (dim(x)[2] != 2) {
-		stop('presence or absence coordiantes data should be a matrix or data.frame with 2 columns' ) 	
+		stop('presence or absence coordinates data should be a matrix or data.frame with 2 columns' ) 	
 	}
 	colnames(x) <- c('x', 'y')
 	return(x)
