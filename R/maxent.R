@@ -60,11 +60,11 @@ if (!isGeneric("maxent")) {
 }	
 
 .getMeVersion <- function() {
-	mxe <- .jnew("mebridge1") 
+	mxe <- .jnew("meversion") 
 	v <- try(.jcall(mxe, "S", "meversion") )
 	if (class(v) == 'try-error') {
 		stop('"dismo" needs a more recent version of Maxent (3.3.3b or later) \nPlease download it here: http://www.cs.princeton.edu/~schapire/maxent/')
-	} else if (v < '3.3.3b') { 
+	} else if (v == '3.3.3a') { 
 		stop("please update your maxent program to version 3.3.3b or later. This version is no longer supported. \nYou can download it here: http://www.cs.princeton.edu/~schapire/maxent/'")
 	}
 	return(v)
@@ -77,7 +77,9 @@ setMethod('maxent', signature(x='missing', p='missing'),
 		if (!file.exists(jar)) {
 			stop('maxent program is missing:', jar, '.\nPlease download it here: http://www.cs.princeton.edu/~schapire/maxent/')
 		}
-		cat('version', .getMeVersion(), '\n' )
+		v <- .getMeVersion()
+		cat('This is MaxEnt version', v, '\n' )
+		return(invisible(v))
 	}
 )
 
@@ -223,7 +225,7 @@ setMethod('maxent', signature(x='data.frame', p='vector'),
 		write.table(pv, file=pfn, sep=',', row.names=FALSE)
 		write.table(av, file=afn, sep=',', row.names=FALSE)
 
-		mxe <- .jnew("mebridge2")	
+		mxe <- .jnew("mebridge")	
 		args <- c("-z", args)
 		
 		if (is.null(factors)) {

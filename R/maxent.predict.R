@@ -29,7 +29,7 @@ setMethod('predict', signature(object='MaxEnt'),
 		
 		MEversion <- .getMeVersion()
 
-		mxe <- .jnew("mebridge2") 		
+		mxe <- .jnew("mebridge") 		
 		args <- c("-z", args)
 		str <- .jcall(mxe, "S", "testPredictArgs", lambdas, args) 
 		if (!is.null(str)) {

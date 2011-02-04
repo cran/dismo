@@ -17,12 +17,12 @@ setClass('InvDistWeightModel',
 	}
 )
 
-if (!isGeneric("idwModel")) {
-	setGeneric("idwModel", function(p, a, ...)
-		standardGeneric("idwModel"))
+if (!isGeneric("geoIDW")) {
+	setGeneric("geoIDW", function(p, a, ...)
+		standardGeneric("geoIDW"))
 }	
 
-setMethod('idwModel', signature(p='matrix', a='matrix'), 
+setMethod('geoIDW', signature(p='matrix', a='matrix'), 
 	function(p, a, ...) {
 		v <- new('InvDistWeightModel')
 		v@model <- list( .idw(p[,1:2,drop=FALSE], a[,1:2,drop=FALSE]) )
@@ -30,16 +30,16 @@ setMethod('idwModel', signature(p='matrix', a='matrix'),
 	}
 )
 
-setMethod('idwModel', signature(p='data.frame', a='data.frame'), 
+setMethod('geoIDW', signature(p='data.frame', a='data.frame'), 
 	function(p, a, ...) {
-		idwModel(as.matrix(p), as.matrix(a), ...)
+		geoIDW(as.matrix(p), as.matrix(a), ...)
 	}
 )
 
 
-setMethod('idwModel', signature(p='SpatialPoints', a='SpatialPoints'), 
+setMethod('geoIDW', signature(p='SpatialPoints', a='SpatialPoints'), 
 	function(p, a, ...) {
-		idwModel(coordinates(p), coordinates(a), ...)
+		geoIDW(coordinates(p), coordinates(a), ...)
 	}
 )
 

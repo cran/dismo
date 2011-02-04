@@ -12,7 +12,7 @@ Domain
 }
 
 \description{
-The Domain algorithm (Carpenter et al. 1993) that has been extensively used for species distribution modeling. It is included here for that reason but please note that it generally does not perform very well in model comparison (Elith et al. 2006, Hijmans and Graham, 2006). The Domain algorithm computes the Gower distance between environmental variables at any location and those at any of the known locations of occurence ('training sites'). For each variable the minimum distance beteen a site and any of the training points is taken. To integrate over environmental variables, the maximum distance to any of the variables is used. This distance is substracted from one, and (in this R implementation) values below zero are truncated so that the scores are between 0 (low) and 1 (high).
+The Domain algorithm (Carpenter et al. 1993) that has been extensively used for species distribution modeling. It is included here for that reason but please note that it generally does not perform very well in model comparison (Elith et al. 2006, Hijmans and Graham, 2006). The Domain algorithm computes the Gower distance between environmental variables at any location and those at any of the known locations of occurrence ('training sites'). For each variable the minimum distance between a site and any of the training points is taken. To integrate over environmental variables, the maximum distance to any of the variables is used. This distance is subtracted from one, and (in this R implementation) values below zero are truncated so that the scores are between 0 (low) and 1 (high).
 }
 
 \usage{
