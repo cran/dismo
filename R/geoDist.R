@@ -52,7 +52,9 @@ setMethod('geoDist', signature(p='data.frame'),
 
 setMethod('geoDist', signature(p='SpatialPoints'), 
 	function(p, a, lonlat, ...) {
-		if (missing(lonlat)) lonlat <- isLonLat(p)
+		if (missing(lonlat)) {
+			lonlat <- isLonLat(p)
+		}
 		p <- coordinates(p)
 		if (missing(a)) { 
 			geoDist(p, lonlat=lonlat, ...) 

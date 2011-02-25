@@ -27,14 +27,14 @@ if (!isGeneric("domain")) {
 
 setMethod('domain', signature(x='Raster', p='matrix'), 
 	function(x, p, ...) {
-		m <- xyValues(x, p)
+		m <- extract(x, p)
 		domain(m)
 	}
 )
 
 setMethod('domain', signature(x='Raster', p='data.frame'), 
 	function(x, p, ...) {
-		m <- xyValues(x, p)
+		m <- extract(x, p)
 		
 		domain(m)
 	}
@@ -85,7 +85,7 @@ setMethod('domain', signature(x='matrix', p='missing'),
 
 setMethod('domain', signature(x='Raster', p='SpatialPoints'), 
 	function(x, p, ...) {
-		m <- xyValues(x, p)
+		m <- extract(x, p)
 		domain(m)
 	}
 )

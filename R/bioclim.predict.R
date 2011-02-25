@@ -45,7 +45,7 @@ function(object, x, tails=NULL, ext=NULL, filename='', progress='text', ...) {
 	
 	if (! (extends(class(x), 'Raster')) ) {
 		if (! all(colnames(object@presence) %in% colnames(x)) ) {
-			stop('missing variables in x ')
+			stop('missing variables in x')
 		}
 		bc <- matrix(ncol=length(ln), nrow=nrow(x))
 		

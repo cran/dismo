@@ -10,8 +10,8 @@ evaluateROCR <- function(model, p, a, x) {
 	}
 	
 	if (!missing(x)) {
-		p <- predict(model, data.frame(xyValues(x, p)))
-		a <- predict(model, data.frame(xyValues(x, a)))
+		p <- predict(model, data.frame(extract(x, p)))
+		a <- predict(model, data.frame(extract(x, a)))
 	} else if (is.vector(p) & is.vector(a)) {
 			# do nothing
 	} else {
@@ -31,8 +31,8 @@ evaluateROCR <- function(model, p, a, x) {
 
 evaluate <- function(p, a, model, x=NULL, tr) {
 	if (!missing(x)) {
-		p <- predict(model, data.frame(xyValues(x, p)))
-		a <- predict(model, data.frame(xyValues(x, a)))
+		p <- predict(model, data.frame(extract(x, p)))
+		a <- predict(model, data.frame(extract(x, a)))
 	} else if (is.vector(p) & is.vector(a)) {
 			# do nothing
 	} else {

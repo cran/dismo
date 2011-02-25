@@ -12,7 +12,7 @@
 \description{
 Build a "MaxEnt" (Maximum Entropy) species distribution model (see references below). The function uses environmental data for locations of known presence and for a large number of 'background' locations. Environmental data can be extracted from raster files. The result is a model object that can be used to predict the suitability of other locations, for example, to predict the entire range of a species. 
 
-This function uses the MaxEnt species distribution model software, which is a java program that you can download from \url{http://www.cs.princeton.edu/~schapire/maxent/}. Put the file 'maxent.jar' in the 'java' folder of this package. That is the folder returned by \code{system.file("java", package="dismo")}. You need maxent version 3.3.3b or higher. Please note that this program (maxent.jar) cannot be redistributed or used for commercial or for-profit purposes.
+This function uses the MaxEnt species distribution model software, which is a java program that you can download from \url{http://www.cs.princeton.edu/~schapire/maxent/}. Put the file 'maxent.jar' in the 'java' folder of this package. That is the folder returned by \code{system.file("java", package="dismo")}. You need MaxEnt version 3.3.3b or higher. Please note that this program (maxent.jar) cannot be redistributed or used for commercial or for-profit purposes.
 }
 
 \usage{
@@ -32,12 +32,23 @@ Additional arguments:
 \tabular{rll}{
 \tab \code{a} \tab Background points. Only used if \code{p} is not missing, and not a vector.  \cr
 \tab \code{factors} \tab Which (if any) variables should be considered as categorical? Either by (layer)name or by index. Only used when argument \code{x} is a Raster* object because it is not needed in other cases as you can set the appropriate class to the variables in the data.frame \cr 
-\tab \code{args} \tab Additional argument that can be passed to Maxent. See the Maxent help. For this function, only the arguments relevant to model fitting are used. (e.g. there is no point in using args='outputformat=raw' when *fitting* the model; but you can use these in the \code{predict} functions. Some others (e.g. outputfiletype) do not apply at all to the R implementation (the "predict" function has its own arguments for that) \cr
+\tab \code{args} \tab Additional argument that can be passed to MaxEnt. See the MaxEnt help for more information. The R maxent function only uses the arguments relevant to model fitting. There is no point in using \code{args='outputformat=raw'} when *fitting* the model; but you can use arguments relevant for *prediction* when using the \code{predict} function. Some other arguments do not apply at all to the R implementation. An example is \code{outputfiletype}, because the \code{predict} function has its own \code{filename} argument for that\cr
+}
 }
 
-if you want to give maxent (the Java virtual machine that runs it) more memory, you do that by running something like this (for 1 GB) \bold{before} you load the dismo library.
+
+\note{
+If you want to give MaxEnt (the Java virtual machine that runs it) more memory, you can do that by running something like this (for 1 GB) \bold{before} you load the dismo library.
 
 \code{options(java.parameters = "-Xmx1g" )} 
+
+
+Some people have reported problems when using this function on a Mac (Apple) computer. Specifically, the following error message occurs:
+
+\code{Error in .jcall(mxe, "S", "fit", c("autorun", "-e", afn, "-o", dirout, : java.lang.InternalError: Can't start the AWT because
+Java was started on the first thread. Make sure StartOnFirstThread is not specified in your application's Info.plist or on the command line.}
+
+This is a known problem with certain Java applications on Macs. The only work around that we are aware of, is to run the maxent function from the JGR interface (a Java based R GUI), instead of from, e.g., Rgui. You can install JGR from here: \url{http://www.rforge.net/JGR/}
 }
 
 
@@ -63,6 +74,7 @@ Jane Elith, Steven J. Phillips, Trevor Hastie, Miroslav Dudik, Yung En Chee, Col
 }
 
 \examples{
+# only run if the maxent.jar file is available, in the right folder
 jar <- paste(system.file(package="dismo"), "/java/maxent.jar", sep='')
 if (file.exists(jar)) {
 
@@ -106,8 +118,8 @@ e1 = evaluate(me, p=occtest, a=bg, x=predictors)
 
 # alternative 1
 # extract values
-pvtest <- data.frame(xyValues(predictors, occtest))
-avtest <- data.frame(xyValues(predictors, bg))
+pvtest <- data.frame(extract(predictors, occtest))
+avtest <- data.frame(extract(predictors, bg))
 
 e2 = evaluate(me, p=pvtest, a=avtest)
 

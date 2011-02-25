@@ -4,8 +4,8 @@
 # Licence GPL v3
 
 prepareData <- function(x, p, b, factors) {
-	p <- xyValues(x, p)
-	b <- xyValues(x, b)
+	p <- extract(x, p)
+	b <- extract(x, b)
 	pb <- data.frame(  cbind(pb=c(rep(1, nrow(p)), rep(0, nrow(b))), rbind(p, b)) )
 	if (!missing(factors)) {
 		for (f in factors) {

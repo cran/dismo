@@ -52,21 +52,21 @@ setMethod('mahal', signature(x='data.frame', p='missing'),
 
 setMethod('mahal', signature(x='Raster', p='matrix'), 
 	function(x, p, ...) {
-		m <- xyValues(x, p)
+		m <- extract(x, p)
 		mahal(m)
 	}
 )
 
 setMethod('mahal', signature(x='Raster', p='data.frame'), 
 	function(x, p, ...) {
-		m <- xyValues(x, p)
+		m <- extract(x, p)
 		mahal(m)
 	}
 )
 
 setMethod('mahal', signature(x='Raster', p='SpatialPoints'), 
 	function(x, p, ...) {
-		m <- xyValues(x, p)
+		m <- extract(x, p)
 		mahal(m)
 	}
 )

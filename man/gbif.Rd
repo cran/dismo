@@ -7,7 +7,7 @@ Data from GBIF
 }
 
 \description{
-This functions downloads species occurence records from the GBIF data portal. You can download either a single species or an entire genus by using \code{species='*'}
+This function downloads species occurence records from the GBIF data portal. You can download either a single species or an entire genus by using \code{species='*'}
 }
 
 

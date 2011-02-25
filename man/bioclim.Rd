@@ -73,7 +73,7 @@ pts <- matrix(c(48.243420, 48.243420, 47.985820, 52.880230, 49.531423, 46.182616
 bc <- bioclim(logo, pts)
 
 #or
-v <- xyValues(logo, pts)
+v <- extract(logo, pts)
 bc <- bioclim(v)
 p1 <- predict(logo, bc)
 p2 <- predict(logo, bc, tails=c('both', 'low', 'high'))

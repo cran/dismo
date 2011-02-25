@@ -55,21 +55,21 @@ setMethod('bioclim', signature(x='data.frame', p='missing'),
 
 setMethod('bioclim', signature(x='Raster', p='matrix'), 
 	function(x, p, ...) {
-		m <- xyValues(x, p)
+		m <- extract(x, p)
 		bioclim(m)
 	}
 )
 
 setMethod('bioclim', signature(x='Raster', p='data.frame'), 
 	function(x, p, ...) {
-		m <- xyValues(x, p)
+		m <- extract(x, p)
 		bioclim(m)
 	}
 )
 
 setMethod('bioclim', signature(x='Raster', p='SpatialPoints'), 
 	function(x, p, ...) {
-		m <- xyValues(x, coordinates(p))
+		m <- extract(x, coordinates(p))
 		bioclim(m)
 	}
 )

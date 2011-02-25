@@ -10,7 +10,9 @@
 
 
 \description{
-The geographic distance model is a null model. It predicts that the likelyhood of presence is highest near places where a species has been observed.
+The geographic distance model predicts that the likelyhood of presence is highest near places where a species has been observed. It can be used as a null-model to calibrate cross-validation scores with.
+
+The predicted values are the inverse distance to the nearest known presence point. Distances smaller than or equal to zero are set to 1 (highest score).
 }
 
 \usage{
@@ -19,7 +21,7 @@ geoDist(p, ...)
  
 \arguments{
   \item{p}{point locations (presence). Two column matrix, data.frame or SpatialPoints* object}
-  \item{...}{ Additional arguments. You must supply a lonlat= argument (logical), unless p is a SpatialPoints* object. 
+  \item{...}{ Additional arguments. You must supply a lonlat= argument (logical), unless p is a SpatialPoints* object and has a valid CRS (coordinate reference system). 
   You can also supply an additional argument 'a' for absence points (currently ignored). Argument 'a' should be of the same class as argument 'p' }
 }
 
@@ -34,7 +36,7 @@ Robert J. Hijmans
 }
 
 \seealso{
-\code{\link[dismo]{predict}, \link[dismo]{maxent}, \link[dismo]{domain}, \link[dismo]{mahal}}
+\code{\link[dismo]{predict}, \link{maxent}, \link{domain}, \link{mahal}}
 }
 
 
