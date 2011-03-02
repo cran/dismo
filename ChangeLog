@@ -1,5 +1,5 @@
---- 26-Februari-2011, version 0.5-19
-Another bug-fix in biovars. When writing results to file, only 12 layers were saved (reported by Marco)
+--- 2-March-2011, version 0.6-0
+Another bug-fix in biovars. When writing results to file, only 12 layers were saved (reported by Marco & Jon Winchester)
 
 --- 26-January-2011, version 0.5-17
 Bug fixes in file writing in biovars (reported by Guinevere Wogan)

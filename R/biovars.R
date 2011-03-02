@@ -49,7 +49,7 @@ if (!isGeneric("biovars")) {
 
 
 setMethod('biovars', signature(prec='vector', tmin='vector', tmax='vector'), 
-	function(prec, tmin, tmax, filename='', ...) {
+	function(prec, tmin, tmax) {
 		biovars(t(as.matrix(prec)), t(as.matrix(tmin)), t(as.matrix(tmax)))
 	}
 )
@@ -83,14 +83,16 @@ setMethod('biovars', signature(prec='Raster', tmin='Raster', tmax='Raster'),
 	tr <- blockSize(out, n=nlayers(out)+36)
 	pb <- pbCreate(tr$n, type=progress)	
 	for (i in 1:tr$n) {
-		prc <- getValues(prec, tr$row[i])
-		tmn <- getValues(tmin, tr$row[i])
-		tmx <- getValues(tmax, tr$row[i])
-		p <- biovars(prc, tmn, tmx, ...)
+		prc <- getValues(prec, tr$row[i], tr$nrows[i])
+		tmn <- getValues(tmin, tr$row[i], tr$nrows[i])
+		tmx <- getValues(tmax, tr$row[i], tr$nrows[i])
+		p <- biovars(prc, tmn, tmx)
 		if (filename != "") {
 			out <- writeValues(out, p, tr$row[i])
 		} else {
-			v[tr$row[i]:(tr$row[i]+tr$nrows[i]-1),] <- p
+			start <- (tr$row[i]-1) * out@ncols + 1
+			end <- (tr$row[i]+tr$nrows[i]-1) * out@ncols
+			v[start:end,] <- p
 		}
 	}
 	
@@ -107,7 +109,7 @@ setMethod('biovars', signature(prec='Raster', tmin='Raster', tmax='Raster'),
 
 
 setMethod('biovars', signature(prec='matrix', tmin='matrix', tmax='matrix'), 
-	function(prec, tmin, tmax, filename='', ...) {
+	function(prec, tmin, tmax) {
 
 		if (nrow(prec) != nrow(tmin) | nrow(tmin) != nrow(tmax) ) {
 			stop('prec, tmin and tmax should have same length')
@@ -144,7 +146,7 @@ setMethod('biovars', signature(prec='matrix', tmin='matrix', tmax='matrix'),
 # P2. Mean Diurnal Range(Mean(period max-min)) 
 		p[,2] <- apply(tmax-tmin, 1, mean)
 # P4. Temperature Seasonality (standard deviation) 
-		p[,4] <- apply(tavg, 1, sd)
+		p[,4] <- 100 * apply(tavg, 1, sd)
 # P5. Max Temperature of Warmest Period 
 		p[,5] <- apply(tmax,1, max)
 # P6. Min Temperature of Coldest Period 
@@ -152,7 +154,7 @@ setMethod('biovars', signature(prec='matrix', tmin='matrix', tmax='matrix'),
 # P7. Temperature Annual Range (P5-P6) 
 		p[,7] <- p[,5] - p[,6]
 # P3. Isothermality (P2 / P7) 
-		p[,3] <- p[,2] / p[,7]
+		p[,3] <- 100 * p[,2] / p[,7]
 # P12. Annual Precipitation 
 		p[,12] <- apply(prec, 1, sum)
 # P13. Precipitation of Wettest Period 

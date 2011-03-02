@@ -62,7 +62,7 @@ setMethod('domain', signature(x='matrix', p='missing'),
 		if (ncol(x) == 0) {	stop('no usable variables') 	}
 		if (nrow(x) < 2) {	stop('insufficient records') 	}
 		
-		r <- apply(x, 2, FUN=function(x){range(x, na.rm=TRUE)})
+		r <- apply(x, 2, FUN=range)
 
 		d <- new('Domain')
 		d@presence <- x
