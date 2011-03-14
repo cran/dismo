@@ -8,6 +8,7 @@
 \alias{bioclim,SpatialGridDataFrame,SpatialPoints-method}
 \alias{bioclim,matrix,missing-method}
 \alias{bioclim,data.frame,missing-method}
+\alias{Bioclim-class}
 
 
 \title{Bioclim}
@@ -37,7 +38,7 @@ bioclim(x, p, ...)
 
 
 \value{
-An object of class 'Bioclim'
+An object of class 'Bioclim' (inherits from \code{\link{DistModel-class}})
 }
 
 

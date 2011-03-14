@@ -4,6 +4,7 @@
 \alias{circles,SpatialPoints-method}
 \alias{circles,matrix-method}
 \alias{circles,data.frame-method}
+\alias{CirclesRange-class}
 
 
 \title{Circles range}
@@ -35,9 +36,8 @@ The following additional arguments can be supplied to the circles function:
 }
 
 \value{
-An object of class 'Circles'
+An object of class 'CirclesRange' (inherits from \code{\link{DistModel-class}})
 }
-
 
 \author{
 Robert J. Hijmans

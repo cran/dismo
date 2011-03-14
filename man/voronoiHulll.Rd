@@ -5,7 +5,7 @@
 \alias{voronoiHull,SpatialPoints,SpatialPoints-method}
 \alias{voronoiHull,matrix,matrix-method}
 \alias{voronoiHull,data.frame,data.frame-method}
-
+\alias{VoronoiHull-class}
 
 \title{Voronoi hull model}
 
@@ -24,7 +24,7 @@ voronoiHull(p, a, ...)
 }
 
 \value{
-A voronoiHull object
+A VoronoiHull object (inherits from \code{\link{DistModel-class}})
 }
 
 \seealso{\code{\link[dismo]{convexHull}}}

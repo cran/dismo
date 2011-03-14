@@ -3,6 +3,9 @@
 \alias{ecocrop}
 \alias{getCrop}
 \alias{ECOcrops}
+\alias{ECOCROP-class}
+\alias{ECOCROPcrop-class}
+
 
 \title{Ecocrop model}
 
@@ -29,7 +32,7 @@ data(ECOcrops)
 
 
 \value{
-vector
+Object of class ECOCROP
 }
 
 \author{

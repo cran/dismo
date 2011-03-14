@@ -1,9 +1,7 @@
-# Download geographic data and return as R object
 # Author: Robert J. Hijmans, r.hijmans@gmail.com
 # License GPL3
-# Version 0.1
-# October 2008
-
+# Version 1.0
+# October 2010
 
 geocode <- function(x, boxes='', extent=NULL) {
 
@@ -88,43 +86,4 @@ geocode <- function(x, boxes='', extent=NULL) {
 	return(res)	
 }
 
-# geocode(c('San Jose, Mexico', 'San Jose'), boxonly=T)
 
-#			loc <- getNodeSet(doc, "//location")
-#			i <- length(loc)
-#			location <- matrix(ncol=2, nrow=i)
-#			viewport <- matrix(ncol=4, nrow=i)
-#			colnames(location) <- c('lon', 'lat')
-#			colnames(viewport) <- c('lonmin', 'lonmax', 'latmin', 'latmax')
-#			for (j in 1:i) {
-#				location[j,] <- rev(as.numeric(xmlSApply(loc[[j]], xmlValue)))
-#
-#				vpSW <- getNodeSet(doc, "//viewport//southwest")
-#				vpSW <- xmlSApply(vpSW[[j]], xmlValue)
-#				vpNE <-  getNodeSet(doc, "//viewport//northeast")
-#				vpNE <- xmlSApply(vpNE[[j]], xmlValue)
-#				viewport[j,] <- as.numeric( c(vpSW[2], vpNE[2], vpSW[1], vpNE[1]) )	
-#			}
-#
-#
-#			loc <- getNodeSet(doc, "//bounds")
-#			i <- length(loc)
-#			bounds <- matrix(ncol=4, nrow=i)
-#			colnames(bounds) <- c('lonmin', 'lonmax', 'latmin', 'latmax')
-#
-#			for (j in 1:i) {
-#				bdSW <- getNodeSet(doc, "//bounds//southwest")
-#				bdSW <- xmlSApply(bdSW[[j]], xmlValue)
-#				bdNE <- getNodeSet(doc, "//bounds//northeast")
-#				bdNE <- xmlSApply(bdNE[[j]], xmlValue)
-#				bounds[j,] <- as.numeric( c(bdSW[2], bdNE[2], bdSW[1], bdNE[1]) )
-#			}
-#			
-#			w <- viewport
-#			viewport[] <- NA
-#			viewport[1:nrow(bounds),] <- bounds
-#			w <- cbind(w, viewport)
-#			for (i in 1:4) w[,i] <- pmax(w[,i], w[,4+i], na.rm=TRUE)
-#			w <- cbind(z, location, w[,1:4,drop=FALSE])
-#			res <- rbind(res, w)
-#			

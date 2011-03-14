@@ -5,6 +5,7 @@
 \alias{domain,Raster,data.frame-method}
 \alias{domain,matrix,missing-method}
 \alias{domain,data.frame,missing-method}
+\alias{Domain-class}
 
 
 \title{
@@ -27,7 +28,7 @@ domain(x, p, ...)
 
 
 \value{
-An object of class 'Domain'
+An object of class 'Domain' (inherits from \code{\link{DistModel-class}})
 }
 
 

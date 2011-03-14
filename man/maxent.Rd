@@ -6,6 +6,7 @@
 \alias{maxent,Raster,ANY-method}
 \alias{maxent,SpatialGridDataFrame,ANY-method}
 \alias{maxent,data.frame,vector-method}
+\alias{MaxEnt-class}
 
 \title{Maxent}
 
@@ -53,7 +54,7 @@ This is a known problem with certain Java applications on Macs. The only work ar
 
 
 \value{
-A RasterLayer object or a vector. 
+An object of class 'MaxEnt' (inherits from \code{\link{DistModel-class}})
 }
 
 \seealso{

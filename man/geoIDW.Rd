@@ -5,6 +5,7 @@
 \alias{geoIDW,SpatialPoints,SpatialPoints-method}
 \alias{geoIDW,matrix,matrix-method}
 \alias{geoIDW,data.frame,data.frame-method}
+\alias{InvDistWeightModel-class}
 
 
 \title{Inverse-distance weighted model}
@@ -24,7 +25,7 @@ geoIDW(p, a, ...)
 }
 
 \value{
-An object of class InvDistWeightModel
+An object of class InvDistWeightModel (inherits from \code{\link{DistModel-class}})
 }
 
 \author{

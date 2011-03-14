@@ -6,6 +6,8 @@
 
 \description{
 A wrapper around the Google geocoding web-service. It returns 0 to n matches. It is important to be as precise as possible, e.g. always include the country in the locality description. 
+
+The purpose of using this function should be to display the map in a browser. You should check the Google terms of use \url{http://code.google.com/apis/maps/terms.html} to see if your usage of this function (and the underlying Google API) is permitted.
 }
 
 \usage{geocode(x, boxes='', extent=NULL) }

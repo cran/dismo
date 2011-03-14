@@ -26,7 +26,6 @@ biogeomancer(country = "", adm1 = "", adm2 = "", locality = "", singleRecord=TRU
 data frame with three columns: longitude, latitude, and uncertainty (see Wieczorek et al., 2004). The datum is always WGS84.
 }
 
-\seealso{\code{\link[dismo]{geocode}}}
 
 \references{ 
 Guralnick, R.P., J. Wieczorek, R. Beaman, R.J. Hijmans and the BioGeomancer Working Group, 2006. BioGeomancer:  Automated georeferencing to map the world's biodiversity data. PLoS Biology 4: 1908-1909.

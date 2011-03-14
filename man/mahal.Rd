@@ -5,6 +5,7 @@
 \alias{mahal,Raster,data.frame-method}
 \alias{mahal,matrix,missing-method}
 \alias{mahal,data.frame,missing-method}
+\alias{Mahalanobis-class}
 
 
 \title{
@@ -12,7 +13,7 @@ Mahalanobis model
 }
 
 \description{
-.. description ...
+Distribution model based on the Mahalanobis distance.
 }
 
 \usage{
@@ -27,7 +28,7 @@ mahal(x, p, ...)
 
 
 \value{
-An object of class Mahalanobis
+An object of class Mahalanobis (inherits from \code{\link{DistModel-class}})
 }
 
 

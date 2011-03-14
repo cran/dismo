@@ -16,6 +16,10 @@ function(object, x, ext=NULL, filename='', progress='text', ...) {
 		d[which(d > 1)] <- 1
 		1-d
 	}
+	
+	domdistcat <- function(xx, ii, y) {
+		stop("can't do factors yet")
+	}
 		
 	if (! (extends(class(x), 'Raster')) ) {
 		if (! all(colnames(object@presence) %in% colnames(x)) ) {
@@ -24,8 +28,21 @@ function(object, x, ext=NULL, filename='', progress='text', ...) {
 		
 		dom <- matrix(ncol=length(colnames(object@presence)), nrow=nrow(x) )
 		ln <- colnames(object@presence)
-		for (i in 1:ncol(dom)) {
-			dom[,i] <- domdist(object, ln[i], x[,ln[i]])
+		
+		f <- which(ln %in% object@factors)
+		if (length(f) > 0 ) {
+			i1 <- 1:ncol(dom)[-f]
+			i2 <- 1:ncol(dom)[f]
+			for (i in i1) {
+				dom[,i] <- domdist(object, ln[i], x[,ln[i]])
+			}
+			for (i in i2) {
+				dom[,i] <- domdistcat(object, ln[i], x[,ln[i]])
+			}
+		} else {
+			for (i in 1:ncol(dom)) {
+				dom[,i] <- domdist(object, ln[i], x[,ln[i]])
+			}
 		}
 		return ( apply(dom, 1, min ) )
 

@@ -6,6 +6,8 @@
 # Based on functions in R package 'RgoogleMaps' 
 # by Markus Loecher, Sense Networks <markus at sensenetworks.com>
 
+
+
 gmap <- function (x, exp=1, type='terrain', filename='', ...) {
 
 	if (! require(rgdal)) { stop('rgdal not available') }
@@ -163,6 +165,7 @@ gmap <- function (x, exp=1, type='terrain', filename='', ...) {
 #plot(r)
 
 
+# not relevant without gmap
 Mercator <- function (p, inverse = FALSE) {
 #author: RH
 	r = 6378137

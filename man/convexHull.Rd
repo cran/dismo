@@ -4,13 +4,14 @@
 \alias{convHull,SpatialPoints-method}
 \alias{convHull,matrix-method}
 \alias{convHull,data.frame-method}
+\alias{ConvexHull-class}
 
 
 \title{Convex hull model}
 
 
 \description{
-The Convex Hull model predicts that a species is present at sites inside the convex hull of a set of training points, and absent outside that hull.
+The Convex hull model predicts that a species is present at sites inside the convex hull of a set of training points, and absent outside that hull.
 I.e. this is the spatial convex hull, not an environmental hull.
 }
 
@@ -31,7 +32,7 @@ You can supply an argument n (>= 1) to get n convex hulls around subset of the p
 
 
 \value{
-An object of class 'ConvexHull'
+An object of class 'ConvexHull' (inherits from \code{\link{DistModel-class}})
 }
 
 

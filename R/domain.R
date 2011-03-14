@@ -9,7 +9,8 @@
 setClass('Domain',
 	contains = 'DistModel',
 	representation (
-		range='vector'
+		range='vector',
+		factors='vector'
 	),	
 	prototype (	
 	),
@@ -41,21 +42,18 @@ setMethod('domain', signature(x='Raster', p='data.frame'),
 )
 
 setMethod('domain', signature(x='data.frame', p='missing'), 
-	function(x, p, ...) {
-
-		for (i in ncol(x):1) {
-			if (is.factor(x[,i])) {
-				warning('variable "', colnames(x)[i], '" was removed because it is a factor (categorical)')
-				x <- x[, -i]
-			}
+	function(x, p, factors, ...) {
+		
+		if (missing(factors)) {
+			factors <- colnames(x)[ sapply(x, function(x) is.factor(x)) ]
 		}
 	
-		domain(as.matrix(x))
+		domain(as.matrix(x), factors=factors, ...)
 	}
 )
 
 setMethod('domain', signature(x='matrix', p='missing'), 
-	function(x, p, ...) {
+	function(x, p, factors='', ...) {
 		
 		x = na.omit(x)
 		
@@ -66,14 +64,18 @@ setMethod('domain', signature(x='matrix', p='missing'),
 
 		d <- new('Domain')
 		d@presence <- x
+		d@factors <- factors
 		d@range <-  abs(r[2,] - r[1,])
 		norange = which(d@range == 0)
 		if (length(norange) > 0) {
 			for (i in length(norange):1) {
 				index = norange[i]
-				warning('variable "', colnames(d@presence)[index], '" was removed because it has no variation for the training points')
-				d@presence <- d@presence[, -index]
-				d@range <- d@range[-index]
+				name <- colnames(d@presence)[index]
+				if (! name %in% factors) {
+					warning('variable "', name, '" was removed because it has no variation for the training points')
+					d@presence <- d@presence[, -index]
+					d@range <- d@range[-index]
+				}
 			}
 		}
 		if (ncol(d@presence) == 0) {

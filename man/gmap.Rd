@@ -13,6 +13,7 @@ You should check the terms of service before you use these maps: \url{http://cod
 The projection of the returned maps is "Mercator" and your data may need to be transformed before you can plot on top of these maps. You can use the \code{Mercator} function for that, and to transform map coordinates back to longitude/latitude.
 
 This function uses the Google static maps web-service, and is based on functions by Markus Loecher for the \code{RgoogleMaps} package. 
+The purpose of using this function should be to display the map in a browser. You should check the Google terms of use \url{http://code.google.com/apis/maps/terms.html} to see if your usage of this function (and the underlying Google API) is permitted.
 }
 
 \usage{
@@ -35,7 +36,8 @@ Mercator(p, inverse = FALSE)
 A RasterLayer
 }
 
-\note{
+
+\details{
 If argument \code{x} is a textual locatlity description, the \code{\link[dismo]{geocode}} function is used to retrieve the extent that should be mapped.
 
 Change the type to 'roadmap' if the map returned says "sorry we have no imagery here"; or use a larger extent.

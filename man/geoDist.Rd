@@ -4,6 +4,7 @@
 \alias{geoDist,SpatialPoints-method}
 \alias{geoDist,matrix-method}
 \alias{geoDist,data.frame-method}
+\alias{GeographicDistance-class}
 
 
 \title{Geographic distance model}
@@ -27,7 +28,7 @@ geoDist(p, ...)
 
 
 \value{
-An object of class 'GeographicDistance'
+An object of class 'GeographicDistance' (inherits from \code{\link{DistModel-class}})
 }
 
 
