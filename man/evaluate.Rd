@@ -6,7 +6,7 @@
 \title{ Model testing }
 
 \description{ 
-Model testing for models predicting presence/absence. Given a vector of presence and a vector of absence values (or a model and presence and absence points and predictors), a number of confusion matrices is computed (for varying thresholds), and model evaluation statistics are computed for each confusion matrix / threshold. 
+Model testing for models predicting presence/absence. Given a vector of presence and a vector of absence values (or a model and presence and absence points and predictors), a number of confusion matrices is computed (for varying thresholds), and model evaluation statistics are computed for each confusion matrix / threshold. See the description of class \code{\link{ModelEvaluation-class}} for more info.
 }
 
 \usage{
@@ -34,7 +34,7 @@ evaluate(p, a, model, x, tr)
 }
 
 \value{
-An object of class ModelEvaluation
+An object of \code{\link{ModelEvaluation-class}}
 }
 
 \author{
@@ -58,6 +58,8 @@ plot(e, 'ROC')
 plot(e, 'TPR')
 boxplot(e)
 density(e)
+
+str(e)
 }
 
 \keyword{spatial}

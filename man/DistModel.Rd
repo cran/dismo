@@ -1,4 +1,4 @@
-\name{DistModel-class}
+\name{DistModel}
 
 \Rdversion{1.1}
 

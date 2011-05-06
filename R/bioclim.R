@@ -26,18 +26,9 @@ if (!isGeneric("bioclim")) {
 
 setMethod('bioclim', signature(x='matrix', p='missing'), 
 	function(x, p, ...) {
-		bc <- new('Bioclim')
-
-		d = dim(x)
-		x = na.omit(x)
+	
+		bioclim(data.frame(x), ...)
 		
-		if (ncol(x) == 0) {	stop('no usable variables') 	}
-		if (nrow(x) < 2) {	stop('insufficient records') 	}
-		
-		bc@presence <- x
-		bc@min <- apply(x, 2, min)
-		bc@max <- apply(x, 2, max)
-		bc
 	}
 )
 
@@ -49,28 +40,38 @@ setMethod('bioclim', signature(x='data.frame', p='missing'),
 				x <- x[, -i]
 			}
 		}
-		bioclim(as.matrix(x))
+		
+		bc <- new('Bioclim')
+
+		x = na.omit(x)
+		if (ncol(x) == 0) {	stop('no usable variables') 	}
+		if (nrow(x) < 2) {	stop('insufficient records') 	}
+		
+		bc@presence <- x
+		bc@min <- apply(x, 2, min)
+		bc@max <- apply(x, 2, max)
+		bc
 	}
 )
 
 setMethod('bioclim', signature(x='Raster', p='matrix'), 
 	function(x, p, ...) {
 		m <- extract(x, p)
-		bioclim(m)
+		bioclim(data.frame(m), ...)
 	}
 )
 
 setMethod('bioclim', signature(x='Raster', p='data.frame'), 
 	function(x, p, ...) {
 		m <- extract(x, p)
-		bioclim(m)
+		bioclim(data.frame(m), ...)
 	}
 )
 
 setMethod('bioclim', signature(x='Raster', p='SpatialPoints'), 
 	function(x, p, ...) {
 		m <- extract(x, coordinates(p))
-		bioclim(m)
+		bioclim(data.frame(m), ...)
 	}
 )
 

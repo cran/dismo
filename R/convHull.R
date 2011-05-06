@@ -24,7 +24,7 @@ if (!isGeneric("convHull")) {
 }	
 
 
-setMethod('convHull', signature(p='matrix'), 
+setMethod('convHull', signature(p='data.frame'), 
 	function(p, n=1, ...) {
 		ch <- new('ConvexHull')
 		ch@presence <- p
@@ -34,9 +34,9 @@ setMethod('convHull', signature(p='matrix'),
 )
 
 
-setMethod('convHull', signature(p='data.frame'), 
+setMethod('convHull', signature(p='matrix'), 
 	function(p, ...) {
-		convHull(as.matrix(p), ...)
+		convHull(as.data.frame(p), ...)
 	}
 )
 

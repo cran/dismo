@@ -7,21 +7,18 @@
 \title{gbm plot}
 
 \description{
-Function to plot gbm response variables, with the option 
-of adding a smooth representation of the response if requested 
-additional options in this version allow for plotting on a common scale 
-note too that fitted functions are now centered by subtracting their mean
+Function to plot gbm response variables, with the option of adding a smooth representation of the response if requested additional options in this version allow for plotting on a common scale. Note hat fitted functions are centered by subtracting their mean.
 }
 
 \usage{
-gbm.plot(gbm.object, variable.no = 0, smooth = FALSE, rug = T, n.plots = length(pred.names), common.scale = T, write.title = T, y.label = "fitted function", x.label = NULL, show.contrib = T, plot.layout = c(3, 4), ...)
+gbm.plot(gbm.object, variable.no=0, smooth=FALSE, rug=TRUE, n.plots=length(pred.names), common.scale=TRUE, write.title=TRUE, y.label="fitted function", x.label=NULL, show.contrib=TRUE, plot.layout=c(3, 4), ...)
 }
 
 \arguments{
   \item{gbm.object}{a gbm object - could be one from gbm.step}
   \item{variable.no}{the var to plot - if zero then plots all}
   \item{smooth}{Logical. If \code{TRUE}, a smoothed version of the fitted function is added}
-  \item{rug}{Logical. If \code{TRUE}, plot a rug of deciles is plotted}
+  \item{rug}{Logical. If \code{TRUE}, a rug of deciles is plotted}
   \item{n.plots}{plot the first n most important preds}
   \item{common.scale}{Logical. If \code{TRUE}, a common scale is used on the y axis}
   \item{write.title}{Logical. If \code{TRUE}, the plot gets a title}

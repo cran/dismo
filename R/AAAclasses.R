@@ -6,13 +6,13 @@
 setClass('DistModel',
 	contains = 'VIRTUAL',
 	representation (
-		presence = 'matrix',
-		absence = 'matrix',
+		presence = 'data.frame',
+		absence = 'data.frame',
 		hasabsence = 'logical'
 	),	
 	prototype (	
-		presence = matrix(NA),
-		absence = matrix(NA),
+		presence = data.frame(NA),
+		absence = data.frame(NA),
 		hasabsence = FALSE
 	),
 	validity = function(object)	{

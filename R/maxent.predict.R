@@ -24,7 +24,6 @@ setMethod('predict', signature(object='MaxEnt'),
 
 
 		variables = colnames(object@presence)
-
 		write.table(object@lambdas, file=lambdas, row.names=FALSE, col.names=FALSE, quote=FALSE)
 		
 		MEversion <- .getMeVersion()
@@ -55,55 +54,130 @@ setMethod('predict', signature(object='MaxEnt'),
 			ncols <- ncol(out)
 		
 			
-			filename <- trim(filename)
 			if (!canProcessInMemory(out, 3) & filename == '') {
 				filename <- rasterTmpFile()
 			}
 			
 			if (filename == '') {
 				v <- matrix(ncol=nrow(out), nrow=ncol(out))
+				inMemory <- TRUE
 			} else {
 				out <- writeStart(out, filename=filename, ... )
+				inMemory <- FALSE
+			}
+
+			if (raster:::.doCluster()) {
+				cl <- getCluster()
+				on.exit( returnCluster() )
+				nodes <- min(ceiling(out@nrows/10), length(cl)) # at least 10 rows per node
+				cat('Using cluster with', nodes, 'nodes\n')
+				flush.console()
+
+				tr <- blockSize(out, minblocks=nodes)
+				pb <- pbCreate(tr$n, type=progress)
+
+				clFun <- function(i) {
+					rr <- firstrow + tr$row[i] - 1
+					rowvals <- getValuesBlock(x, row=rr, nrows=tr$nrows[i], firstcol, ncols)
+					rowvals <- rowvals[,variables,drop=FALSE]
+					res <- rep(NA, times=nrow(rowvals))
+					rowvals <- na.omit(rowvals)
+					if (length(rowvals) > 0) {
+						rowvals[] <- as.numeric(rowvals)
+					
+						mxe <- .jnew("mebridge") 		
+						p <- .jcall(mxe, "[D", "predict", lambdas, .jarray(colnames(rowvals)), .jarray(rowvals), args) 
+
+						naind <- as.vector(attr(rowvals, "na.action"))
+						if (!is.null(naind)) {
+							res[-naind] <- p
+						} else {
+							res <- p
+						}
+						res[res == -9999] <- NA
+					}	
+					return(res)	
+				} 
+		
+				for (i in 1:nodes) {
+					sendCall(cl[[i]], clFun, i, tag=i)
+				}
+		        
+				if (inMemory) {
+					for (i in 1:tr$n) {
+						pbStep(pb, i)
+						d <- recvOneData(cl)
+						if (! d$value$success) {
+							stop('cluster error')
+						}
+						res <- matrix(d$value$value, nrow=ncol(out))		
+						cols <- tr$row[d$value$tag]:(tr$row[d$value$tag]+dim(res)[2]-1)
+						v[, cols] <- res
+
+						ni <- nodes+i
+						if (ni <= tr$n) {
+							sendCall(cl[[d$node]], clFun, ni, tag=ni)
+						}
+					}
+				} else {
+					for (i in 1:tr$n) {
+						pbStep(pb, i)
+						d <- recvOneData(cl)
+						if (! d$value$success ) { stop('cluster error') }
+						out <- writeValues(out, d$value$value, tr$row[d$value$tag])
+						
+						if ((nodes + i) <= tr$n) {
+							sendCall(cl[[d$node]], clFun, nodes+i, tag=i)
+						}
+					}
+				}
+
+			} else {
+
+				tr <- blockSize(out, n=nlayers(x)+2)
+				pb <- pbCreate(tr$n, type=progress)	
+			
+				for (i in 1:tr$n) {
+					rr <- firstrow + tr$row[i] - 1
+					rowvals <- getValuesBlock(x, row=rr, nrows=tr$nrows[i], firstcol, ncols)
+					rowvals <- rowvals[,variables,drop=FALSE]
+					res <- rep(NA, times=nrow(rowvals))
+					rowvals <- na.omit(rowvals)
+					if (length(rowvals) > 0) {
+						rowvals[] <- as.numeric(rowvals)
+						p <- .jcall(mxe, "[D", "predict", lambdas, .jarray(colnames(rowvals)), .jarray(rowvals), args) 
+
+						naind <- as.vector(attr(rowvals, "na.action"))
+						if (!is.null(naind)) {
+							res[-naind] <- p
+						} else {
+							res <- p
+						}
+						res[res == -9999] <- NA
+					}	
+				
+					if (inMemory) {
+						res = matrix(res, nrow=ncol(out))		
+						cols = tr$row[i]:(tr$row[i]+dim(res)[2]-1)
+						v[, cols] <- res
+					} else {
+						out <- writeValues(out, res, tr$row[i])
+					}
+					pbStep(pb, i) 
+				} 
 			}
 			
-			tr <- blockSize(out, n=nlayers(x)+2)
-			pb <- pbCreate(tr$n, type=progress)	
-			
-			for (i in 1:tr$n) {
-				rr <- firstrow + tr$row[i] - 1
-				rowvals <- getValuesBlock(x, row=rr, nrows=tr$nrows[i], firstcol, ncols)
-				rowvals <- rowvals[,variables,drop=FALSE]
-				res <- rep(NA, times=nrow(rowvals))
-				rowvals <- na.omit(rowvals)
-				if (length(rowvals) > 0) {
-					rowvals[] <- as.numeric(rowvals)
-					p <- .jcall(mxe, "[D", "predict", lambdas, .jarray(colnames(rowvals)), .jarray(rowvals), args) 
-
-					naind <- as.vector(attr(rowvals, "na.action"))
-					if (!is.null(naind)) {
-						res[-naind] <- p
-					} else {
-						res <- p
-					}
-					res[res == -9999] <- NA
-				}
-				
-				if (filename != '') {
-					out <- writeValues(out, res, tr$row[i])
-				} else {
-					res = matrix(res, nrow=ncol(out))		
-					cols = tr$row[i]:(tr$row[i]+dim(res)[2]-1)
-					v[, cols] <- res
-				}
-				pbStep(pb, i) 
-			} 
 			pbClose(pb)
-			if (filename  == '') {
+			if (inMemory) {
 				out <- setValues(out, as.vector(v))
 			} else {
 				out <- writeStop(out)
 			}
-		} else {
+		
+		
+		} else { 
+		
+		
 			if (inherits(x, "Spatial")) {
 				x <- as.data.frame(x)
 			}

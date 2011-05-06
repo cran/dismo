@@ -13,13 +13,13 @@ gbm.plot <-
 function(gbm.object,                # a gbm object - could be one from gbm.step
      variable.no = 0,               # the var to plot - if zero then plots all
      smooth = FALSE,                # should we add a smoothed version of the fitted function 
-     rug = T,                       # plot a rug of deciles
+     rug = TRUE,                    # plot a rug of deciles
      n.plots = length(pred.names),  # plot the first n most important preds
-     common.scale = T,              # use a common scale on the y axis
-     write.title = T,               # plot a title above the plot
+     common.scale = TRUE,           # use a common scale on the y axis
+     write.title = TRUE,            # plot a title above the plot
      y.label = "fitted function",   # the default y-axis label
      x.label = NULL,                # the default x-axis label
-     show.contrib = T,              # show the contribution on the x axis
+     show.contrib = TRUE,           # show the contribution on the x axis
      plot.layout = c(3,4),          # define the default layout for graphs on the page
      ...                            # other arguments to pass to the plotting 
                                     # useful options include cex.axis, cex.lab, etc.

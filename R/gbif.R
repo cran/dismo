@@ -36,9 +36,13 @@ gbif <- function(genus, species='', geo=TRUE, sp=FALSE, removeZeros=TRUE, downlo
 	}
 
 
+	genus <- trim(genus)
+	sp <- species
+	species <- gsub(" ", "%20", trim(species))  # for genus species var. xxx
+	
 	if (sp) geo <- TRUE
 
-    spec <- paste('scientificname=', trim(genus),'+', trim(species), sep='')
+    spec <- paste('scientificname=', genus,'+', species, sep='')
 	if (geo) { cds <- '&coordinatestatus=true' 
 	} else { cds <- '' }
     base <- 'http://data.gbif.org/ws/rest/occurrence/'
@@ -50,11 +54,11 @@ gbif <- function(genus, species='', geo=TRUE, sp=FALSE, removeZeros=TRUE, downlo
 	if (! download) { return(n) }
 	
     if (n==0) {
-        cat('no occurrences found\n')
+		cat(genus, sp, ': no occurrences found\n')
         return(invisible(NULL))
     } else {
 		if (feedback > 0) {
-			cat(genus, species, ':', n, 'occurrences found\n')
+			cat(genus, sp, ':', n, 'occurrences found\n')
 			flush.console()
 		}
 	}

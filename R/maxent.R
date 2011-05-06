@@ -222,8 +222,8 @@ setMethod('maxent', signature(x='data.frame', p='vector'),
 		pv <- x[p==1, ,drop=FALSE]
 		av <- x[p==0, ,drop=FALSE]
 		me <- new('MaxEnt')
-		me@presence <- as.matrix(pv)
-		me@absence <- as.matrix(av)
+		me@presence <- pv
+		me@absence <- av
 		me@hasabsence <- TRUE
 		me@path <- dirout
 

@@ -40,6 +40,8 @@ setMethod('predict', signature(object='GeographicDistance'),
 		
 			if ( inherits(x, 'SpatialPoints') )  { 
 				x = coordinates(x) 
+			} else {
+				x <- x[, colnames(object@presence)]
 			}
 			
 			res <- vector(length=nrow(x))

@@ -94,6 +94,7 @@ occtrain <- occ[fold != 1, ]
 
 # fit model, biome is a categorical variable
 me <- maxent(predictors, occtrain, factors='biome')
+
 # see the maxent results in a browser:
 # me
 
@@ -103,8 +104,13 @@ me <- maxent(predictors, occtrain, factors='biome')
 # plot showing importance of each variable
 plot(me)
 
+# response curves
+# response(me)
+
 # predict to entire dataset
 r <- predict(me, predictors, progress='text') 
+
+# with options:
 # r <- predict(me, predictors, progress='text', args=c("outputformat=raw"))
 
 plot(r)

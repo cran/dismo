@@ -29,15 +29,20 @@ if (!isGeneric("domain")) {
 setMethod('domain', signature(x='Raster', p='matrix'), 
 	function(x, p, ...) {
 		m <- extract(x, p)
-		domain(m)
+		domain(as.data.frame(m))
 	}
 )
 
 setMethod('domain', signature(x='Raster', p='data.frame'), 
 	function(x, p, ...) {
 		m <- extract(x, p)
-		
-		domain(m)
+		domain(as.data.frame(m))
+	}
+)
+
+setMethod('domain', signature(x='matrix', p='missing'), 
+	function(x, p, ...) {
+		domain(as.data.frame(x), ...)
 	}
 )
 
@@ -47,14 +52,7 @@ setMethod('domain', signature(x='data.frame', p='missing'),
 		if (missing(factors)) {
 			factors <- colnames(x)[ sapply(x, function(x) is.factor(x)) ]
 		}
-	
-		domain(as.matrix(x), factors=factors, ...)
-	}
-)
 
-setMethod('domain', signature(x='matrix', p='missing'), 
-	function(x, p, factors='', ...) {
-		
 		x = na.omit(x)
 		
 		if (ncol(x) == 0) {	stop('no usable variables') 	}
@@ -88,7 +86,7 @@ setMethod('domain', signature(x='matrix', p='missing'),
 setMethod('domain', signature(x='Raster', p='SpatialPoints'), 
 	function(x, p, ...) {
 		m <- extract(x, p)
-		domain(m)
+		domain(as.data.frame(m))
 	}
 )
 

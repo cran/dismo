@@ -79,19 +79,19 @@ if (!isGeneric("circles")) {
 }	
 
 
-setMethod('circles', signature(p='matrix'), 
+setMethod('circles', signature(p='data.frame'), 
 	function(p, d, lonlat, ...) {
 		ci <- new('CirclesRange')
 		ci@presence <- p
-		ci@circles <- .generateCircles(p, d, lonlat=lonlat)
+		ci@circles <- .generateCircles(p, d=d, lonlat=lonlat)
 		return(ci)
 	}
 )
 
 
-setMethod('circles', signature(p='data.frame'), 
+setMethod('circles', signature(p='matrix'), 
 	function(p, lonlat, ...) {
-		circles(as.matrix(p), lonlat=lonlat, ...)
+		circles(as.data.frame(p), lonlat=lonlat, ...)
 	}
 )
 

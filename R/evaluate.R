@@ -1,4 +1,4 @@
-# Author: Robert J. Hijmans, r.hijmans@gmail.com
+# Author: Robert J. Hijmans
 # Date :  December 2009
 # Version 0.1
 # Licence GPL v3
@@ -24,7 +24,7 @@ evaluateROCR <- function(model, p, a, x) {
 	if (length(a) < 1) { stop('no valid absence (a) values') }
 	predictions = c(p, a)
 	labels = c( rep(1, length(p)), rep(0, length(a)) )
-	pred <- prediction( predictions, labels)
+	pred <- ROCR::prediction( predictions, labels)
 	return(pred)
 }
 

@@ -22,8 +22,16 @@ if (!isGeneric("mahal")) {
 		standardGeneric("mahal"))
 }	
 
-setMethod('mahal', signature(x='matrix', p='missing'), 
+setMethod('mahal', signature(x='data.frame', p='missing'), 
 	function(x, p, ...) {
+		for (i in ncol(x):1) {
+			if (is.factor(x[,i])) {
+				warning('variable "', colnames(x)[i], '" was removed because it is a factor (categorical)')
+				x <- x[, -i]
+			}
+		}
+		if (ncol(x) == 0) {	stop('no usable variables') 	}
+
 		m <- new('Mahalanobis')
 		
 		x = na.omit(x)
@@ -37,16 +45,9 @@ setMethod('mahal', signature(x='matrix', p='missing'),
 	}
 )
 
-setMethod('mahal', signature(x='data.frame', p='missing'), 
+setMethod('mahal', signature(x='matrix', p='missing'), 
 	function(x, p, ...) {
-		for (i in ncol(x):1) {
-			if (is.factor(x[,i])) {
-				warning('variable "', colnames(x)[i], '" was removed because it is a factor (categorical)')
-				x <- x[, -i]
-			}
-		}
-		if (ncol(x) == 0) {	stop('no usable variables') 	}
-		mahal(as.matrix(x))
+		mahal(as.data.frame(x))
 	}
 )
 

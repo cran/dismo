@@ -49,7 +49,7 @@
 
 randomPoints <- function(mask, n, p, ext=NULL, extf=1.1, excludep=TRUE, tryf=5, warn=2) {
 	
-	if (! inherits(mask, 'RasterLayer')) { mask <- raster(mask, 1)	}
+	if (nlayers(mask) > 1) { mask <- raster(mask, 1)	}
 	
 	if (n > ncell(mask)) {
 		n <- ncell(mask)
