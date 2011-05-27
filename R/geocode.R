@@ -3,7 +3,7 @@
 # Version 1.0
 # October 2010
 
-geocode <- function(x, boxes='', extent=NULL) {
+geocode <- function(x, boxes='', extent=NULL, progress='') {
 
 	if (! require(XML)) stop('You need to install the XML package to be able use this function')
 
@@ -15,12 +15,13 @@ geocode <- function(x, boxes='', extent=NULL) {
 	
 	if (boxes != '') { boxonly <- TRUE } else { boxonly <- FALSE }
 	
+	res <- matrix(ncol=7, nrow=0) 
+	colnames(res) <- c('ID', 'lon', 'lat', 'lonmin', 'lonmax', 'latmin', 'latmax')
 	if (boxonly) { 
-		res <- matrix(ncol=5, nrow=0)
-	} else { 
-		res <- matrix(ncol=7, nrow=0) 
+		res <- res[,4:7]
 	}
 	
+	pb <- pbCreate(length(x), type=progress)
 	for (z in 1:length(x)) {
 		r <- x[z]
 		r <- gsub(', ', ',', r)
@@ -35,12 +36,16 @@ geocode <- function(x, boxes='', extent=NULL) {
 		}
 		try( doc <- xmlInternalTreeParse(gurl) )
 		if (class(doc)[1] == 'try-error') {
-			stop('cannot parse XML document\n')
-		} 
-		status <- xmlValue(getNodeSet(doc, "//GeocodeResponse//status")[[1]])
+			warning('cannot parse XML document\n')
+			status <- ''
+		} else { 
+			status <- xmlValue(getNodeSet(doc, "//GeocodeResponse//status")[[1]])
+		}
+		
 		if (status != "OK") {
 			cat(status, ':', r, '\n')
 			w <- matrix(NA, ncol=ncol(res), nrow=1)
+			w[1] <- z
 			res <- rbind(res, w)
 			next
 		}
@@ -67,8 +72,9 @@ geocode <- function(x, boxes='', extent=NULL) {
 		}
 		
 		res <- rbind(res, w)
-	
-	}
+		pbStep(pb, z) 
+	} 
+	pbClose(pb)
 
 	if (boxonly) {
 		res <- res[,2:5,drop=FALSE]
@@ -78,11 +84,7 @@ geocode <- function(x, boxes='', extent=NULL) {
 		} else {
 			rownames(res) <- 1:nrow(res)
 		}
-		colnames(res) <- c('lonmin', 'lonmax', 'latmin', 'latmax')
-		
-	} else {
-		colnames(res) <- c('ID', 'lon', 'lat', 'lonmin', 'lonmax', 'latmin', 'latmax')
-	}
+	} 
 	return(res)	
 }
 

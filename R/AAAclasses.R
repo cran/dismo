@@ -11,8 +11,8 @@ setClass('DistModel',
 		hasabsence = 'logical'
 	),	
 	prototype (	
-		presence = data.frame(NA),
-		absence = data.frame(NA),
+		presence = data.frame(),
+		absence = data.frame(),
 		hasabsence = FALSE
 	),
 	validity = function(object)	{

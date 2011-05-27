@@ -19,7 +19,7 @@ biogeomancer(country = "", adm1 = "", adm2 = "", locality = "", singleRecord=TRU
   \item{adm2}{Character. Name of the second-level administrative subdivsion. E.g. the county in the United States, and the district in India and China }
   \item{locality}{Character. Locality description}
   \item{singleRecord}{Boolean. If \code{TRUE}, the record with lowest uncertainty is selected when several records are returned}  
-  \item{progress}{Character. Valid values are "" (no progress indicator), "text" (the default), "tcltk", and "windows" (on that platform only)}  
+  \item{progress}{Character. Valid values are "" (no progress indicator), "text" (the default) and "windows" (on that platform only)}  
 }
 
 \value{

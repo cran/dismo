@@ -189,7 +189,7 @@ setMethod('maxent', signature(x='Raster', p='ANY'),
 
 
 setMethod('maxent', signature(x='data.frame', p='vector'), 
-	function(x, p, args=NULL, ...) {
+	function(x, p, args=NULL, path, ...) {
 
 		jar <- paste(system.file(package="dismo"), "/java/maxent.jar", sep='')
 		if (!file.exists(jar)) {
@@ -212,11 +212,21 @@ setMethod('maxent', signature(x='data.frame', p='vector'),
 			}
 		}
 		
-		dirout <- .meTmpDir()
-		f <- paste(round(runif(10)*10), collapse="")
-		dirout <- paste(dirout, '/', f, sep='')
-		if (! file.exists(dirout)) {
-			dir.create(dirout, recursive=TRUE, showWarnings=TRUE)
+		if (!missing(path)) {
+			path <- trim(path)
+			dir.create(path, recursive=TRUE, showWarnings=FALSE)
+			if (!file.exists(path)) {
+				stop('cannot create output directory: ', path)
+			}
+			dirout <- path			
+		} else {
+			dirout <- .meTmpDir()
+			f <- paste(round(runif(10)*10), collapse="")
+			dirout <- paste(dirout, '/', f, sep='')
+			dir.create(dirout, recursive=TRUE, showWarnings=FALSE)
+			if (! file.exists(dirout)) {
+				stop('cannot create output directory: ', f)
+			}
 		}
 		
 		pv <- x[p==1, ,drop=FALSE]

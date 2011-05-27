@@ -24,7 +24,7 @@ Make a RasterLayer with a prediction based on a model object of class Bioclim, D
   \tab  \code{x} \tab A Raster* object or a data.frame\cr
   \tab  \code{ext} \tab An \link[raster]{extent} object to limit the prediction to a sub-region of \code{x}. Or an object that can be coerced to an Extent object by \code{\link[raster]{extent}}; such as a Raster* or Spatial* object \cr
   \tab  \code{filename}  \tab Output filename for a new raster; if NA the result is not written to a file but returned with the RasterLayer object, in the data slot \cr
-  \tab \code{progress} \tab Character. Valid values are "" (no progress bar), "text", "tcltk", and "windows" (on that platform only) \cr
+  \tab \code{progress} \tab Character. Valid values are "" (no progress bar), "text" and "windows" (on that platform only) \cr
   \tab  \code{...}  \tab Additional model specific arguments and arguments for file writing (see below)\cr
 }
 

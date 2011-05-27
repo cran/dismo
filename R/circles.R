@@ -17,7 +17,7 @@
 		}
 	} else {
 		for (i in 1:nrow(xy)) { 
-			d[,i] <- pointDistance(xy[i,], xy, type='Euclidean', r=r)
+			d[,i] <- pointDistance(xy[i,], xy, longlat=TRUE, r=r)
 		}
 	}
 	mean(apply(d, 1, median))

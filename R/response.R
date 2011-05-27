@@ -7,17 +7,27 @@ if (!isGeneric("response")) {
 
 setMethod("response", signature(x='DistModel'), 
 
-function(x, var=NULL, at=median, rug=TRUE, ylim=c(0,1), col='red', lwd=2, add=FALSE, ... ) {
+function(x, var=NULL, at=median, range='pa', expand=10, rug=TRUE, ylim=c(0,1), col='red', lwd=2, add=FALSE, ... ) {
 	
-	d <- x@presence
+	stopifnot(range %in% c('p', 'pa'))
+	
+	d <- dd <- x@presence
+	if (range == 'pa') {
+		if (x@hasabsence) {
+			dd <- rbind(d, x@absence)
+		}
+	}
 	cn <- colnames(d)
 	if (is.null(var)) {
 		var <- cn
 	}
-	
 	if (is.numeric(var)) {
 		var <- cn[var]
 	}
+	if (length(var)==1) {
+		
+	}
+	
 	var <- var[var %in% cn]
 	if (length(var) == 0) { stop('var not found')	}
 	
@@ -31,12 +41,13 @@ function(x, var=NULL, at=median, rug=TRUE, ylim=c(0,1), col='red', lwd=2, add=FA
 	
 	for (vr in var) {
 		i <- which(cn==vr)
-		v <- d[,i]
+		v <- dd[,i]
 		if (is.factor(v)) {
 			v <- levels(v)
 		} else {
 			v <- range(v)
-			v <- v[1] + -10:110 * (v[2]-v[1])/100
+			expand <- round(abs(expand))
+			v <- v[1] + (-expand):(100+expand) * (v[2]-v[1])/100
 		}
 		if (is.function(at)) {
 			m <- as.numeric(apply(d[,-i], 2, at))
