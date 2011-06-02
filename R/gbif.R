@@ -37,7 +37,7 @@ gbif <- function(genus, species='', geo=TRUE, sp=FALSE, removeZeros=TRUE, downlo
 
 
 	genus <- trim(genus)
-	sp <- species
+	spec <- species
 	species <- gsub(" ", "%20", trim(species))  # for genus species var. xxx
 	
 	if (sp) geo <- TRUE
@@ -54,11 +54,11 @@ gbif <- function(genus, species='', geo=TRUE, sp=FALSE, removeZeros=TRUE, downlo
 	if (! download) { return(n) }
 	
     if (n==0) {
-		cat(genus, sp, ': no occurrences found\n')
+		cat(genus, spec, ': no occurrences found\n')
         return(invisible(NULL))
     } else {
 		if (feedback > 0) {
-			cat(genus, sp, ':', n, 'occurrences found\n')
+			cat(genus, spec, ':', n, 'occurrences found\n')
 			flush.console()
 		}
 	}

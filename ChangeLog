@@ -1,3 +1,6 @@
+--- 29-May-2011, version 0.6-9
+Removed bug in gbif function with sp=TRUE, reported by Luis Cayuela
+
 --- 18-May-2011, version 0.6-8
 Additional arguments to the response function
 Option to provide a filename to permanently save MaxEnt model output

@@ -10,7 +10,7 @@ shapefile <- function(filename) {
 		stop('This function requires the rgdal package; please install it')
 	}
 	fn <- basename(filename) 
-	ext(fn) <- ''
+	extension(fn) <- ''
 	vec <- readOGR(dirname(filename), fn) 
 	return(vec)
 }

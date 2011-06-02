@@ -140,7 +140,7 @@ gmap <- function (x, exp=1, type='terrain', filename='', ...) {
 	
 	
 	if (trim(filename) == '') filename <- rasterTmpFile()
-	ext(filename) <- 'gif'
+	extension(filename) <- 'gif'
 	download.file(gurl, filename, mode = "wb", quiet = TRUE)
     
 	MyMap <- list(lat.center = center[1], lon.center = center[2], zoom = zoom)
@@ -155,7 +155,7 @@ gmap <- function (x, exp=1, type='terrain', filename='', ...) {
 	extent(r) <- extent(as.vector(p))
 	projection(r) = "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs"
 	try( hdr(r, format='worldfile', extension='.gfw') )
-	ext(filename) <- 'prj'
+	extension(filename) <- 'prj'
 	showWKT(projection(r), file=filename, morphToESRI=TRUE)
     return(r)
 }
