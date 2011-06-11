@@ -3,23 +3,15 @@
 # Version 1.0
 # October 2010
 
-geocode <- function(x, boxes='', extent=NULL, progress='') {
+geocode <- function(x, oneRecord=FALSE, extent=NULL, progress='') {
 
 	if (! require(XML)) stop('You need to install the XML package to be able use this function')
 
 	burl <- "http://maps.google.com/maps/api/geocode/xml?address="
 
-	if (! boxes %in% c('', 'only', 'one')) {
-		warning("boxes should be '', 'only', or 'one'")
-	}
-	
-	if (boxes != '') { boxonly <- TRUE } else { boxonly <- FALSE }
-	
-	res <- matrix(ncol=7, nrow=0) 
+
+	res <- matrix(ncol=7, nrow=0)
 	colnames(res) <- c('ID', 'lon', 'lat', 'lonmin', 'lonmax', 'latmin', 'latmax')
-	if (boxonly) { 
-		res <- res[,4:7]
-	}
 	
 	pb <- pbCreate(length(x), type=progress)
 	for (z in 1:length(x)) {
@@ -63,28 +55,24 @@ geocode <- function(x, boxes='', extent=NULL, progress='') {
 		}
 
 		w <- cbind(viewport, bounds)
-		for (i in 1:4) w[,i] <- pmax(w[,i], w[,4+i], na.rm=TRUE)
+		w[,c(1,3)] <- pmin(w[,c(1,3)], w[,c(1,3)+4], na.rm=TRUE)
+		w[,c(2,4)] <- pmax(w[,c(2,4)], w[,c(2,4)+4], na.rm=TRUE)
 		w <- cbind(z, location, w[,1:4,drop=FALSE])
 	
-		if (boxonly) {
+		if (oneRecord & nrow(w) > 1) {
 			f <- apply(w[,4:7, drop=FALSE], 2, range)
-			w <- cbind(w[1,1], f[1,1], f[2,2], f[1,3], f[2,4])
+			g <- apply(w[,2:3, drop=FALSE], 2, mean)
+			w <- cbind(z, g[1], g[2], f[1,1], f[2,2], f[1,3], f[2,4])
 		}
-		
+
 		res <- rbind(res, w)
 		pbStep(pb, z) 
 	} 
 	pbClose(pb)
 
-	if (boxonly) {
-		res <- res[,2:5,drop=FALSE]
-		if (boxes == 'one') {
-			f <- apply(res, 2, range)
-			res <- cbind(f[1,1], f[2,2], f[1,3], f[2,4])
-		} else {
-			rownames(res) <- 1:nrow(res)
-		}
-	} 
+	rownames(res) <- 1:nrow(res)
+	x <- data.frame(ID=1:length(x), location=x)
+	res <- merge(res, x, by='ID')
 	return(res)	
 }
 

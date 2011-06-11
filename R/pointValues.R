@@ -27,7 +27,7 @@ pointValues <- function(x, p, a, uniquecells=TRUE, na.rm=TRUE) {
 			warning("unique cells=", frac," times total" ) 
 		}
 	} 
-	vals <- cbind(pa[,1], cellValues(x, cell))
+	vals <- cbind(pa[,1], extract(x, cell))
 	if (is.null(colnames(vals))) {
 		colnames(vals) <- c('presabs', 'value')
 	} else {

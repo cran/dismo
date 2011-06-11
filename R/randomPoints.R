@@ -128,7 +128,7 @@ randomPoints <- function(mask, n, p, ext=NULL, extf=1.1, excludep=TRUE, tryf=5, 
 			cells <- cellFromXY(mask, xy)
 		}
 
-		vals <- cbind(cells, cellValues(mask, cells))
+		vals <- cbind(cells, extract(mask, cells))
 		cells <- na.omit(vals)[,1]
 	}
 		

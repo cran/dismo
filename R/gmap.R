@@ -75,12 +75,12 @@ gmap <- function (x, exp=1, type='terrain', filename='', ...) {
 	gurl <- "http://maps.google.com/staticmap?"
 		
 	if (is.character(x)) {
-		x <- geocode(x, boxes='one')
+		x <- geocode(x, oneRecord=TRUE)
 		if (any(is.na(x))) {
 			stop('location not found')
 		}
-		x <- extent(as.vector(x))
-		
+		x <- extent(as.vector(as.matrix(x[4:7])))
+
 	} else {
 		prj <- projection(x, asText=TRUE)
 		
