@@ -26,7 +26,7 @@ setMethod('predict', signature(object='MaxEnt'),
 		variables = colnames(object@presence)
 		write.table(object@lambdas, file=lambdas, row.names=FALSE, col.names=FALSE, quote=FALSE)
 		
-		MEversion <- .getMeVersion()
+		MEversion <- dismo:::.getMeVersion()
 
 		mxe <- .jnew("mebridge") 		
 		args <- c("-z", args)
@@ -36,6 +36,7 @@ setMethod('predict', signature(object='MaxEnt'),
 		}
 
 		filename <- trim(filename)
+		
 		if (inherits(x, "Raster")) {
 			
 			if (! all(colnames(object@presence)  %in%  layerNames(x) )) {
@@ -145,7 +146,7 @@ setMethod('predict', signature(object='MaxEnt'),
 					rowvals <- na.omit(rowvals)
 					if (length(rowvals) > 0) {
 						rowvals[] <- as.numeric(rowvals)
-						p <- .jcall(mxe, "[D", "predict", lambdas, .jarray(colnames(rowvals)), .jarray(rowvals), args) 
+						p <- .jcall(mxe, "[D", "predict", lambdas, .jarray(colnames(rowvals)), .jarray(rowvals, dispatch=TRUE), args) 
 
 						naind <- as.vector(attr(rowvals, "na.action"))
 						if (!is.null(naind)) {
@@ -204,7 +205,7 @@ setMethod('predict', signature(object='MaxEnt'),
 			if (nrow(x) > 0) {
 				x <- as.matrix(x)
 				x[] <- as.numeric(x)
-				p <- .jcall(mxe, "[D", "predict", lambdas, .jarray(colnames(x)), .jarray(x), args) 
+				p <- .jcall(mxe, "[D", "predict", lambdas, .jarray(colnames(x)), .jarray(x, dispatch=TRUE), args) 
 				p[p == -9999] <- NA
 				naind <- as.vector(attr(x, "na.action"))
 				if (!is.null(naind)) {

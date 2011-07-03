@@ -40,7 +40,7 @@ setMethod('mahal', signature(x='data.frame', p='missing'),
 		
 		
 		m@presence <- x
-		m@cov <- var(x)
+		m@cov <- solve( var(x) )
 		m
 	}
 )

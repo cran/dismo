@@ -1,3 +1,7 @@
+--- 3-July-2011, version 0.7-1
+maxent predict failure fixed by adding distpatch=TRUE to .jarray() (bug reported by Stella Copeland)
+rJava is now suggested instead of required (and its namespace not imported), such that dismo can be loaded if rJava is absent or complains about missing variables (JAVA_PATH) or libraries.
+
 --- 29-May-2011, version 0.6-9
 Removed bug in gbif function with sp=TRUE, reported by Luis Cayuela
 

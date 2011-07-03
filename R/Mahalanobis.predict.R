@@ -12,7 +12,7 @@ function(object, x, ext=NULL, filename='', progress='text', ...) {
 			stop('missing variables in matrix ')
 		}
 		x <- x[ , colnames(object@presence),drop=FALSE]
-		mah <- 1 - apply(data.frame(x), 1, FUN=function(z) min( mahalanobis(object@presence, z, object@cov)))
+		mah <- 1 - apply(data.frame(x), 1, FUN=function(z) min( mahalanobis(object@presence, z, object@cov, inverted=TRUE)))
 		return(mah)
 		
 	} else {
@@ -42,6 +42,7 @@ function(object, x, ext=NULL, filename='', progress='text', ...) {
 				filename <- rasterTmpFile()
 				if (getOption('verbose')) { cat('writing raster to:', filename)	}						
 			}
+			out <- writeStart(out, ...)
 		}
 
 		cn <- colnames(object@presence)
@@ -53,7 +54,7 @@ function(object, x, ext=NULL, filename='', progress='text', ...) {
 			vals <- getValuesBlock(x, row=rr, nrows=tr$nrows[i], firstcol, ncols)
 
 			vals <- vals[,cn,drop=FALSE]
-			res <- 1 - apply(data.frame(vals), 1, FUN=function(z) min( mahalanobis(object@presence, z, object@cov)))
+			res <- 1 - apply(data.frame(vals), 1, FUN=function(z) min( mahalanobis(object@presence, z, object@cov, inverted=TRUE)))
 
 			if (inmem) {
 				res <- matrix(res, nrow=ncol(out))
