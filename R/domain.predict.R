@@ -77,7 +77,7 @@ function(object, x, ext=NULL, filename='', progress='text', ...) {
 		
 		ln <- colnames(object@presence)
 		tr <- blockSize(out, n=nlayers(x)+2)
-		dom <- matrix(ncol=nlayers(x), nrow=ncols*tr$size )
+		dom <- matrix(ncol=nlayers(x), nrow=ncols*tr$nrows[1] )
 		pb <- pbCreate(tr$n, type=progress)	
 		
 		for (i in 1:tr$n) {
