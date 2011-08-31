@@ -8,7 +8,7 @@
 setClass('VoronoiHull',
 	contains = 'DistModel',
 	representation (
-		hull ='SpatialPolygonsDataFrame'
+		polygons ='SpatialPolygonsDataFrame'
 	),	
 	prototype (	
 	),
@@ -25,7 +25,9 @@ if (!isGeneric("voronoiHull")) {
 setMethod('voronoiHull', signature(p='matrix', a='matrix'), 
 	function(p, a, ...) {
 		v <- new('VoronoiHull')
-		v@hull <- .voronoi(p[,1:2,drop=FALSE], a[,1:2,drop=FALSE])
+		v@polygons <- .voronoi(p[,1:2,drop=FALSE], a[,1:2,drop=FALSE])
+		v@presence <- data.frame(p)
+		v@absence <- data.frame(a)
 		return(v)
 	}
 )
@@ -67,13 +69,26 @@ setMethod('voronoiHull', signature(p='SpatialPoints', a='SpatialPoints'),
 	}
 	
 	polys <- SpatialPolygons(polys)
-	polys <- SpatialPolygonsDataFrame(polys, data=data.frame(pa))
+	
+	#if (require(rgeos)) {
+	#	p <- polys[pa==1]
+	#	a <- polys[pa==0]
+	#	p <- gUnionCascaded(p)
+	#	a <- gUnionCascaded(a)
+	#	a@polygons[[1]]@ID = "2"
+	#	polys <- SpatialPolygons(list(p@polygons[[1]], a@polygons[[1]]))
+	#	pa <- data.frame(pa=c(1,0))
+	#	polys <- SpatialPolygonsDataFrame(polys, data=data.frame(pa))
+	#} else {
+		polys <- SpatialPolygonsDataFrame(polys, data=data.frame(pa))
+	#}
+	
 	return(polys)
 }
 
 
 setMethod("plot", signature(x='VoronoiHull', y='missing'), 
 	function(x, ...) {
-		plot(x@hull[x@hull@data[,1]==1, ], ...)
+		plot(x@polygons[x@polygons@data[,1]==1, ], ...)
 	}
 )

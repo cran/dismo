@@ -42,7 +42,7 @@ function(object, x, ext=NULL, filename='', progress='text', ...) {
 				filename <- rasterTmpFile()
 				if (getOption('verbose')) { cat('writing raster to:', filename)	}						
 			}
-			out <- writeStart(out, ...)
+			out <- writeStart(out, filename=filename, ...)
 		}
 
 		cn <- colnames(object@presence)

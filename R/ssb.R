@@ -1,6 +1,10 @@
+# Author: Robert J. Hijmans, r.hijmans@gmail.com
+# Date : August 2011
+# Version  1.0
+# Licence GPL v3
 
 
-selectByDistance <- function(from, to, target, tr=0.1, lonlat=TRUE) {
+ssb <- function(p, a, reference, lonlat=TRUE, avg=TRUE) {
 
 	distHaversine <- function (p1, p2) {
 		r <- 6378137
@@ -20,7 +24,7 @@ selectByDistance <- function(from, to, target, tr=0.1, lonlat=TRUE) {
 		m <- nrow(y)
 		dm <- matrix(ncol = m, nrow = n)
 		for (i in 1:n) {
-			dm[i, ] <- distHaversine(x[i, ], y)
+			dm[i, ] <- distHaversine(x[i, ,drop=FALSE], y)
 		}
 		return(dm)
 	}
@@ -34,7 +38,7 @@ selectByDistance <- function(from, to, target, tr=0.1, lonlat=TRUE) {
 		m = nrow(y)
 		dm = matrix(ncol = m, nrow = n)
 		for (i in 1:n) {
-			dm[i, ] = dfun(x[i, ], y)
+			dm[i, ] = dfun(x[i, ,drop=FALSE], y)
 		}
 		return(dm)
 	}
@@ -45,22 +49,28 @@ selectByDistance <- function(from, to, target, tr=0.1, lonlat=TRUE) {
 		distfun <- distPlane
 	}
 	
-	ngb <- NULL
-	fromd <- apply(distfun(from, target), 1, min)
-	tod <- distfun(to, target)
-	for (i in 1:nrow(from)) {
-		d <- apply(tod, 1, min) 
-		d <- abs(d - fromd[i])
-		mn <- min(d)
-		if (mn < (1+tr) * fromd[i]) {
-			x <- which.min(d)
-			ngb <- c(ngb, x)
-			tod[x, ] <- Inf
-		} else {
-			ngb <- c(ngb, NA)
-		}
+	if (inherits(p, 'SpatialPoints')) p <- coordinates(p)
+	if (inherits(a, 'SpatialPoints')) a <- coordinates(a)
+	if (inherits(reference, 'SpatialPoints')) reference <- coordinates(reference)
+	p <- as.matrix(p)[,1:2]
+	a <- as.matrix(a)[,1:2]
+	reference <- as.matrix(reference)[,1:2]
+		
+	pdist <- distfun(p, reference)
+	adist <- distfun(a, reference)
+
+	pd <- apply(pdist, 1, min)
+	ad <- apply(adist, 1, min)
+	
+	if (avg) {
+		return( cbind(mean(pd), mean(ad)) )
+	} else {
+		return( list(pd, ad) )
 	}
-	return(ngb)
 }
 
 
+
+
+ 
+ 

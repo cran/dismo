@@ -21,25 +21,27 @@ setMethod('predict', signature(object='GeographicDistance'),
 		}
 
 		if ( extends(class(x), 'Raster'))  {
-			if (! mask) {
-				x = raster(x)
-			} else if (dataContent(x) != 'all' & dataSource(x) != 'disk') {
-				mask = FALSE
+			if (!hasValues(x)) {
+				mask <- FALSE
 			}
-			
-			if (! is.null(ext)) { x = crop(x, ext) }
+			if (! mask) {
+				x <- raster(x)
+			}
+			if (! is.null(ext)) { 
+				x <- crop(x, ext) 
+			}
 
 			xx <- distanceFromPoints(x, object@presence)
 			if (mask) {
 				xx <- mask(xx, x)
 			}
-			xx = calc(xx, fun=inverse, filename=filename, ...)
+			xx <- calc(xx, fun=inverse, filename=filename, ...)
 			return(xx)
 			
 		} else {
 		
 			if ( inherits(x, 'SpatialPoints') )  { 
-				x = coordinates(x) 
+				x <- coordinates(x) 
 			} else {
 				x <- x[, colnames(object@presence)]
 			}

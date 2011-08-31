@@ -2,6 +2,7 @@
 
 \alias{response}
 \alias{response,DistModel-method}
+\alias{response,ANY-method}
 
 
 \title{response plots}
@@ -18,7 +19,7 @@ response(x, ...)
 
 
 \arguments{
-  \item{x}{ Model object that inherits from 'DistModel', e.g. 'MaxEnt' }
+  \item{x}{ Model object that inherits from 'DistModel', e.g. 'MaxEnt'. Also works for some other models (e.g. GLM) }
   \item{...}{ Additional arguments. See Details }  
 }
 

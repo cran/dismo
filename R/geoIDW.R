@@ -49,9 +49,11 @@ setMethod('geoIDW', signature(p='SpatialPoints', a='SpatialPoints'),
 .idw <- function(p, a){
 	if (!require(gstat)) { stop('you need to first install the "gstat" package') }
 
-	xy = rbind(p,a)
-	pa = c(rep(1, nrow(p)), rep(0, nrow(a)))
-	paxy = unique(cbind(pa, xy)) 
+	rownames(p) <- NULL
+	rownames(a) <- NULL
+	xy <- rbind(p,a)
+	pa <- c(rep(1, nrow(p)), rep(0, nrow(a)))
+	paxy <- unique(cbind(pa, xy)) 
 	paxy[duplicated(paxy[, 2:3]),1] = 1  # duplicates are present
 	paxy = data.frame(unique(paxy))
 	colnames(paxy) = c('pa', 'x', 'y')

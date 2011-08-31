@@ -6,16 +6,11 @@ if (!isGeneric("response")) {
 
 
 setMethod("response", signature(x='DistModel'), 
-
 function(x, var=NULL, at=median, range='pa', expand=10, rug=TRUE, ylim=c(0,1), col='red', lwd=2, add=FALSE, ... ) {
-	
 	stopifnot(range %in% c('p', 'pa'))
-	
-	d <- dd <- x@presence
-	if (range == 'pa') {
-		if (x@hasabsence) {
-			dd <- rbind(d, x@absence)
-		}
+	d <- x@presence
+	if (range == 'pa' & x@hasabsence) {
+		d <- rbind(d, x@absence)
 	}
 	cn <- colnames(d)
 	if (is.null(var)) {
@@ -25,11 +20,49 @@ function(x, var=NULL, at=median, range='pa', expand=10, rug=TRUE, ylim=c(0,1), c
 		var <- cn[var]
 	}
 	if (length(var)==1) {
-		
+		# ?
 	}
-	
 	var <- var[var %in% cn]
 	if (length(var) == 0) { stop('var not found')	}
+
+	.doResponse(x, var, at, d, cn, expand, rug, ylim, col, lwd, add, ... )
+
+}
+)
+
+
+
+setMethod("response", signature(x='ANY'), 
+function(x, var=NULL, at=median, range='pa', expand=10, rug=TRUE, ylim=c(0,1), col='red', lwd=2, add=FALSE, ... ) {
+	stopifnot(range %in% c('p', 'pa'))
+
+	cn <- names(attr(x$terms, "dataClasses")[-1])
+	d <- x$model
+	
+	if (range != 'pa') {
+		warning("range='p' is ignored")
+	}
+	if (is.null(var)) {
+		var <- cn
+	}
+	if (is.numeric(var)) {
+		cn <- names(attr(model$terms, "dataClasses")[-1])
+		var <- cn[var]
+	}
+	if (length(var)==1) {
+		# ?
+	}
+#	var <- var[var %in% cn]
+	if (length(var) == 0) { stop('var not found')	}
+
+	d <- d[, var]
+	.doResponse(x, var, at, d, cn, expand, rug, ylim, col, lwd, add, ... )
+
+}
+)
+
+
+.doResponse <- function(x, var, at, d, cn, expand, rug, ylim, col, lwd, add, ...) {
 	
 	if (length(var) > 1) {
 		old.par <- par(no.readonly = TRUE) 
@@ -41,7 +74,7 @@ function(x, var=NULL, at=median, range='pa', expand=10, rug=TRUE, ylim=c(0,1), c
 	
 	for (vr in var) {
 		i <- which(cn==vr)
-		v <- dd[,i]
+		v <- d[,i]
 		if (is.factor(v)) {
 			v <- levels(v)
 		} else {
@@ -79,5 +112,5 @@ function(x, var=NULL, at=median, range='pa', expand=10, rug=TRUE, ylim=c(0,1), c
 		return(invisible(cbind(a[,1], p)))
 	}
 }
-)
+
 

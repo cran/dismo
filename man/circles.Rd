@@ -11,7 +11,7 @@
 
 
 \description{
-The circles model predicts that a species is present at sites near training points, and absent further away.
+The circles model predicts that a species is present at sites within a certain distance from a training point, and absent further away.
 }
 
 
@@ -27,10 +27,10 @@ circles(p, ...)
 \details{
 The following additional arguments can be supplied to the circles function:
 \tabular{rll}{
- \tab \code{d}  \tab The diameter of each circle. If missing the diameter is computed from the inter-point distance \cr
+ \tab \code{d}  \tab The radius of each circle in meters. Can be a single number of a vector with elements corresponding to rows in \code{p}. If missing the diameter is computed from the inter-point distance \cr
  \tab \code{n}  \tab How many vertices in the circle? Default is 360 \cr
  \tab \code{lonlat} \tab  Are these longitude/latidue data? Default = \code{FALSE} \cr
-  \tab \code{r}  \tab  Radius of the earth. Relevant for longitude/latitude data. Default is 6378137 m\cr
+  \tab \code{r}  \tab  Radius of the earth. Only relevant for longitude/latitude data. Default is 6378137 m\cr
 } 
 
 }
@@ -60,7 +60,7 @@ cc <- circles(train, lonlat=FALSE)
 predict(cc, test)
 
 plot(r)
-plot(cc@circles, border='red', lwd=2, add=TRUE)
+plot(cc@polygons, border='red', lwd=2, add=TRUE)
 points(train, col='red', pch=20, cex=2)
 points(test, col='black', pch=20, cex=2)
 

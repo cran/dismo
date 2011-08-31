@@ -10,31 +10,27 @@ setMethod('predict', signature(object='VoronoiHull'),
 	
 		if ( extends(class(x), 'Raster'))  {
 			if (! mask) {
-				x = raster(x)
+				x <- raster(x)
 			}
 			if (! is.null(ext)) { 
-				x = crop(x, ext) 
+				x <- crop(x, ext) 
 			}
 			
+			xx <- rasterize(object@polygons, raster(x), field=1, fun='max', mask=FALSE, update=FALSE, getCover=FALSE, silent=TRUE, progress=progress)
 			if (mask) {
-				xx = rasterize(object@hull, raster(x), field=-1, fun='max', mask=FALSE, update=FALSE, updateValue="NA", getCover=FALSE, silent=TRUE, progress=progress)
-				xx <- mask(xx, x, filename=filename, progress=progress, ...)
-			} else {
-				xx = rasterize(object@hull, raster(x), filename=filename, field=-1, fun='max', mask=FALSE, update=FALSE, updateValue="NA", getCover=FALSE, silent=TRUE, progress=progress, ...)
+				xx <- mask(xx, x)
 			}
-			xx <- calc(xx, fun=fun, filename=filename, progress=progress, ...)
 			return(xx)
 			
 		} else {
 		
 			if (! inherits(x, 'SpatialPoints') )  {
-				x = data.frame(x[,1:2])
+				x <- data.frame(x[,1:2])
 				colnames(x) = c('x', 'y')
 				coordinates(x) = ~ x + y
 			}
 			
-			v <- .pointsInPolygons(x, object@hull[object@hull@data[,1]==1,], max) 
-			
+			v <- .pointsInPolygons(x, object@polygons) 			
 			return(v)
 		}
 	}

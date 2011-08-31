@@ -8,7 +8,7 @@
 
 \title{Class "DistModel"}
 \description{
-Parent class to store distribution modeling results. This is a virtual Class, no objects may be created from it. Several other classes inherit from it, including Bioclim, Domain, MaxEnt.}
+Parent class for a number of distribution models defined in the dismo package (those created by \code{\link{bioclim}, \link{domain}, \link{maxent} and \link{mahal}}). This is a virtual Class, no objects may be direclty created from it. }
 
 
 \section{Slots}{

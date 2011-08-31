@@ -7,7 +7,7 @@ point values
 
 
 \description{
-Extract values from a Raster* object for point locations. 
+Extract values from a Raster* object for point locations. This function adds a few options that can be useful in the context of species distribution modeling to \code{\link[raster]{extract}} function in the raster package.  
 }
 
 
@@ -23,11 +23,12 @@ pointValues(x, p, a, uniquecells = TRUE, na.rm = TRUE)
   \item{na.rm}{Logical. If \code{TRUE}, cell values of NA are not returned}
 }
 
-
 \value{
 matrix
 }
 
+
+\seealso{\code{\link[raster]{extract}}}
 
 \author{
 Robert J. Hijmans

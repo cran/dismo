@@ -7,7 +7,7 @@
 
 
 
-.avgDist <- function(xy, lonlat=TRUE, r=6378137) {
+.avgDist <- function(xy, lonlat, r=6378137) {
 	xy <- unique(xy)
 	xy <- as.matrix(xy[,1:2])
 	d <- matrix(nrow=nrow(xy), ncol=nrow(xy))
@@ -17,53 +17,66 @@
 		}
 	} else {
 		for (i in 1:nrow(xy)) { 
-			d[,i] <- pointDistance(xy[i,], xy, longlat=TRUE, r=r)
+			d[,i] <- pointDistance(xy[i,], xy, longlat=FALSE, r=r)
 		}
 	}
-	mean(apply(d, 1, median))
+	median(apply(d, 1, function(x)quantile(x, 0.1)))
 }
 
 
-.generateCircles <- function(xy, d, n=360, lonlat=TRUE, r=6378137 ) {
-	if (missing(d)) {
-		d <- .avgDist(xy, lonlat=lonlat, r=r) / 2
+.generateCircles <- function(xy, d, n=360, lonlat, r=6378137 ) {
+	if (length(d)==1) {
+		d <- rep(d, nrow(xy))
+	} else if (length(d) != nrow(xy)) {
+		# recycling
+		dd <- vector(length=nrow(xy))
+		dd[] <- d
+		d <- dd
 	}
+	
 	xy <- as.matrix(xy[,1:2])
 	n <- max(4, round(n))
 	toRad <- pi/180
 	brng <- 1:n * 360/n
 	brng <- brng * toRad
-	if (lonlat) { xy = xy * toRad }
+	if (lonlat) { 
+		xy = xy * toRad 
+	}
 	pols <- list()
 	for (i in 1:nrow(xy)) {
 		p <- xy[i, ]
 		if (lonlat) {
 			lon1 <- p[1]
 			lat1 <- p[2]
-			lat2 <- asin(sin(lat1) * cos(d/r) + cos(lat1) * sin(d/r) * cos(brng))
-			lon2 <- lon1 + atan2(sin(brng) * sin(d/r) * cos(lat1), cos(d/r) - sin(lat1) * sin(lat2))
+			lat2 <- asin(sin(lat1) * cos(d[i]/r) + cos(lat1) * sin(d[i]/r) * cos(brng))
+			lon2 <- lon1 + atan2(sin(brng) * sin(d[i]/r) * cos(lat1), cos(d[i]/r) - sin(lat1) * sin(lat2))
 			lon2 <- (lon2 + pi)%%(2 * pi) - pi
 			lon2[is.nan(lon2)] <- NA
 			lat2[is.nan(lat2)] <- NA
 			res <- cbind(lon2, lat2)/toRad
 			colnames(res) <- c("lon", "lat")
 		} else {
-			x2 <- p[1] + d * cos(brng)
-			y2 <- p[2] + d * sin(brng)
+			x2 <- p[1] + d[i] * cos(brng)
+			y2 <- p[2] + d[i] * sin(brng)
 			res <- cbind(x2, y2)
 			colnames(res) <- c("x", "y")
 		}
 		res <- rbind(res, res[1,])
 		pols <- c(pols, Polygons(list(Polygon( res )), i))		
 	}
-	return( SpatialPolygons( pols ) )
+
+	pols <- SpatialPolygons(pols)
+	if (lonlat) {
+		projection(pols) <- CRS('+proj=longlat')
+	}
+	return( pols )
 }
 
 
 setClass('CirclesRange',
 	contains = 'DistModel',
 	representation (
-		circles='SpatialPolygons'
+		polygons='SpatialPolygons'
 	),	
 	prototype (	
 	),
@@ -83,22 +96,38 @@ setMethod('circles', signature(p='data.frame'),
 	function(p, d, lonlat, ...) {
 		ci <- new('CirclesRange')
 		ci@presence <- p
-		ci@circles <- .generateCircles(p, d=d, lonlat=lonlat)
+		if (missing(lonlat)) {
+			stop("you must provide a 'lonlat' argument")
+		}
+		if (missing(d)) {
+			d <- .avgDist(p, lonlat=lonlat, r=r) / 2
+		}
+		ci@polygons <- .generateCircles(p, d=d, lonlat=lonlat)
 		return(ci)
 	}
 )
 
 
 setMethod('circles', signature(p='matrix'), 
-	function(p, lonlat, ...) {
-		circles(as.data.frame(p), lonlat=lonlat, ...)
+	function(p, ...) {
+		circles(data.frame(p), ...)
 	}
 )
 
 setMethod('circles', signature(p='SpatialPoints'), 
-	function(p, lonlat, ...) {
+	function(p, d, lonlat, ...) {
 		if (missing(lonlat)) lonlat <- isLonLat(p)
-		circles(coordinates(p), lonlat=lonlat, ...)
+		p <- coordinates(p)
+		if (missing(d)) { d <- .avgDist(p, lonlat=lonlat, r=r) / 2	}
+		circles(p, d=d, lonlat=lonlat, ...)
 	}
 )
+
+
+setMethod("plot", signature(x='CirclesRange', y='missing'), 
+	function(x, ...) {
+		plot(x@polygons, ...)
+	}
+)
+
 
