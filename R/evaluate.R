@@ -43,10 +43,10 @@ evaluate <- function(p, a, model, x=NULL, tr) {
 	a <- na.omit(a)
 
 	if (missing(tr)) {
-		pr = range(c(0,p,1))
-		pr <- 1:50 * (pr[2]-pr[1])/50
-		ar <- as.vector(quantile(c(p, a), 0:50/50))
-		tr = sort(unique(round(c(pr,ar), 3)))
+		pr <- range(c(0,p,1))
+		pr <- 1:1000 * (pr[2]-pr[1])/1000
+		ar <- as.vector(quantile(c(p, a), 0:100/100))
+		tr <- sort(unique(round(c(pr,ar, 1:100/10000), 4)))
 	}
 	
 	np <- length(p)

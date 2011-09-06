@@ -8,17 +8,25 @@
 \usepackage[utf8]{inputenc}
 \usepackage{hyperref}
 
+\DeclareGraphicsExtensions{.png,.pdf,.jpg}
+
 % \VignetteIndexEntry{Species distribution modeling with R}
 % \VignetteDepends{dismo}
 % \VignetteKeyword{spatial}
-
-% options(width=65)
 
 \newcommand{\super}[1]{\ensuremath{^{\textrm{#1}}}}
 \newcommand{\sub}[1]{\ensuremath{_{\textrm{#1}}}}
 \newcommand{\R}{{\normalfont\textsf{R }}{}}
 
+\SweaveOpts{png=TRUE}
+\SweaveOpts{resolution=100}
 \SweaveOpts{keep.source=TRUE}
+
+<<foo,include=FALSE,echo=FALSE>>=
+options(width = 60)
+set.seed(0)
+@
+
 
 \begin{document}
 
@@ -66,7 +74,7 @@ We are using an example file that is installed with the '\verb@dismo@'  package,
 <<sdm1>>=
 # loads the dismo library
 library(dismo)
-file <- paste(system.file(package="dismo"), '/ex/bradypus.csv', sep="")
+file <- paste(system.file(package="dismo"), "/ex/bradypus.csv", sep="")
 # this is the file we will use:
 file
 
@@ -86,16 +94,10 @@ You can also read such data directly out of Excel or from a database (see e.g. t
 If you do not have any species distribution data you can get started by downloading data from the Global Biodiversity Inventory Facility (GBIF) (\url{http://www.gbif.org/}). In the dismo package there is a function '\texttt{gbif}' that you can use for this. The data used below were downloaded (and saved to a permanent data set for use in this vignette) using the \texttt{gbif} function like this: 
 
 
-\verb@acaule = gbif('solanum', 'acaule', geo=FALSE)@
+\verb@acaule = gbif("solanum", "acaule", geo=FALSE)@
 
 
-If you want to understand the order of the arguments given here to \texttt{gbif} or find out what other arguments you can use with this function, check out the help file (remember you can't access help files if the library is not loaded), by typing:
- 
-
-\texttt{?gbif}
-\texttt{# or}
-\texttt{help(gbif)}
-\newline
+If you want to understand the order of the arguments given here to \texttt{gbif} or find out what other arguments you can use with this function, check out the help file (remember you can't access help files if the library is not loaded), by typing: \texttt{?gbif} or \texttt{help(gbif)}
 
  
 Many species occurence records may not have geographic coordinates. Out of the 699 records that GBIF returned (March 2010), there were only 54 records with coordinates. 
@@ -121,7 +123,8 @@ Below is a simple way to make a map of the occurrence localities of \textit{Sola
 <<sdm3, fig=TRUE, echo=TRUE>>=
 library(maptools)
 data(wrld_simpl)
-plot(wrld_simpl, xlim=c(-80,10), ylim=c(-60,10), axes=TRUE, col='light yellow')
+plot(wrld_simpl, xlim=c(-80,10), ylim=c(-60,10), axes=TRUE, 
+        col='light yellow')
 
 # restore the box around the map
 box()
@@ -157,7 +160,7 @@ Interestingly, another data quality issue is revealed above: each record occurs 
 
 
 <<sdm5a>>=
-# which records are duplicates (only considering the first 10 columns)?
+# which records are duplicates (only for the first 10 columns)?
 dups <- duplicated(lonzero[, 1:10])
 # remove duplicates
 lonzero  <-  lonzero[dups, ]
@@ -186,8 +189,8 @@ library(sp)
 # make a SpatialPointsDataFrame
 coordinates(acgeo) <- ~lon+lat
 class(acgeo)
-# use the coordinates to do a spatial query of the polygons in wrld_simpl
-# wich is a SpatialPolygonsDataFrame object
+# use the coordinates to do a spatial query of the polygons
+# in wrld_simpl wich is a SpatialPolygonsDataFrame object
 class(wrld_simpl)
 ov <- overlay(acgeo, wrld_simpl)
 # ov has, for each point, the record number of wrld_simpl
@@ -196,7 +199,8 @@ ov <- overlay(acgeo, wrld_simpl)
 names(wrld_simpl@data)
 head(wrld_simpl@data)
 
-# We clearly need the variable 'NAME' in the data.frame (stored in the 'data' slot) of wrld_simpl
+# We clearly need the variable 'NAME' in the data.frame 
+# (stored in the 'data' slot) of wrld_simpl
 
 cntr <- as.character(wrld_simpl@data$NAME[ov])
 
@@ -244,7 +248,7 @@ Here is an example for one of the records with longitude = 0. We put the biogeom
 args(biogeomancer)
 # the first locality:
 lonzero$locality[1]
-b <-  try(  biogeomancer('Peru', locality=lonzero$locality[1], progress='')  )
+b <- try( biogeomancer('Peru', locality=lonzero$locality[1], progress=''))
 b
 @
 
@@ -265,8 +269,8 @@ r <- expand(r, extent(r)+1)
 # get the cell number for each point
 cell <- cellFromXY(r, acgeo)
 dup <- duplicated(cell)
-# select the records that are not duplicated
-# a random selection within duplicates might be better (but more elaborate)
+# select the records that are not duplicated. A random selection
+# within duplicates might be better (but more elaborate).
 acsel <- acgeo[!dup, ]
 
 # display the results
@@ -293,11 +297,11 @@ Note that if the mask has the longitude/latitute coordinate reference system, fu
 
 <<sdm21a, fig=TRUE, width=9, height=6>>=
 files <- list.files(path=paste(system.file(package="dismo"), '/ex', 
-					sep=''),  pattern='grd',  full.names=TRUE )
+                       sep=''),  pattern='grd',  full.names=TRUE )
 mask <- raster(files[[1]])
 # select 500 random points
-# set seed to assure that the examples will always have the same random sample.
-set.seed(0) 
+# set seed to assure that the examples will always
+# have the same random sample.
 bg <- randomPoints(mask, 500 )
 # set up the plotting area for two maps
 par(mfrow=c(1,2))
@@ -377,10 +381,10 @@ Here we make a list of files that are installed with the dismo package and then 
 
 <<sdm22, fig=TRUE>>=
 files <- list.files(path=paste(system.file(package="dismo"), 
-			'/ex', sep=''), pattern='grd', full.names=TRUE )
-# The above finds all the files with extension "grd" in the examples
-# ("ex") directory of the dismo package. You do not need such a complex
-# statement to get your own files.
+              '/ex', sep=''), pattern='grd', full.names=TRUE )
+# The above finds all the files with extension "grd" in the
+# examples ("ex") directory of the dismo package. You do not
+# need such a complex statement to get your own files.
 files
 predictors <- stack(files)
 predictors
@@ -424,7 +428,8 @@ There are alternative approaches possible here. For example, one could extract m
 
 To visually investigate colinearity in the environmental data (at the occurrence points) you can use a pairs plot. See Dormann \textit{et al}. (2011) for a discussion of methods to remove colinearity. 
 <<sdm24b, fig=TRUE>>=
-# pairs plot of the values of the climate data at the bradypus occurrence sites.
+# pairs plot of the values of the climate data 
+# at the bradypus occurrence sites.
 pairs(sdmdata[,2:5], cex=0.1, fig=TRUE)
 @
 
@@ -521,7 +526,8 @@ a <- rnorm(50, mean=0.4, sd=0.4)
 par(mfrow=c(1, 2))
 plot(sort(p), col='red', pch=21)
 points(sort(a), col='blue', pch=24)
-legend(1, 0.95 * max(a,p), c('presence', 'absence'), pch=c(21,24), col=c('red', 'blue'))
+legend(1, 0.95 * max(a,p), c('presence', 'absence'),
+          pch=c(21,24), col=c('red', 'blue'))
 comb = c(p,a)
 group = c(rep('presence', length(p)), rep('absence', length(a)))
 boxplot(comb~group, col=c('blue', 'red'))
@@ -812,13 +818,13 @@ Here we fit two basic glm models. All variables are used, but without interactio
 <<sdm66>>=
 # logistic regression:
 gm1 <- glm(pa ~ bio1 + bio5 + bio6 + bio7 + bio8 + bio12 + bio16 + bio17, 
-			family = binomial(link = "logit"), data=envtrain)
+            family = binomial(link = "logit"), data=envtrain)
 
 summary(gm1)
 coef(gm1)
 
-gm2 <- glm(pa ~ bio1 + bio5 + bio6 + bio7 + bio8 + bio12 + bio16 + bio17,
-			family = gaussian(link = "identity"), data=envtrain)
+gm2 <- glm(pa ~ bio1+bio5 + bio6 + bio7 + bio8 + bio12 + bio16 + bio17,
+            family = gaussian(link = "identity"), data=envtrain)
 			
 evaluate(testpres, testbackg, gm1)
 e2 <- evaluate(testpres, testbackg, gm2)
@@ -863,7 +869,7 @@ if (file.exists(jar)) {
 	xm <- maxent(predictors, pres_train, factors='biome')
 	plot(xm)
 } else {
-    cat('cannot run this example because maxent is not available on this system')
+    cat('cannot run this example because maxent is not available')
 	plot(1)
 }
 @
@@ -876,7 +882,7 @@ jar <- paste(system.file(package="dismo"), "/java/maxent.jar", sep='')
 if (file.exists(jar)) {
 	response(xm)
 } else {
-    cat('cannot run this example because maxent is not available on this system')
+    cat('cannot run this example because maxent is not available')
 	plot(1)
 }
 @
@@ -944,7 +950,7 @@ and the 'svm' function in package 'e1071'. 'ksvm' includes many different SVM fo
 
 <<sdm81, fig=TRUE, width=9, height=6>>=
 library(kernlab)
-svm <- ksvm(pa ~ bio1 + bio5 + bio6 + bio7 + bio8 + bio12 + bio16 + bio17, data=envtrain)
+svm <- ksvm(pa ~ bio1+bio5+bio6+bio7+bio8+bio12+bio16+bio17, data=envtrain)
 e <- evaluate(testpres, testbackg, svm)
 e
 ps <- predict(predictors, svm, ext=ext)
@@ -1058,7 +1064,9 @@ points(backg_train, pch='-', cex=0.25)
 
 
 <<sdm108, fig=TRUE, width=9, height=6>>=
-vorm <- voronoiHull(p=pres_train, a=data.frame(back_train[sample(nrow(back_train), 100), ]))
+# take a smallish sample of the background training data
+va <- data.frame(back_train[sample(nrow(back_train), 100), ])
+vorm <- voronoiHull(p=pres_train, a=va)
 
 e <- evaluate(vorm, p=pres_test, a=backg_test, tr=quantile(ds, c(1:50/50)))
 e

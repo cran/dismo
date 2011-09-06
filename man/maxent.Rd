@@ -7,6 +7,7 @@
 \alias{maxent,SpatialGridDataFrame,ANY-method}
 \alias{maxent,data.frame,vector-method}
 \alias{MaxEnt-class}
+\alias{MaxEntReplicates-class}
 
 \title{Maxent}
 
@@ -55,7 +56,7 @@ This is a known problem with certain Java applications on Macs. The only work ar
 
 
 \value{
-An object of class 'MaxEnt' (inherits from \code{\link{DistModel-class}})
+An object of class 'MaxEnt' (inherits from \code{\link{DistModel-class}}). Or a 'MaxEntReplicates' object if you use 'replicates=' as part of the \code{args} argument.
 }
 
 \seealso{

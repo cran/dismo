@@ -11,6 +11,17 @@
 % \VignetteDepends{dismo}
 % \VignetteKeyword{spatial}
 
+\DeclareGraphicsExtensions{.png,.pdf,.jpg}
+\newcommand{\R}{{\normalfont\textsf{R }}{}}
+
+\SweaveOpts{keep.source=TRUE}
+\SweaveOpts{png=TRUE}
+\SweaveOpts{resolution=100}
+
+<<foo,include=FALSE,echo=FALSE>>=
+options(width = 65)
+set.seed(0)
+@
 
 \begin{document}
 
@@ -23,9 +34,9 @@
 
 \section{Introduction}
 
-This is a brief tutorial to accompany a set of functions that we have written to facilitate fitting BRT (boosted regression tree) models in R.  This tutorial is a modified version of the tutorial accompaniying Elith, Leathwick and Hastie's article in Journal of Animal Ecology. It has been adjusted to match the implementation of these functions in the 'dismo' package. The gbm* functions in the dismo package extend functions in the 'gbm' package by Greg Ridgeway. The goal of our functions is to make the functions in the 'gbm' package easier to apply to ecological data, and to enhance interpretation. 
+This is a brief tutorial to accompany a set of functions that we have written to facilitate fitting BRT (boosted regression tree) models in \R.  This tutorial is a modified version of the tutorial accompaniying Elith, Leathwick and Hastie's article in Journal of Animal Ecology. It has been adjusted to match the implementation of these functions in the 'dismo' package. The gbm* functions in the dismo package extend functions in the 'gbm' package by Greg Ridgeway. The goal of our functions is to make the functions in the 'gbm' package easier to apply to ecological data, and to enhance interpretation. 
 
-The tutorial is aimed at helping you to learn the mechanics of how to use the functions and to develop a BRT model in R. It does not explain what a BRT model is - for that, see the references at the end of the tutorial, and the documentation of the gbm package. For an example application with similar data as in this tutorial, see Elith et al., 2008. 
+The tutorial is aimed at helping you to learn the mechanics of how to use the functions and to develop a BRT model in \R. It does not explain what a BRT model is - for that, see the references at the end of the tutorial, and the documentation of the gbm package. For an example application with similar data as in this tutorial, see Elith et al., 2008. 
 
 The gbm functions in 'dismo' are as follows:
 
@@ -51,7 +62,6 @@ Two sets of presence/absence data for Anguilla australis (Angaus) are available.
 library(dismo)
 data(Anguilla_train)
 head(Anguilla_train)
-Anguilla_train = Anguilla_train[1:250, ]
 @
 
 
@@ -64,9 +74,9 @@ To fit a gbm model, you need to decide what settings to use the article associat
 To below example shows how to use our function that steps forward and identifies the optimal number of trees (nt).
 
 <<fig=TRUE , echo=TRUE>>=
-angaus.tc5.lr01 <- gbm.step(data=Anguilla_train, gbm.x = 3:13, gbm.y = 2, 
-                  family = "bernoulli", tree.complexity = 5, 
-				  learning.rate = 0.01, bag.fraction = 0.5)
+angaus.tc5.lr01 <- gbm.step(data=Anguilla_train, gbm.x = 3:13, gbm.y = 2,
+                        family = "bernoulli", tree.complexity = 5,
+                        learning.rate = 0.01, bag.fraction = 0.5)
 @
 
 Above we used the function gbm.step, this function is an alternative to the cross-validation provided in the gbm package.  
@@ -97,7 +107,8 @@ This model was built with the default 10-fold cross-validation. The solid black 
 The returned object is a list (see R documentation if you don't know what that is), and the names of the components can be seen by typing:
 
 To pull out one component of the list, use a number (angaus.tc5.lr01[[29]]) or name (angaus.tc5.lr01\$cv.statistics) - but be careful, some are as big as the dataset, e.g. there will be 1000 fitted values. Find this by typing 
-length(angaus.tc5.lr01\$fitted)
+
+\texttt{length(angaus.tc5.lr01\$fitted)}
 
 The way we organise our functions is to return exactly what Ridgeway's function in the gbm package returned, plus extra things that are relevant to our code. You will see by looking at the final parts of the gbm.step code that we have added components 25 onwards, that is, from gbm.call on. See the gbm documentation for what his parts comprise. Ours are:
 
@@ -141,8 +152,8 @@ The above was a first guess at settings, using rules of thumb discussed in Elith
  
 <<fig=TRUE, echo=TRUE>>=
 angaus.tc5.lr005 <- gbm.step(data=Anguilla_train, gbm.x = 3:13, gbm.y = 2, 
-								family = "bernoulli", tree.complexity = 5,
-								learning.rate = 0.005, bag.fraction = 0.5)
+                      family = "bernoulli", tree.complexity = 5,
+                      learning.rate = 0.005, bag.fraction = 0.5)
 @
 
 To more broadly explore whether other settings perform better, and assuming that these are the only data available, you could either split the data into a training and testing set or use the cross-validation results. You could systematically alter tc,  lr and the bag fraction and compare the results. See the later section on prediction to find out how to predict to independent data and calculate relevant statistics. 
@@ -167,8 +178,9 @@ You can use the number indicated by the red vertical line, or look at the result
 Now make a model with 1 predictor dropped, by indicating to the gbm.step call the relevant number of predictor(s) from the predictor list in the angaus.simp object - see highlights, below, in which we indicate we want to drop 1 variable by calling the second vector of predictor columns in the pred list, using a [[1]]:
 
 <<fig=TRUE, echo=TRUE>>=
-angaus.tc5.lr005.simp <- gbm.step(Anguilla_train, gbm.x=angaus.simp$pred.list[[1]], 
-                         gbm.y=2, tree.complexity=5, learning.rate=0.005)
+angaus.tc5.lr005.simp <- gbm.step(Anguilla_train, 
+                   gbm.x=angaus.simp$pred.list[[1]], gbm.y=2,
+                   tree.complexity=5, learning.rate=0.005)
 @
 
 This has now made a new model (angaus.tc5.lr005.simp) with the same list components as described earlier. We could continue to use it, but given that we don't particularly want a more simple model (our view is that, in a dataset of this size, included variables that contribute little are acceptable), we won't use it further.
@@ -228,13 +240,14 @@ Note that the calc.deviance function has different formulae for different distri
 
 <<dismo-10>>=
 data(Anguilla_test)
-preds <- predict.gbm(angaus.tc5.lr005, Anguilla_test, 
-          n.trees=angaus.tc5.lr005$gbm.call$best.trees, type="response")
+preds <- predict.gbm(angaus.tc5.lr005, Anguilla_test,
+         n.trees=angaus.tc5.lr005$gbm.call$best.trees, type="response")
+
 calc.deviance(obs=Anguilla_test$Angaus_obs, pred=preds, calc.mean=TRUE)
-d = cbind(Anguilla_test$Angaus_obs, preds)
-pres = d[d[,1]==1, 2]
-abs  = d[d[,1]==0, 2]
-e = evaluate(p=pres, a=abs)
+d <- cbind(Anguilla_test$Angaus_obs, preds)
+pres <- d[d[,1]==1, 2]
+abs <- d[d[,1]==0, 2]
+e <- evaluate(p=pres, a=abs)
 e
 @
 
@@ -242,10 +255,10 @@ e
 One useful feature of prediction in gbm is you can predict to a varying number of trees. See the highlighted code below to how to predict to a vector of trees. The full set of code here shows how to make one of the graphed lines from Fig. 2 in our paper, using a model of 5000 trees developed with gbm.fixed
 
 <<dismo-11>>=
-angaus.5000 <- gbm.fixed(data=Anguilla_train, gbm.x=3:13, gbm.y=2, 
+angaus.5000 <- gbm.fixed(data=Anguilla_train, gbm.x=3:13, gbm.y=2,
                learning.rate=0.005, tree.complexity=5, n.trees=5000)
 tree.list <- seq(100, 5000, by=100)
-pred <- predict.gbm(angaus.5000, Anguilla_test, n.trees=tree.list,  "response")
+pred <- predict.gbm(angaus.5000, Anguilla_test, n.trees=tree.list, "response")
 @
 
 Note that the code above makes a matrix, with each column being the predictions from the model angaus.5000 to the number of trees specified by that element of tree.list - for example, the predictions in column 5 are for tree.list[5] = 500 trees. Now to calculate the deviance of all these results, and plot them:
@@ -253,18 +266,21 @@ Note that the code above makes a matrix, with each column being the predictions 
 <<dismo-12>>=
 angaus.pred.deviance <- rep(0,50)
 for (i in 1:50) {
-  angaus.pred.deviance[i] <- calc.deviance(Anguilla_test$Angaus_obs, pred[,i], calc.mean=TRUE)
+   angaus.pred.deviance[i] <- calc.deviance(Anguilla_test$Angaus_obs,
+                               pred[,i], calc.mean=TRUE)
 }
 @
 
 \begin{center}
 <<fig =TRUE , echo=TRUE>>=
-plot(tree.list, angaus.pred.deviance, ylim=c(0.7,1), xlim=c(-100,5000), type='l', xlab="number of trees", ylab="predictive deviance", cex.lab=1.5) 
+plot(tree.list, angaus.pred.deviance, ylim=c(0.7,1), xlim=c(-100,5000),
+     type='l', xlab="number of trees", ylab="predictive deviance",
+     cex.lab=1.5) 
 @
 \end{center}
 
 
-\section{spatial prediction}
+\section{Spatial prediction}
 
 Here we show how to predict to a whole map (technically to a RasterLayer object) using the predict version in the package 'raster'. The predictor variables are available as a RasterBrick (multi-layered raster) in Anguilla\_grids. 
 
@@ -279,7 +295,7 @@ There is (obviously) no grid for fishing method. We create a data.frame with a c
 Method=factor('electric', levels = levels(Anguilla_train$Method))
 add=data.frame(Method)
 p = predict(Anguilla_grids, angaus.tc5.lr005, const=add, 
-            n.trees=angaus.tc5.lr005$gbm.call$best.trees, type="response")
+       n.trees=angaus.tc5.lr005$gbm.call$best.trees, type="response")
 p = mask(p, raster(Anguilla_grids, 1))
 plot(p, main='Angaus - BRT prediction')
 @

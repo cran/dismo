@@ -8,15 +8,48 @@ setClass('MaxEnt',
 	representation (
 		lambdas  = 'vector',
 		results = 'matrix',
-		path = 'character'
+		path = 'character',
+		html = 'character'
 	),	
 	prototype (	
 		lambdas = as.vector(NA),
 		results = as.matrix(NA),
-		path = ''
+		path = '',
+		html = ''
 	),
 )
 
+
+
+setClass('MaxEntReplicates',
+	representation (
+		models  = 'list',
+		results = 'matrix',
+		html = 'character'
+	),	
+	prototype (	
+		models = list(),
+		results = as.matrix(NA),
+		html = ''
+	),
+)
+
+
+setMethod ('show' , 'MaxEntReplicates', 
+	function(object) {
+		cat('class     :' , class(object), '\n')
+		cat('replicates:', length(object@models), '\n')
+		if (file.exists(object@html)) {
+			browseURL( paste("file:///", object@html, sep='') )
+		} else {
+			cat('output html file no longer exists\n')
+		}
+	}
+)	
+
+		
+		
+		
 
 setMethod ('show' , 'MaxEnt', 
 	function(object) {
@@ -45,8 +78,9 @@ setMethod ('show' , 'MaxEnt',
 #		cat('\nmodel fit\n')
 #		print(object@results)
 #		cat('\n')
-		if (file.exists(paste(object@path, "/maxent.html", sep=''))) {
-			browseURL( paste("file:///", object@path, "/maxent.html", sep='') )
+
+		if (file.exists(object@html)) {
+			browseURL( paste("file:///", object@html, sep='') )
 		} else {
 			cat('output html file no longer exists\n')
 		}
@@ -146,9 +180,9 @@ setMethod('maxent', signature(x='Raster', p='ANY'),
 		} 
 		
 		if (! is.null(a) ) {
-			a = .getMatrix(a)
+			a <- .getMatrix(a)
 			av <- data.frame(extract(x, a))
-			avr = nrow(av)
+			avr <- nrow(av)
 			av <- na.omit(av)
 			nas <- length(as.vector(attr(av, "na.action")))
 			if (nas > 0) {
@@ -186,7 +220,7 @@ setMethod('maxent', signature(x='Raster', p='ANY'),
 		
 		# Signature = data.frame, missing
 
-		x = rbind(pv, av)
+		x <- rbind(pv, av)
 		
 		if (!is.null(factors)) {
 			for (f in factors) {
@@ -194,16 +228,28 @@ setMethod('maxent', signature(x='Raster', p='ANY'),
 			}
 		}
 		
-		p = c(rep(1, nrow(pv)), rep(0, nrow(av)))
+		p <- c(rep(1, nrow(pv)), rep(0, nrow(av)))
 		maxent(x, p, ...)	
 	}
 )
 
 
+.getreps <- function(args) {
+	if (is.null(args)) { return(1) }
+	args <- trim(args)
+	i <- which(substr(args,1,10) == 'replicates')
+	if (! isTRUE(i > 0)) {
+		return(1)
+	} else {
+		i <- args[i]
+		i <- strsplit(i, '=')[[1]][[2]]
+		return(as.integer(i))
+	}
+}
 
 
 setMethod('maxent', signature(x='data.frame', p='vector'), 
-	function(x, p, args=NULL, path, ...) {
+	function(x, p, args=NULL, path, silent=FALSE, ...) {
 	
 		jar <- paste(system.file(package="dismo"), "/java/maxent.jar", sep='')
 		if (!file.exists(jar)) {
@@ -215,15 +261,15 @@ setMethod('maxent', signature(x='data.frame', p='vector'),
 
 		x <- cbind(p, x)
 		x <- na.omit(x)
-		x[is.na(x)] <- -9999  # maxent flag for NA, unless changed with args(nodata= ), so we should check for that.
+		x[is.na(x)] <- -9999  # maxent flag for NA, unless changed with args(nodata= ), so we should check for that rather than use this fixed value.
 
 		p <- x[,1]
 		x <- x[, -1 ,drop=FALSE]
 
-		factors = NULL
+		factors <- NULL
 		for (i in 1:ncol(x)) {
 			if (class(x[,i]) == 'factor') {
-				factors = c(factors, colnames(x)[i])
+				factors <- c(factors, colnames(x)[i])
 			}
 		}
 		
@@ -235,7 +281,7 @@ setMethod('maxent', signature(x='data.frame', p='vector'),
 			}
 			dirout <- path			
 		} else {
-			dirout <- .meTmpDir()
+			dirout <- dismo:::.meTmpDir()
 			f <- paste(round(runif(10)*10), collapse="")
 			dirout <- paste(dirout, '/', f, sep='')
 			dir.create(dirout, recursive=TRUE, showWarnings=FALSE)
@@ -260,9 +306,12 @@ setMethod('maxent', signature(x='data.frame', p='vector'),
 		write.table(pv, file=pfn, sep=',', row.names=FALSE)
 		write.table(av, file=afn, sep=',', row.names=FALSE)
 
-		mxe <- .jnew("mebridge")	
-		args <- c("-z", args)
+		mxe <- .jnew("mebridge")
 		
+		
+		replicates <- .getreps(args) 
+		args <- c("-z", args)
+
 		if (is.null(factors)) {
 			str <- .jcall(mxe, "S", "fit", c("autorun", "-e", afn, "-o", dirout, "-s", pfn, args)) 
 		} else {
@@ -271,23 +320,69 @@ setMethod('maxent', signature(x='data.frame', p='vector'),
 		if (!is.null(str)) {
 			stop("args not understood:\n", str)
 		}
+
+	
+		if (replicates > 1) {
 		
-		me@lambdas <- unlist( readLines( paste(dirout, '/species.lambdas', sep='') ) )
-		d = t(read.csv(paste(dirout, '/maxentResults.csv', sep='') ))
-		d = d[-1, ,drop=FALSE]
-		dd = matrix(as.numeric(d))
-		rownames(dd) = rownames(d)
-		me@results <- dd
-		
-		f <- paste(me@path, "/species.html", sep='')
-		html <- readLines(f)
-		html[1] <- "<title>Maxent model</title>"
-		html[2] <- "<CENTER><H1>Maxent model</H1></CENTER>"
-		html[3] <- sub("model for species", "model result", html[3])
-		newtext <- paste("using 'dismo' version ", packageDescription('dismo')$Version, "& Maxent version")
-		html[3] <- sub("using Maxent version", newtext, html[3])
-		f <- paste(me@path, "/maxent.html", sep='')
-		writeLines(html, f)	
+			mer <- new('MaxEntReplicates')
+			d <- t(read.csv(paste(dirout, '/maxentResults.csv', sep='') ))
+			d1 <- d[1,]
+			d <- d[-1, ,drop=FALSE]
+			dd <- matrix(as.numeric(d), ncol=ncol(d))
+			rownames(dd) <- rownames(d)
+			colnames(dd) <- d1
+			mer@results <- dd
+			f <- paste(dirout, "/species.html", sep='')
+			html <- readLines(f)
+			html[1] <- "<title>Maxent model</title>"
+			html[2] <- "<CENTER><H1>Maxent model</H1></CENTER>"
+			html[3] <- sub("model for species", "model result", html[3])
+			newtext <- paste("using 'dismo' version ", packageDescription('dismo')$Version, "& Maxent version")
+			html[3] <- sub("using Maxent version", newtext, html[3])
+			f <- paste(dirout, "/maxent.html", sep='')
+			writeLines(html, f)	
+			mer@html <- f
+			
+			for (i in 0:(replicates-1)) {	
+				mex <- me
+				mex@lambdas <- unlist( readLines( paste(dirout, '/species_', i, '.lambdas', sep='') ) )
+					
+				f <- paste(mex@path, "/species_", i, ".html", sep='')
+				html <- readLines(f)
+				html[1] <- "<title>Maxent model</title>"
+				html[2] <- "<CENTER><H1>Maxent model</H1></CENTER>"
+				html[3] <- sub("model for species", "model result", html[3])
+				newtext <- paste("using 'dismo' version ", packageDescription('dismo')$Version, "& Maxent version")
+				html[3] <- sub("using Maxent version", newtext, html[3])
+				f <- paste(mex@path, "/maxent_", i, ".html", sep='')
+				writeLines(html, f)
+				mex@html <- f
+				mer@models[[i+1]] <- mex
+				mer@models[[i+1]]@results <- dd[, 1+1, drop=FALSE]				
+			}
+			
+			return(mer)
+			
+		} else {
+			
+			me@lambdas <- unlist( readLines( paste(dirout, '/species.lambdas', sep='') ) )
+			d <- t(read.csv(paste(dirout, '/maxentResults.csv', sep='') ))
+			d <- d[-1, ,drop=FALSE]
+			dd <- matrix(as.numeric(d))
+			rownames(dd) <- rownames(d)
+			me@results <- dd
+			
+			f <- paste(me@path, "/species.html", sep='')
+			html <- readLines(f)
+			html[1] <- "<title>Maxent model</title>"
+			html[2] <- "<CENTER><H1>Maxent model</H1></CENTER>"
+			html[3] <- sub("model for species", "model result", html[3])
+			newtext <- paste("using 'dismo' version ", packageDescription('dismo')$Version, "& Maxent version")
+			html[3] <- sub("using Maxent version", newtext, html[3])
+			f <- paste(me@path, "/maxent.html", sep='')
+			writeLines(html, f)	
+			me@html <- f
+		}
 		
 		me
 	}

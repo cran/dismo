@@ -25,12 +25,9 @@ if (!isGeneric("geoDist")) {
 
 
 setMethod('geoDist', signature(p='data.frame'), 
-	function(p, a, lonlat, ...) {
+	function(p, lonlat, ...) {
 		gd <- new('GeographicDistance')
-		gd@presence <- p
-		if (! missing(a)) {
-			gd@absence <- a
-		}
+		gd@presence <- na.omit(p)
 		gd@lonlat <- lonlat
 		return(gd)
 	}
@@ -38,27 +35,20 @@ setMethod('geoDist', signature(p='data.frame'),
 
 
 setMethod('geoDist', signature(p='matrix'), 
-	function(p, a, lonlat, ...) {
+	function(p, lonlat, ...) {
+		stopifnot(ncol(p) == 2)
 		p <- as.data.frame(p)
-		if (missing(a)) { 
-			geoDist(p, lonlat=lonlat, ...) 
-		} else {
-			geoDist(p, a=as.matrix(a), lonlat=lonlat, ...)
-		}
+		geoDist(p, lonlat=lonlat, ...) 
 	}
 )
 
 setMethod('geoDist', signature(p='SpatialPoints'), 
-	function(p, a, lonlat, ...) {
+	function(p, lonlat, ...) {
 		if (missing(lonlat)) {
 			lonlat <- isLonLat(p)
 		}
 		p <- coordinates(p)
-		if (missing(a)) { 
-			geoDist(p, lonlat=lonlat, ...) 
-		} else {
-			geoDist(p, a=coordinates(a), lonlat=lonlat, ...)
-		}
+		geoDist(p, lonlat=lonlat, ...) 
 	}
 )
 

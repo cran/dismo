@@ -3,7 +3,12 @@
 # Version 1
 # Licence GPL v3
 
-prepareData <- function(x, p, b, factors) {
+prepareData <- function(x, p, b, factors, xy=FALSE) {
+	if (xy) {
+		coords <- data.frame(rbind(as.matrix(p), as.matrix(b)))
+		colnames(coords) <- c('x', 'y')
+	} 
+
 	p <- extract(x, p)
 	b <- extract(x, b)
 	pb <- data.frame(  cbind(pb=c(rep(1, nrow(p)), rep(0, nrow(b))), rbind(p, b)) )
@@ -11,6 +16,10 @@ prepareData <- function(x, p, b, factors) {
 		for (f in factors) {
 			pb[,f] = factor(pb[,f])
 		}
+	}
+	
+	if (xy) {
+		pb <- cbind(coords, pb)
 	}
 	return(pb)
 }

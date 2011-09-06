@@ -1,3 +1,6 @@
+--- 6-September-2011, version 0.7-8
+maxent argument 'replicates= '  is now supported
+
 --- 26-August-2011, version 0.7-4
 New functions ssb (spatial sorting bias) and pwdSample (pair-wise distance sampling)
 Several minor bug fixes. 
