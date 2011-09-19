@@ -164,10 +164,15 @@ setMethod('maxent', signature(x='SpatialGridDataFrame', p='ANY'),
 
 
 setMethod('maxent', signature(x='Raster', p='ANY'), 
-	function(x, p, a=NULL, factors=NULL, ...) {
-#extract values for points from stack
+	function(x, p, a=NULL, factors=NULL, removeDuplicates=TRUE, ...) {
+
 		p <- .getMatrix(p)
-		pv <- data.frame(extract(x, p))
+		if (removeDuplicates) {
+			cells <- unique(cellFromXY(x, p))
+			pv <- data.frame(extract(x, cells))
+		} else {
+			pv <- data.frame(extract(x, p))
+		}
 
 		pv1 <- na.omit(pv)
 		nas <- length(as.vector(attr(pv1, "na.action")))

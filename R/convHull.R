@@ -25,10 +25,13 @@ if (!isGeneric("convHull")) {
 
 
 setMethod('convHull', signature(p='data.frame'), 
-	function(p, n=1, ...) {
+	function(p, n=1, crs=NULL, ...) {
 		ch <- new('ConvexHull')
 		ch@presence <- p
 		ch@polygons <- .generateHulls(p, n)
+		if (!is.null(crs)) {
+			projection(ch@polygons) <- crs
+		}
 		return(ch)
 	}
 )
@@ -42,7 +45,7 @@ setMethod('convHull', signature(p='matrix'),
 
 setMethod('convHull', signature(p='SpatialPoints'), 
 	function(p, ...) {
-		convHull(coordinates(p), ...)
+		convHull(coordinates(p), crs=p@proj4string, ...)
 	}
 )
 

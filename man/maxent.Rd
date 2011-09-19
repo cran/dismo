@@ -35,6 +35,7 @@ Additional arguments:
 \tab \code{a} \tab Background points. Only used if \code{p} is not missing, and not a vector.  \cr
 \tab \code{factors} \tab Which (if any) variables should be considered as categorical? Either by (layer)name or by index. Only used when argument \code{x} is a Raster* object because it is not needed in other cases as you can set the appropriate class to the variables in the data.frame \cr 
 \tab \code{args} \tab Additional argument that can be passed to MaxEnt. See the MaxEnt help for more information. The R maxent function only uses the arguments relevant to model fitting. There is no point in using \code{args='outputformat=raw'} when *fitting* the model; but you can use arguments relevant for *prediction* when using the \code{predict} function. Some other arguments do not apply at all to the R implementation. An example is \code{outputfiletype}, because the \code{predict} function has its own \code{filename} argument for that\cr
+\tab \code{removeDuplicates} \tab Boolean. If \code{TRUE} duplicate presence points (that fall in the same grid cell) are removed. \cr
 \tab \code{path} \tab Optional. Where do you want the MaxEnt output files to be stored. This allows you to permanently keep these files. If not supplied the MaxEnt files will be stored in a temporary file. These are the files that are shown in a browser when typing the model name or when you use "show(model)" \cr
 }
 }

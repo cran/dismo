@@ -17,7 +17,7 @@ The purpose of using this function should be to display the map in a browser. Yo
 }
 
 \usage{
-gmap(x, exp=1, type='terrain', filename='', ...) 
+gmap(x, exp=1, type='terrain', filename='', style, ...) 
 Mercator(p, inverse = FALSE) 
 }
 
@@ -26,6 +26,8 @@ Mercator(p, inverse = FALSE)
   \item{exp}{An expansion factor to enlarge (by multiplication) the extent specified by \code{x} }
   \item{type}{Character. Choose from 'roadmap', 'satellite', 'hybrid', 'terrain' }
   \item{filename}{Character. Filename (optional). You can open the resulting file in a GIS program }
+  \item{style}{Character. Additional style arguments. See \url{http://code.google.com/apis/maps/documentation/staticmaps/#StyledMapFeatures}.
+  Note that certain style features do not work in combination with (the default) \code{type='terrain'} }
   \item{...}{Graphical parameters }
   
   \item{p}{Points. A two-column matrix, or a SpatialPoints object}
@@ -91,6 +93,11 @@ coordinates(pt) <- ~X1 + X2
 proj4string(pt) <-"+proj=longlat +datum=WGS84 +ellps=WGS84"
 ptm2 <- spTransform(pt, CRS("+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs"))
 points(ptm, col='red', pch='x', cex=3)
+
+# styles:
+\dontrun{
+d = gmap("Brooklyn", type='roadmap',  style="feature:road.local|element:geometry|hue:0x00ff00|saturation:100&style=feature:landscape|element:geometry|lightness:-100")
+}
 }
 }
 }

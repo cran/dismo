@@ -12,6 +12,23 @@ if (!isGeneric("predict")) {
 
 
 
+setMethod('predict', signature(object='MaxEntReplicates'), 
+	function(object, x, ext=NULL, filename='', progress='text', args="", ...) {
+		extension(filename) <- ''
+		lst <- list()
+		for (i in 1:length(object@models)) {
+			if (filename != '') {
+				fname <- paste(fname, '_', i, sep='')
+			} else {
+				fname <- ''
+			}
+			lst[[i]] <- predict(object@models[[i]], x, ext=ext, filename=fname, progress=progress, args=args, ...)
+		}
+		return(stack(lst))
+	}
+)
+
+
 setMethod('predict', signature(object='MaxEnt'), 
 	function(object, x, ext=NULL, filename='', progress='text', args="", ...) {
 

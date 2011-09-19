@@ -3,14 +3,14 @@
 \alias{evaluate}
 
 
-\title{ Model testing }
+\title{ Model evaluation }
 
 \description{ 
-Model testing for models predicting presence/absence. Given a vector of presence and a vector of absence values (or a model and presence and absence points and predictors), a number of confusion matrices is computed (for varying thresholds), and model evaluation statistics are computed for each confusion matrix / threshold. See the description of class \code{\link{ModelEvaluation-class}} for more info.
+Cross-validation of models with presence/absence data. Given a vector of presence and a vector of absence values (or a model and presence and absence points and predictors), confusion matrices are computed (for varying thresholds), and model evaluation statistics are computed for each confusion matrix / threshold. See the description of class \code{\link{ModelEvaluation-class}} for more info.
 }
 
 \usage{
-evaluate(p, a, model, x, tr)
+evaluate(p, a, model, x, tr, ...)
 }
  
 \arguments{
@@ -31,6 +31,8 @@ evaluate(p, a, model, x, tr)
   \item{x}{Optional. Predictor variables (object of class Raster*). If present, \code{p} and \code{a} are interpreted as (spatial) points }
   
   \item{tr}{Optional. a vector of threshold values to use for computing the confusion matrices}
+  
+  \item{...}{Additional arguments for the predict function}  
 }
 
 \value{
@@ -39,6 +41,10 @@ An object of \code{\link{ModelEvaluation-class}}
 
 \author{
 Robert J. Hijmans
+}
+
+\references{
+Fielding, A.H. and J.F. Bell, 1997. A review of methods for the assessment of prediction errors in conservation presence/absence models. Environmental Conservation 24:38-49
 }
 
 \examples{

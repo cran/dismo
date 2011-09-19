@@ -8,11 +8,14 @@
 \alias{predict,Mahalanobis-method}
 \alias{predict,MaxEnt-method}
 \alias{predict,ConvexHull-method}
+\alias{predict,geoDist-method}
 
 \title{Distribution model predictions}
 
 \description{
-Make a RasterLayer with a prediction based on a model object of class Bioclim, Domain, MaxEnt, ConvexHull, or Mahalanobis. Provide a Raster* object with the independent variables. The layerNames in the Raster* object should include those expected by the model. 
+Make a RasterLayer with a prediction based on a model object of class the inherits from 'DistModel', including: Bioclim, Domain, MaxEnt, Mahalanobis, and GeographicDistance. Predictions with model objects that do not inherit from DistModel can be made using the similar \code{\link[raster]{predict}} function in the 'raster' package. 
+
+Provide a Raster* object with the independent variables. The layerNames in the Raster* object should include those expected by the model. 
 }
 
 \section{Methods}{
@@ -39,17 +42,20 @@ The following additional arguments can be passed, to replace default values, whe
 For \link[dismo]{maxent} models, there is an additional argument \code{'args'} used to pass arguments (options) to the maxent software. See the help page for \code{ \link[dismo]{maxent}} for more information.
  
 For \link[dismo]{bioclim} models, there is an additional argument \code{'tails'} which you can use to ignore the left or right tail of the percentile distribution for a variable. If supplied, tails should be a character vector with a length equal to the number of variables used in the model. Valid values are "both" (the default), "low" and "high". For example, if you have a variable x with an observed distribution between 10 and 20 and you are predicting the bioclim value for a value 25, the default result would be zero (outside of all observed values); but if you use tail='low', the high (right) tail is ignored and the value returned will be 1.
- 
- }}
+
+
+For \link{geoDist} models, there is an additional argument \code{fun} that allows you to use your own (inverse) distance function, and argument \code{scale=1} that allows you to scale the values (distances smaller than this value become one, and the others are divided by this value before computing the inverse distance).
+   
+}}
 
 \value{
-A RasterLayer or, if \code{x} is a matrix), a vector. 
+A RasterLayer or, (if \code{x} is a matrix), a vector. 
 }
 
 \seealso{
 For spatial predictions with GLM, GAM, BRT, randomForest, etc., see \link[raster]{predict} in the Raster package.
 
-To fit a model that can be used with this predict method, see \code{ \link[dismo]{maxent}, \link[dismo]{bioclim}, \link[dismo]{mahal}, \link[dismo]{domain}, \link[dismo]{convHull}}
+To fit a model that can be used with this predict method, see \code{ \link{maxent}, \link{bioclim}, \link{mahal}, \link{domain}, \link{geoDist}, \link{convHull}}
 }
 
 \author{ Robert J. Hijmans}

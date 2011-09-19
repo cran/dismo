@@ -8,7 +8,7 @@
 
 
 
-gmap <- function (x, exp=1, type='terrain', filename='', ...) {
+gmap <- function (x, exp=1, type='terrain', filename='', style=NULL, ...) {
 
 	if (! require(rgdal)) { stop('rgdal not available') }
 	
@@ -72,8 +72,9 @@ gmap <- function (x, exp=1, type='terrain', filename='', ...) {
 		return(list(X = X, Y = Y))
 	}
 
-	gurl <- "http://maps.google.com/staticmap?"
-		
+#	gurl <- "http://maps.google.com/staticmap?"
+	gurl <- "http://maps.googleapis.com/maps/api/staticmap?"
+	
 	if (is.character(x)) {
 		x <- geocode(x, oneRecord=TRUE)
 		if (any(is.na(x))) {
@@ -125,19 +126,24 @@ gmap <- function (x, exp=1, type='terrain', filename='', ...) {
 		cr <- ll2XY(center[1], center[2], zoom)
 		ll.Rcoords <- tile2r(ll, cr)
 		ur.Rcoords <- tile2r(ur, cr)
-		size[1] <- 2 * max(c(ceiling(abs(ll.Rcoords$X)), ceiling(abs(ur.Rcoords$X)))) +   1
-		size[2] <- 2 * max(c(ceiling(abs(ll.Rcoords$Y)), ceiling(abs(ur.Rcoords$Y)))) +   1
-
-		if (length(size) < 2) {
-			s <- paste(size, size, sep = "x")
+		s1 <- 2 * max(c(ceiling(abs(ll.Rcoords$X)), ceiling(abs(ur.Rcoords$X)))) +   1
+		s2 <- 2 * max(c(ceiling(abs(ll.Rcoords$Y)), ceiling(abs(ur.Rcoords$Y)))) +   1
+		if (s1 > s2) {
+			size[2] <- as.integer(size[2] * s2/s1)
 		} else {
-			s <- paste(size, collapse = "x")
+			size[1] <- as.integer(size[1] * s1/s2)
 		}
+		s <- paste(size, collapse = "x")
 
 		ctr <- paste(center, collapse = ",")
 	
 		gurl <- paste(gurl, "center=", ctr, "&zoom=", zoom, "&size=", s, "&maptype=", type, "&format=gif", "&sensor=false", sep = "")
-	
+		if (!is.null(style)) {
+			style <- gsub("\\|", "%7C", style)
+			style <- gsub(" ", "", style)
+			gurl <- paste(gurl, '&style=', style, sep='')
+		}
+#		cat(gurl, "\n")
 	
 	if (trim(filename) == '') filename <- rasterTmpFile()
 	extension(filename) <- 'gif'

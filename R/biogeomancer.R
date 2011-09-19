@@ -25,7 +25,7 @@ biogeomancer <- function(country='', adm1='', adm2='', locality='', singleRecord
 			if(length(nodes) == 0) {
 				ans <- data.frame(lon=NA, lat=NA, coordUncertaintyM=NA)
 			} else {
-				varNames <- c("DecimalLongitude", "DecimalLatitude", "GeodeticDatum", "CoordinateUncertaintyInMeters")
+				varNames <- c("decimalLongitude", "decimalLatitude", "geodeticDatum", "coordinateUncertaintyInMeters")
 				dims <- c(length(nodes), length(varNames)) 
    # create an empty data frame with as many rows and columns as needed.
 				ans <- as.data.frame(replicate(dims[2], rep(as.character(NA), dims[1]), simplify = FALSE), stringsAsFactors = FALSE)

@@ -29,31 +29,38 @@ evaluateROCR <- function(model, p, a, x) {
 }
 
 
-evaluate <- function(p, a, model, x=NULL, tr) {
-	if (!missing(x)) {
-		p <- predict(model, data.frame(extract(x, p)))
-		a <- predict(model, data.frame(extract(x, a)))
+evaluate <- function(p, a, model, x, tr, ...) {
+	if (! missing(x) ) {
+		p <- predict(model, data.frame(extract(x, p)), ...)
+		a <- predict(model, data.frame(extract(x, a)), ...)
 	} else if (is.vector(p) & is.vector(a)) {
 			# do nothing
 	} else {
-		p <- predict(model, data.frame(p))
-		a <- predict(model, data.frame(a))
+		p <- predict(model, data.frame(p), ...)
+		a <- predict(model, data.frame(a), ...)
 	}
 	p <- na.omit(p)
 	a <- na.omit(a)
-
-	if (missing(tr)) {
-		pr <- range(c(0,p,1))
-		pr <- 1:1000 * (pr[2]-pr[1])/1000
-		ar <- as.vector(quantile(c(p, a), 0:100/100))
-		tr <- sort(unique(round(c(pr,ar, 1:100/10000), 4)))
-	}
-	
 	np <- length(p)
 	na <- length(a)
 	if (na == 0 | np == 0) {
 		stop('cannot evaluate a model without absence and presence data that are not NA')
 	}
+
+	if (missing(tr)) {
+		if (length(p) > 1000) {
+			p <- as.vector(quantile(p, 0:1000/1000))
+		}
+		if (length(a) > 1000) {
+			a <- as.vector(quantile(a, 0:1000/1000))
+		}
+		tr <- sort(unique( round(c(a, p), 8 )))
+		tr <- c( tr - 0.0001, tr[length(tr)] + c(0, 0.0001))
+		
+	} else {
+		tr <- sort(as.vector(tr))
+	}
+	
 	N <- na + np
 
 	xc <- new('ModelEvaluation')
@@ -63,6 +70,7 @@ evaluate <- function(p, a, model, x=NULL, tr) {
 	mv <- wilcox.test(p, a)
 	xc@pauc <- mv$p.value
 	xc@auc <- as.vector(mv$statistic) / (na * np)
+	
 	cr <- cor.test(c(p,a), 	c(rep(1, length(p)), rep(0, length(a))) )
 	xc@cor <- cr$estimate
 	xc@pcor <- cr$p.value
@@ -84,9 +92,9 @@ evaluate <- function(p, a, model, x=NULL, tr) {
 # after Fielding and Bell	
 	xc@np <- as.integer(np)
 	xc@na <- as.integer(na)
-	xc@prevalence = a + c / N
-	xc@ODP = b + d / N
-	xc@CCR = a + d / N
+	xc@prevalence = (a + c) / N
+	xc@ODP = (b + d) / N
+	xc@CCR = (a + d) / N
 	xc@TPR = a / (a + c)
 	xc@TNR = d / (b + d)
 	xc@FPR = b / (b + d)
@@ -109,27 +117,26 @@ evaluate <- function(p, a, model, x=NULL, tr) {
 
 setMethod ('show' , 'ModelEvaluation', 
 	function(object) {
-		cat('class            :' , class(object), '\n')
-		cat('n presences      :' , object@np, '\n')
-		cat('n absences       :' , object@na, '\n')
-		cat('AUC              :' , object@auc,'\n')
+		cat('class          :' , class(object), '\n')
+		cat('n presences    :' , object@np, '\n')
+		cat('n absences     :' , object@na, '\n')
+		cat('AUC            :' , object@auc,'\n')
 #		cat('p(AUC)      :' , object@pauc,'\n')
-		cat('cor              :' , object@cor,'\n')
+		cat('cor            :' , object@cor,'\n')
 #		cat('p(cor)      :' , object@pcor,'\n')
-#		cat('prevalence  :' , object@prevalence,'\n')
-#		cat('overallDiagnosticPower :', object@overallDiagnosticPower,'\n')
-#		cat('correctClassificationRate :', object@correctClassificationRate,'\n')
-#		cat('sensitivity :', object@sensitivity,'\n')
-#		cat('specificity :', object@specificity,'\n')
-#		cat('falsePositiveRate :', object@falsePositiveRate,'\n')
-#		cat('falseNegativeRate :', object@falseNegativeRate,'\n')
+#		cat('prevalence     :' , object@prevalence,'\n')
+#		cat('overallDiagnosticPower :', object@ODP,'\n')
+#		cat('correctClassificationRate :', object@CCR,'\n')
+#		cat('sensitivity    :', object@TPR,'\n')
+#		cat('specificity    :', object@TNR,'\n')
+#		cat('falsePositiveRate :', object@FPR,'\n')
+#		cat('falseNegativeRate :', object@FNR,'\n')
 #		cat('PPP :', object@PPP,'\n')
 #		cat('NPP :', object@NPP,'\n')
-#		cat('misclassificationRate :', object@misclassificationRate,'\n')
-#		cat('oddsRatio :', object@oddsRatio,'\n')
+#		cat('misclassificationRate :', object@MCR,'\n')
+#		cat('oddsRatio :', object@OR,'\n')
 #		cat('kappa :', object@kappa,'\n')
-
-		cat('TPR+TNR threshold:', object@t[which.max(object@TPR + object@TNR)], '\n')
+		cat('max TPR+TNR at :', object@t[which.max(object@TPR + object@TNR)], '\n')
 	}
 )	
 

@@ -37,7 +37,7 @@ Robert J. Hijmans
 }
 
 \seealso{
-\code{\link[dismo]{predict}, \link{maxent}, \link{domain}, \link{mahal}}
+\code{\link[dismo]{predict}, \link{convHull}, \link{maxent}, \link{domain}, \link{mahal}, \link{voronoiHull}, \link{geoIDW}}
 }
 
 
