@@ -16,7 +16,6 @@
 
 \SweaveOpts{keep.source=TRUE}
 \SweaveOpts{png=TRUE}
-\SweaveOpts{resolution=100}
 
 <<foo,include=FALSE,echo=FALSE>>=
 options(width = 65)

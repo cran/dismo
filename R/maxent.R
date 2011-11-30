@@ -286,7 +286,7 @@ setMethod('maxent', signature(x='data.frame', p='vector'),
 			}
 			dirout <- path			
 		} else {
-			dirout <- dismo:::.meTmpDir()
+			dirout <- .meTmpDir()
 			f <- paste(round(runif(10)*10), collapse="")
 			dirout <- paste(dirout, '/', f, sep='')
 			dir.create(dirout, recursive=TRUE, showWarnings=FALSE)

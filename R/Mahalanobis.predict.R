@@ -5,7 +5,7 @@
 # Licence GPL v3
 
 setMethod('predict', signature(object='Mahalanobis'), 
-function(object, x, ext=NULL, filename='', progress='text', ...) {
+function(object, x, ext=NULL, filename='', ...) {
 
 	if (! (extends(class(x), 'Raster')) ) {
 		if (! all(colnames(object@presence) %in% colnames(x)) ) {
@@ -48,7 +48,7 @@ function(object, x, ext=NULL, filename='', progress='text', ...) {
 		cn <- colnames(object@presence)
 
 		tr <- blockSize(out, n=nlayers(x)+2)
-		pb <- pbCreate(tr$n, type=progress)	
+		pb <- pbCreate(tr$n, ...)	
 		for (i in 1:tr$n) {
 			rr <- firstrow + tr$row[i] - 1
 			vals <- getValuesBlock(x, row=rr, nrows=tr$nrows[i], firstcol, ncols)

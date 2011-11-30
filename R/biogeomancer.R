@@ -11,7 +11,7 @@ biogeomancer <- function(country='', adm1='', adm2='', locality='', singleRecord
 
 	d <- data.frame(country, adm1, adm2, locality)
 	d[is.na(d)] <- ''
-	pb <- pbCreate(dim(d)[1], type=progress)
+	pb <- pbCreate(dim(d)[1], progress)
 
 	for (r in 1:dim(d)[1]) {
 		theurl <- paste("http://bg.berkeley.edu:8080/ws/single?cy=", d$country[r], "&sp=", d$adm1[r], "&co=", d$adm2[r], "&locality=", d$locality[r], sep='')

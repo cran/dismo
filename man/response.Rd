@@ -2,6 +2,7 @@
 
 \alias{response}
 \alias{response,DistModel-method}
+\alias{response,MaxEntReplicates-method}
 \alias{response,ANY-method}
 
 

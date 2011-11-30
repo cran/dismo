@@ -638,7 +638,7 @@ sb2 <- ssb(pres_test_pwd, back_test_pwd, pres_train)
 sb2[1]/ sb2[2]
 @
 
-Spatial sorting bias is much reduced now. The AUC drops from almost around 0.8 to 0.5!
+Spatial sorting bias is much reduced now; notice how the AUC dropped!
 
 <<sdm45d, echo=TRUE>>=
 bc <- bioclim(predictors, pres_train)
@@ -846,7 +846,7 @@ points(backg_train, pch='-', cex=0.25)
 
 \section{Generalized Additive Models}
 
-Generalized additive models (GAMs; Hastie and Tibshirani, 1990; Wood, 2006) are an extension to GLMs. In GAMs, the linear predictor is the sum of smoothing functions. This makes GAMs very flexible, and they can fit very complex functions. It also makes them very similar to machine learning methods. In \R, GAMs are implemented in the 'mgcv' package. The 'grasp' package implements species distribution modeling with gam (Lehman \textit{et al}., 2002). 
+Generalized additive models (GAMs; Hastie and Tibshirani, 1990; Wood, 2006) are an extension to GLMs. In GAMs, the linear predictor is the sum of smoothing functions. This makes GAMs very flexible, and they can fit very complex functions. It also makes them very similar to machine learning methods. In \R, GAMs are implemented in the 'mgcv' package. 
 
 
 

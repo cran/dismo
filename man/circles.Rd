@@ -27,9 +27,9 @@ circles(p, ...)
 \details{
 The following additional arguments can be supplied to the circles function:
 \tabular{rll}{
- \tab \code{d}  \tab The radius of each circle in meters. Can be a single number of a vector with elements corresponding to rows in \code{p}. If missing the diameter is computed from the inter-point distance \cr
+ \tab \code{d}  \tab The radius of each circle in meters. Can be a single number of a vector with elements corresponding to rows in 'p'. If missing the diameter is computed from the inter-point distance \cr
  \tab \code{n}  \tab How many vertices in the circle? Default is 360 \cr
- \tab \code{lonlat} \tab  Are these longitude/latidue data? Default = \code{FALSE} \cr
+ \tab \code{lonlat} \tab  Are these longitude/latidue data? Default value is FALSE \cr
   \tab \code{r}  \tab  Radius of the earth. Only relevant for longitude/latitude data. Default is 6378137 m\cr
 } 
 

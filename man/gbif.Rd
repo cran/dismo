@@ -12,12 +12,13 @@ This function downloads species occurence records from the Global Biodiversity I
 
 
 \usage{
-gbif(genus, species="", geo=TRUE, sp=FALSE, removeZeros=TRUE, download=TRUE, getAlt=TRUE, feedback=3)
+gbif(genus, species="", ext=NULL, geo=TRUE, sp=FALSE, removeZeros=TRUE, download=TRUE, getAlt=TRUE, feedback=3)
 }
  
 \arguments{
   \item{genus}{Character. genus name}
   \item{species}{Character. species name. Use '*' to download the entire genus. Append '*' to the species name to get all sub-taxa }
+  \item{ext}{Extent object to limit the geographic extent of the records. An extent can be created using functions like \code{\link{drawExtent}} and \code{\link{extent}}}
   \item{geo}{Logical. If \code{TRUE}, only records that have a georeference (longitude and latitude values) will be downloaded}
   \item{sp}{Logical. If \code{TRUE}, \code{geo} will be set to \code{TRUE} and a \link[sp]{SpatialPointsDataFrame} will be returned}
   \item{removeZeros}{Logical. If \code{TRUE}, all records that have a latiude OR longitude of zero will be removed if \code{geo==TRUE}, or set to \code{NA} if \code{geo==FALSE}. If \code{FALSE}, only records that have a latiude AND longitude that are zero will be removed / set to \code{NA}}.

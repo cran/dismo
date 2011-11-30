@@ -25,18 +25,11 @@ Provide a Raster* object with the independent variables. The layerNames in the R
 \tabular{rll}{  
   \tab  \code{object}  \tab A fitted model of class Bioclim, Domain, MaxEnt, ConvexHull, or Mahalanobis (classes that inherit from DistModel)\cr
   \tab  \code{x} \tab A Raster* object or a data.frame\cr
-  \tab  \code{ext} \tab An \link[raster]{extent} object to limit the prediction to a sub-region of \code{x}. Or an object that can be coerced to an Extent object by \code{\link[raster]{extent}}; such as a Raster* or Spatial* object \cr
+  \tab  \code{ext} \tab An extent object to limit the prediction to a sub-region of 'x'. Or an object that can be coerced to an Extent object by extent; such as a Raster* or Spatial* object \cr
   \tab  \code{filename}  \tab Output filename for a new raster; if NA the result is not written to a file but returned with the RasterLayer object, in the data slot \cr
   \tab \code{progress} \tab Character. Valid values are "" (no progress bar), "text" and "windows" (on that platform only) \cr
-  \tab  \code{...}  \tab Additional model specific arguments and arguments for file writing (see below)\cr
+  \tab  \code{...}  \tab Additional model specific arguments. And additional arguments for file writing as for \link{writeRaster} \cr
 }
-
-The following additional arguments can be passed, to replace default values, when writing the results to a file
-\tabular{rll}{
-  \tab \code{format} \tab Character. Output file type. See \code{\link[raster]{writeRaster}} \cr
-  \tab \code{datatype} \tab Character. Output data type; see \code{\link[raster]{dataType}} \cr
-  \tab \code{overwrite} \tab Logical. If TRUE, "filename" will be overwritten if it exists \cr
- }
 
 
 For \link[dismo]{maxent} models, there is an additional argument \code{'args'} used to pass arguments (options) to the maxent software. See the help page for \code{ \link[dismo]{maxent}} for more information.
@@ -56,6 +49,8 @@ A RasterLayer or, (if \code{x} is a matrix), a vector.
 For spatial predictions with GLM, GAM, BRT, randomForest, etc., see \link[raster]{predict} in the Raster package.
 
 To fit a model that can be used with this predict method, see \code{ \link{maxent}, \link{bioclim}, \link{mahal}, \link{domain}, \link{geoDist}, \link{convHull}}
+
+Extent object: \code{\link[raster]{extent}}
 }
 
 \author{ Robert J. Hijmans}

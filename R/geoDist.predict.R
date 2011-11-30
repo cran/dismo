@@ -6,7 +6,7 @@
 
 
 setMethod('predict', signature(object='GeographicDistance'), 
-	function(object, x, ext=NULL, filename='', mask=FALSE, scale=1, fun=NULL, progress='text', ...) {
+	function(object, x, ext=NULL, mask=FALSE, scale=1, fun=NULL, filename='', ...) {
 			
 		if (is.null(fun)) {
 			inverse <- function(x) {

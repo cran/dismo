@@ -10,7 +10,7 @@ if (!isGeneric("predict")) {
 }	
 
 setMethod('predict', signature(object='Bioclim'), 
-function(object, x, tails=NULL, ext=NULL, filename='', progress='text', ...) {
+function(object, x, tails=NULL, ext=NULL, filename='', ...) {
 
 	percRank <- function(x, y, tail) {
 		x <- sort(as.vector(na.omit(x)))
@@ -83,7 +83,7 @@ function(object, x, tails=NULL, ext=NULL, filename='', progress='text', ...) {
 		}
 
 		tr <- blockSize(out, n=nlayers(x)+2)
-		pb <- pbCreate(tr$n, type=progress)	
+		pb <- pbCreate(tr$n, ...)	
 		
 		mincomp <- object@min
 		mincomp[tails=='high'] <- -Inf
@@ -105,7 +105,7 @@ function(object, x, tails=NULL, ext=NULL, filename='', progress='text', ...) {
 			res <- apply(bc, 1, min)
 			if (inmem) {
 				res <- matrix(res, nrow=ncols)
-				cols = tr$row[i]:(tr$row[i]+dim(res)[2]-1)
+				cols <- tr$row[i]:(tr$row[i]+dim(res)[2]-1)
 				v[ , cols] <- res
 			} else {
 				out <- writeValues(out, res, tr$row[i])

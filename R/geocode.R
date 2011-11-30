@@ -13,7 +13,7 @@ geocode <- function(x, oneRecord=FALSE, extent=NULL, progress='') {
 	res <- matrix(ncol=7, nrow=0)
 	colnames(res) <- c('ID', 'lon', 'lat', 'lonmin', 'lonmax', 'latmin', 'latmax')
 	
-	pb <- pbCreate(length(x), type=progress)
+	pb <- pbCreate(length(x), progress)
 	for (z in 1:length(x)) {
 		r <- x[z]
 		r <- gsub(', ', ',', r)

@@ -81,7 +81,7 @@ setMethod('biovars', signature(prec='Raster', tmin='Raster', tmax='Raster'),
 	}	
 
 	tr <- blockSize(out, n=nlayers(out)+36)
-	pb <- pbCreate(tr$n, type=progress)	
+	pb <- pbCreate(tr$n, ...)	
 	for (i in 1:tr$n) {
 		prc <- getValues(prec, tr$row[i], tr$nrows[i])
 		tmn <- getValues(tmin, tr$row[i], tr$nrows[i])

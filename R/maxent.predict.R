@@ -13,7 +13,7 @@ if (!isGeneric("predict")) {
 
 
 setMethod('predict', signature(object='MaxEntReplicates'), 
-	function(object, x, ext=NULL, filename='', progress='text', args="", ...) {
+	function(object, x, ext=NULL, filename='', args="", ...) {
 		extension(filename) <- ''
 		lst <- list()
 		for (i in 1:length(object@models)) {
@@ -22,7 +22,7 @@ setMethod('predict', signature(object='MaxEntReplicates'),
 			} else {
 				fname <- ''
 			}
-			lst[[i]] <- predict(object@models[[i]], x, ext=ext, filename=fname, progress=progress, args=args, ...)
+			lst[[i]] <- predict(object@models[[i]], x, ext=ext, filename=fname, args=args, ...)
 		}
 		return(stack(lst))
 	}
@@ -30,12 +30,13 @@ setMethod('predict', signature(object='MaxEntReplicates'),
 
 
 setMethod('predict', signature(object='MaxEnt'), 
-	function(object, x, ext=NULL, filename='', progress='text', args="", ...) {
+	function(object, x, ext=NULL, args="", filename='', ...) {
 
 		args <- c(args, "")
 
 		if (! file.exists(object@path)) {
-			dir.create(object@path, recursive=TRUE, showWarnings=TRUE)
+			object@path <- .meTmpDir()
+			# dir.create(object@path, recursive=TRUE, showWarnings=TRUE)
 		}
 		lambdas <- paste(object@path, '/lambdas.csv', sep="")
 
@@ -92,7 +93,7 @@ setMethod('predict', signature(object='MaxEnt'),
 				flush.console()
 
 				tr <- blockSize(out, minblocks=nodes)
-				pb <- pbCreate(tr$n, type=progress)
+				pb <- pbCreate(tr$n, ...)
 
 				clFun <- function(i) {
 					rr <- firstrow + tr$row[i] - 1
@@ -153,7 +154,7 @@ setMethod('predict', signature(object='MaxEnt'),
 			} else {
 
 				tr <- blockSize(out, n=nlayers(x)+2)
-				pb <- pbCreate(tr$n, type=progress)	
+				pb <- pbCreate(tr$n, ...)	
 			
 				for (i in 1:tr$n) {
 					rr <- firstrow + tr$row[i] - 1

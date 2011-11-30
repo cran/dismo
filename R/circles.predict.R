@@ -6,7 +6,7 @@
 
 
 setMethod('predict', signature(object='CirclesRange'), 
-	function(object, x, ext=NULL, filename='', mask=FALSE, progress='text', ...) {
+	function(object, x, ext=NULL, mask=FALSE, filename='', ...) {
 	
 		if ( extends(class(x), 'Raster'))  {
 			if (! mask) {
@@ -15,10 +15,13 @@ setMethod('predict', signature(object='CirclesRange'),
 			if (! is.null(ext)) { 
 				x = crop(x, ext) 
 			}
-			xx <- rasterize(object@polygons, raster(x), field=-1, fun='sum', mask=FALSE, update=FALSE, updateValue="NA", getCover=FALSE, silent=TRUE, progress=progress)
 			if (mask) {
-				xx <- mask(xx, x)
+				xx <- rasterize(object@polygons, raster(x), field=-1, fun='sum', mask=FALSE, update=FALSE, updateValue="NA", getCover=FALSE, silent=TRUE, ...)
+				xx <- mask(xx, x, filename=filename, ...)
+			} else {
+				xx <- rasterize(object@polygons, raster(x), field=-1, fun='sum', mask=FALSE, update=FALSE, updateValue="NA", getCover=FALSE, silent=TRUE, filename=filename, ...)
 			}
+
 			#nc <- length(object@polygons@polygons) 
 			#fun <- function(x){x / nc }
 			#xx <- calc(xx, fun=fun, filename=filename, progress=progress, ...)

@@ -1,7 +1,17 @@
+--- 30-November-2011, version 0.7-13
+New 'ext' argument to gbif function to allow for querying for a geographic region
+imrovements to 'response'
+Fixed bug in 'evaluate' when using > 1000 evaluation points, discovered by Diego Nieto Lugilde
+
+--- 18-October-2011, version 0.7-12
+Fixed a problem with maxent that could occur when predicting from a an object fitted on another machine. Reported by Adam Smith: https://r-forge.r-project.org/forum/message.php?msg_id=5060 
+Fixed bug in biogeomancer function
+Fixed bug in .pointsInPolygon function that (randomly) affected evaluation of the circles, voronoiHull, and convHull models.
+
 --- 6-September-2011, version 0.7-8
 maxent argument 'replicates= '  is now supported
 
---- 26-August-2011, version 0.7-4
+--- 1-September-2011, version 0.7-6
 New functions ssb (spatial sorting bias) and pwdSample (pair-wise distance sampling)
 Several minor bug fixes. 
 Improved vignette (still under development).

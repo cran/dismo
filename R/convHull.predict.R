@@ -12,7 +12,7 @@ if (!isGeneric("predict")) {
 }	
 
 setMethod('predict', signature(object='ConvexHull'), 
-	function(object, x, ext=NULL, filename='', mask=FALSE, progress='text', ...) {
+	function(object, x, ext=NULL, mask=FALSE, filename='',  ...) {
 	
 		nc <- nrow(object@polygons@data)
 		if ( extends(class(x), 'Raster'))  {
@@ -23,12 +23,13 @@ setMethod('predict', signature(object='ConvexHull'),
 				x = crop(x, ext) 
 			}
 			
-			xx = rasterize(object@polygons, raster(x), field=-1, fun='sum', background=0, mask=FALSE, update=FALSE, updateValue="NA", getCover=FALSE, silent=TRUE, progress=progress)
+			xx <- rasterize(object@polygons, raster(x), field=-1, fun='sum', background=0, mask=FALSE, update=FALSE, updateValue="NA", getCover=FALSE, silent=TRUE, ...)
 			if (mask) {
-				xx <- mask(xx, x)
+				xx <- mask(xx, x, ...)
 			}
-			fun = function(x){x / nc }
-			xx <- calc(xx, fun=fun, filename=filename, progress=progress, ...)
+			
+			fun <- function(x){x / nc }
+			xx <- calc(xx, fun=fun, filename=filename, ...)
 			return(xx)
 			
 		} else {

@@ -4,7 +4,7 @@
 # Version 0.1
 # Licence GPL v3
 
-gbif <- function(genus, species='', geo=TRUE, sp=FALSE, removeZeros=TRUE, download=TRUE, getAlt=TRUE, feedback=3) {
+gbif <- function(genus, species='', ext=NULL, geo=TRUE, sp=FALSE, removeZeros=TRUE, download=TRUE, getAlt=TRUE, feedback=3) {
 	
 	if (! require(XML)) { stop('You need to install the XML package to use this function') }
 
@@ -36,19 +36,25 @@ gbif <- function(genus, species='', geo=TRUE, sp=FALSE, removeZeros=TRUE, downlo
 	}
 
 	
+	if (!is.null(ext)) { 
+		ex <- round(extent(ext), 5)
+		ex <- paste('&minlatitude=',max(-90, ex@ymin),'&maxlatitude=',min(90, ex@ymax),'&minlongitude=',max(-180, ex@xmin),'&maxlongitude=',min(180, ex@xmax), sep='')
+	} else {
+		ex <- NULL
+	}
 	genus <- trim(genus)
 	species <- trim(species)
 	gensp <- paste(genus, species)
-	species <- gsub("   ", " ", trim(species)) 
-	species <- gsub("  ", " ", trim(species)) 	
-	species <- gsub(" ", "%20", trim(species))  # for genus species var. xxx
-    species <- paste(genus, '+', species, sep='')
+	spec <- gsub("   ", " ", species) 
+	spec <- gsub("  ", " ", spec) 	
+	spec <- gsub(" ", "%20", spec)  # for genus species var. xxx
+    spec <- paste(genus, '+', spec, sep='')
 	
 	if (sp) geo <- TRUE
 	if (geo) { cds <- '&coordinatestatus=true' 
 	} else { cds <- '' }
     base <- 'http://data.gbif.org/ws/rest/occurrence/'
-    url <- paste(base, 'count?scientificname=', species, cds, sep='')
+    url <- paste(base, 'count?scientificname=', spec, cds, ex, sep='')
     x <- readLines(url, warn=FALSE)
     x <- x[substr(x, 1, 20) == "<gbif:summary totalM"]
     n <- as.integer(unlist(strsplit(x, '\"'))[2])
@@ -77,7 +83,7 @@ gbif <- function(genus, species='', geo=TRUE, sp=FALSE, removeZeros=TRUE, downlo
 			flush.console()
 		}
 		
-        aurl <- paste(base, 'list?scientificname=', species, '&mode=processed&format=darwin&startindex=', format(start, scientific=FALSE), cds, sep='')
+        aurl <- paste(base, 'list?scientificname=', spec, '&mode=processed&format=darwin&startindex=', format(start, scientific=FALSE), cds, ex, sep='')
 		zz <- gbifxmlToDataFrame(aurl)
 
 		#s <- readLines(aurl, warn=FALSE)
@@ -145,6 +151,7 @@ gbif <- function(genus, species='', geo=TRUE, sp=FALSE, removeZeros=TRUE, downlo
 		}
 	}
 
+#	if (inherits(ext, 'SpatialPolygons')) { overlay	}
 	return(z)
 }
 

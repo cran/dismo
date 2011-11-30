@@ -152,7 +152,7 @@ gmap <- function (x, exp=1, type='terrain', filename='', style=NULL, ...) {
 	MyMap <- list(lat.center = center[1], lon.center = center[2], zoom = zoom)
 	bb <- list(ll = xy2ll(MyMap, X = -size[1]/2 + 0.5, Y = -size[2]/2 - 0.5), ur = xy2ll(MyMap, X = size[1]/2 +  0.5, Y = size[2]/2 - 0.5))
 
-	r <- raster(filename)
+	r <- raster(filename, warn=FALSE)
 	ext <- extent(bb$ll[2], bb$ur[2], bb$ll[1], bb$ur[1])
 	p <- t(bbox(raster(ext))) *  pi/180
 	rad = 6378137	

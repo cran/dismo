@@ -12,7 +12,7 @@ if (!isGeneric("predict")) {
 }	
 
 setMethod('predict', signature(object='InvDistWeightModel'), 
-	function(object, x, ext=NULL, filename='', mask=FALSE, progress='text', ...) {
+	function(object, x, ext=NULL, filename='', mask=FALSE, ...) {
 	
 		if ( extends(class(x), 'Raster'))  {
 			if (! mask) {
@@ -22,10 +22,10 @@ setMethod('predict', signature(object='InvDistWeightModel'),
 				x = crop(x, ext) 
 			}
 			if (mask) {
-				xx <- interpolate(x, object@model[[1]], progress=progress, debug.level=0)
-				xx <- mask(xx, x, filename=filename, progress=progress, ...)
+				xx <- interpolate(x, object@model[[1]], debug.level=0, ...)
+				xx <- mask(xx, x, filename=filename, ...)
 			} else {
-				xx <- interpolate(x, object@model[[1]], filename=filename, progress=progress, ...)
+				xx <- interpolate(x, object@model[[1]], filename=filename, ...)
 			}				
 		} else {
 			if (! inherits(x, 'SpatialPoints') )  {

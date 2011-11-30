@@ -6,7 +6,7 @@
 
 
 setMethod('predict', signature(object='Domain'), 
-function(object, x, ext=NULL, filename='', progress='text', ...) {
+function(object, x, ext=NULL, filename='', ...) {
 
 	domdist <- function(xx, ii, y) {
 		r <- xx@range[ii]
@@ -78,7 +78,7 @@ function(object, x, ext=NULL, filename='', progress='text', ...) {
 		ln <- colnames(object@presence)
 		tr <- blockSize(out, n=nlayers(x)+2)
 		dom <- matrix(ncol=nlayers(x), nrow=ncols*tr$nrows[1] )
-		pb <- pbCreate(tr$n, type=progress)	
+		pb <- pbCreate(tr$n, ...)	
 		
 		for (i in 1:tr$n) {
 			if (i == tr$n) {

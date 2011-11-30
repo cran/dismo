@@ -6,7 +6,7 @@
 
 
 setMethod('predict', signature(object='VoronoiHull'), 
-	function(object, x, ext=NULL, filename='', mask=FALSE, progress='text', ...) {
+	function(object, x, ext=NULL, filename='', mask=FALSE, ...) {
 	
 		if ( extends(class(x), 'Raster'))  {
 			if (! mask) {
@@ -16,10 +16,13 @@ setMethod('predict', signature(object='VoronoiHull'),
 				x <- crop(x, ext) 
 			}
 			
-			xx <- rasterize(object@polygons, raster(x), field=1, fun='max', mask=FALSE, update=FALSE, getCover=FALSE, silent=TRUE, progress=progress)
 			if (mask) {
-				xx <- mask(xx, x)
+				xx <- rasterize(object@polygons, raster(x), field=1, fun='max', mask=FALSE, update=FALSE, getCover=FALSE, silent=TRUE, ...)
+				xx <- mask(xx, x, filename=filename, ...)
+			} else {
+				xx <- rasterize(object@polygons, raster(x), field=1, fun='max', mask=FALSE, update=FALSE, getCover=FALSE, silent=TRUE, filename=filename, ...)
 			}
+			
 			return(xx)
 			
 		} else {
