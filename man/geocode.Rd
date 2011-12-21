@@ -16,7 +16,7 @@ The purpose of using this function should be to display the locations on a map i
   \item{x}{A vector of locality descriptions}
   \item{oneRecord}{Logical. If \code{TRUE} a single record for each item in x is returned by averaging the coordinates and taking the union of all bounding boxes }
   \item{extent}{An Extent object, or an object that can be coerced to one, to bias the search towards that region}
-  \item{progress}{Character. Valid values are "" (no progress indicator), "text" (the default) and "windows" (on that platform only)}    
+  \item{progress}{Character. Valid values are "" (no progress indicator), "text" or "window"}
 }
 
 \value{

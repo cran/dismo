@@ -1,10 +1,14 @@
 # Author: Robert J. Hijmans
 # contact: r.hijmans@gmail.com
 # Date : December 2009
-# Version 0.1
+# Version 1.0
 # Licence GPL v3
 
-gbif <- function(genus, species='', ext=NULL, geo=TRUE, sp=FALSE, removeZeros=TRUE, download=TRUE, getAlt=TRUE, feedback=3) {
+# 2011-12-04
+# implemented trycatch to deal with poor response from GBIF server
+# suggestion and changed code provided by John Baumgartner
+
+gbif <- function(genus, species='', ext=NULL, geo=TRUE, sp=FALSE, removeZeros=TRUE, download=TRUE, getAlt=TRUE, ntries=5, nrecs=1000, start=1, end=NULL, feedback=3) {
 	
 	if (! require(XML)) { stop('You need to install the XML package to use this function') }
 
@@ -55,11 +59,21 @@ gbif <- function(genus, species='', ext=NULL, geo=TRUE, sp=FALSE, removeZeros=TR
 	} else { cds <- '' }
     base <- 'http://data.gbif.org/ws/rest/occurrence/'
     url <- paste(base, 'count?scientificname=', spec, cds, ex, sep='')
-    x <- readLines(url, warn=FALSE)
-    x <- x[substr(x, 1, 20) == "<gbif:summary totalM"]
+	
+    if (exists('x')) rm(x)  
+	tries <- 0
+    while (!exists('x'))  {
+		if (tries == 5) { # if you cannot do this in 5 tries, you might as well stop
+			stop('GBIF server does not return a valid answer')
+		}
+    	tryCatch(x <- readLines(url, warn = FALSE), error = function(e) cat('failed.\n'))
+		tries <- tries + 1
+    }
+    x <- x[grep('totalMatched', x)]
     n <- as.integer(unlist(strsplit(x, '\"'))[2])
-
-	if (! download) { return(n) }
+    if (!download) {
+        return(n)
+    }
 	
     if (n==0) {
 		cat(gensp, ': no occurrences found\n')
@@ -71,33 +85,56 @@ gbif <- function(genus, species='', ext=NULL, geo=TRUE, sp=FALSE, removeZeros=TR
 		}
 	}
 
-    iter <- n %/% 1000
+	ntries <- min(max(ntries, 1), 100)
+	if (! download) { return(n) }
+	nrecs <- min(max(nrecs, 1), 1000)
+	
+    iter <- n %/% nrecs
 	first <- TRUE
-    for (group in 0:iter) {
-        start <- group * 1000
+	breakout <- FALSE
+	if (start > 1) {
+		ss <- floor(start/nrecs)
+	} else {
+		ss <- 0
+	}
+    for (group in ss:iter) {
+        start <- group * nrecs
 		if (feedback > 1) {
-			if (group == iter) { end <- n-1 } else { end <- start + 999 }
-			if (group == 0) { cat('1-', end+1, sep='')  
+			if (group == iter) { end <- n-1 } else { end <- start + nrecs - 1 }
+			if (group == ss) { cat(ss, '-', end+1, sep='')  
 			} else { cat('-', end+1, sep='')  }
-			if ((group != 0 & group %% 20 == 0)  |  group == iter ) { cat('\n') }
+			if ((group > ss & group %% 20 == 0)  |  group == iter ) { cat('\n') }
 			flush.console()
 		}
 		
         aurl <- paste(base, 'list?scientificname=', spec, '&mode=processed&format=darwin&startindex=', format(start, scientific=FALSE), cds, ex, sep='')
-		zz <- gbifxmlToDataFrame(aurl)
 
-		#s <- readLines(aurl, warn=FALSE)
-        #try(zz <- gbifxmlToDataFrame(s), silent=TRUE)
-		#if (class(zz) == 'try-error') {
-		#	s <- sub("\002", "", s)
-		#	zz <- gbifxmlToDataFrame(s)
-		#}
+		tries <- 0
+	    if (exists('zz')) rm(zz)
+        #======= if download fails due to server problems, keep trying  =======#
+        while (!exists('zz')) {
+			if (tries > 1) {
+				if (tries > ntries) {
+					warning('GBIF did not return the data in ', ntries, ' tries\nreturning incomplete data')
+					breakout <- TRUE
+					break
+				} else {
+					cat('(try:',tries,')')
+				}
+			}
+			tries <- tries + 1
+	    	tryCatch( zz <- gbifxmlToDataFrame(aurl), error = function(e) cat('failed.\n') )
+	    }
+        #======================================================================#
 		
 		if (first) {
 			z <- zz
 			first <- FALSE
 		} else {
 			z <- rbind(z, zz)
+		}
+		if (breakout) {
+			break
 		}
 	}
 

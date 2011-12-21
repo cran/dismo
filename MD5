@@ -1,5 +1,5 @@
 1a94c8fddf78c4087a3dba8efbcd684d *ChangeLog
-c7e803c7d9d958332c14045f07e2e022 *DESCRIPTION
+2cb747cd26b4e25897bea063fafb0671 *DESCRIPTION
 9230bb62111d1790ed52a3e6810a485d *NAMESPACE
 8e40b84686821508043d29fb0c62c9c2 *R/AAAclasses.R
 85e40f0760a28d974510b55884d205e3 *R/Mahalanobis.R
@@ -25,7 +25,7 @@ f245bb08813f19f9148e1047b627c2b7 *R/ecocrop.R
 1da76c56851cf913971f60b20fba8475 *R/errorReport.R
 6e1f76a917f554ec67e0772381a0e78a *R/estimators.R
 87f7e7cefa3ff00e5fe77e5a5297508d *R/evaluate.R
-10e800266cc93f2c9a01a34b31c3fd07 *R/gbif.R
+ee611513bcd9af4ace6dcfcf96cd4187 *R/gbif.R
 56a30b5b9a9aa02e4bd8b84d9ef3b988 *R/gbm.fixed.R
 41bfcfa325230facddd4bf277b803833 *R/gbm.holdout.R
 0af19eab2bdabfc84c02f256cbf63aa4 *R/gbm.interactions.R
@@ -46,7 +46,7 @@ bdfe13a5df585692a924a95d8100d368 *R/gmap.R
 8afacc007a82abe83591f3a58a6fa83c *R/hullls.R
 5af9becf311bd71232a497e863182751 *R/kauc.R
 529b7bc2486c2ebae86d22299a737d9e *R/kfold.R
-a30090a4b93338ce6724597858d198d6 *R/maxent.R
+8b271467847202d199c04ab887bc9a06 *R/maxent.R
 a1ea1ea6adc60ee8a824633c7dad852a *R/maxent.predict.R
 c2d52b9507c2412a6a3a854c8c8b8883 *R/nullRandom.R
 6199ab48d03cbbda475f6a387842dc8d *R/onLoad.R
@@ -60,7 +60,7 @@ a957f0fcd925f892229d1e50bd015ff1 *R/pointInPolygon.R
 4ed21a3ad83e797c2ddee140e4ff5ddb *R/precision.R
 ac6c48fe434057094cc89c87e62d328c *R/prepareData.R
 0088e38138606c627c3889cd7ae597ca *R/pwdSample.R
-7e2f4ad5df23eb99598c3647076f71d9 *R/randomPoints.R
+7f658fb3c1650cd04b9e390653b22af8 *R/randomPoints.R
 925948372eee1b46a2660375489fba84 *R/reserves.R
 bf693bf5a0b41c9502601f8d38805864 *R/response.R
 9e16de899cc7b27a826abc20af7df821 *R/shp.R
@@ -74,7 +74,7 @@ ea15beebbfdbc253b278c785160aebc0 *data/Anguilla_test.RData
 e5afab739dd38365e288bf085f40856a *data/acaule.RData
 3b89d76af51a9f31610558422179e7ea *inst/doc/brt.Rnw
 fe4baa09817f7f0f8a11800e0967c9bf *inst/doc/brt.pdf
-6db286ac39503030d5c08d63877b96f2 *inst/doc/sdm.Rnw
+c8ca3540c45ab32a3aa7aae16c67a76f *inst/doc/sdm.Rnw
 50770bc66f4df282e0bdebfc0d8f45fd *inst/doc/sdm.pdf
 246736e1523c8168ae29515dcced5fb8 *inst/ex/bio1.grd
 709be5f5f000c90bf477da7dd833fd29 *inst/ex/bio1.gri
@@ -114,7 +114,7 @@ a86086b26bc37a7f122f69360cd22856 *man/calc.deviance.Rd
 b6316e326d10ce177ffa1626ccab614c *man/ecocrop.Rd
 b178fa4bcc33351b5c68ca470cfa86ed *man/evaluate.Rd
 3cb712e34bf56146db6522d4bbfa68c9 *man/evaluateROCR.Rd
-e0bfe3e7de7eecdaec7c4dd97e458621 *man/gbif.Rd
+48e14f3c28196f1e5861888e5e248e6c *man/gbif.Rd
 a2b49ab19fbd7688e158cf6008460147 *man/gbm.data.Rd
 f2fd2da44e55ddebf8250d7be6b55f5f *man/gbm.fixed.Rd
 271d35994b7ff855ee06dceff71810fc *man/gbm.holdout.Rd
@@ -126,7 +126,7 @@ a7d2e195da536eac4c22cde52d394052 *man/gbm.plot.Rd
 34984dc40a1ce4da626626714dc4cbc1 *man/gbm.step.Rd
 e31774dbdd02c6f74f001d92a8950794 *man/geoDist.Rd
 bcbc72b800d95848bfc1794d8ef82f74 *man/geoIDW.Rd
-b67f2ae9e655ca664c1a21440c5caf0c *man/geocode.Rd
+e144d374f57eba8283f1fa76b5c9e52a *man/geocode.Rd
 cea60006690453a4483595fed390e117 *man/gmap.Rd
 5f6b8aed0d22d49fb7c0577862f49c0a *man/gridSample.Rd
 ecf600541ee28ccafc0f1b86e55ab880 *man/kfold.Rd

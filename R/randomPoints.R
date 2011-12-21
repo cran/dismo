@@ -1,5 +1,4 @@
 # Author: Robert J. Hijmans
-# contact: r.hijmans@gmail.com
 # Date : December 2009
 # Version 0.1
 # Licence GPL v3
@@ -66,7 +65,7 @@ randomPoints <- function(mask, n, p, ext=NULL, extf=1.1, excludep=TRUE, cellnumb
 	}
 	
 	if (class(ext)=='character') {
-		if (! ext%in% c('points')) { 
+		if (! ext %in% c('points')) { 
 			stop("if ext is a character variable it should be 'points'") 
 		} else if (missing(p)) { 
 			warning("if p is missing, 'ext=points' is meaningless") 
