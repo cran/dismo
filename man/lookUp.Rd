@@ -7,7 +7,7 @@
 
 \title{ lookup }
 
-\description{ Look up geographic data for long/lat data }
+\description{ Look up the elevation or the names of countries of adminstrative subdivisions for point locations (longitude/latitude) }
 
 \usage{
 country(lonlat, radius=0)
@@ -19,7 +19,7 @@ alt(lonlat)
 \arguments{
   \item{lonlat}{ matrix with longitude and latitude values}
   \item{radius}{ radius around each point to consider}
-  \item{maxrows}{ max nr or rows (records) to be returned }
+  \item{maxrows}{ maximum number of rows (records) to be returned }
 }
 
 \value{

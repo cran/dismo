@@ -31,12 +31,10 @@ evaluateROCR <- function(model, p, a, x) {
 
 
 
-.auc <- function(p, a) {
-	#p <- na.omit(p)
-	#a <- na.omit(a)
-	#if (length(p) == 0 | length(a) == 0) {
-	#	return(NA)
-	#}
+.auctest <- function(e) {
+	w <- wilcox.test(e@presence, e@absence)
+	pauc <- w$p.value
+	w$auc <- as.vector(w$statistic) / (e@na * e@np)
 }
 
 
@@ -82,10 +80,6 @@ evaluate <- function(p, a, model, x, tr, ...) {
 	xc@presence = p
 	xc@absence = a
 		
-	#mv <- wilcox.test(p, a)
-	#xc@pauc <- mv$p.value
-	#xc@auc <- as.vector(mv$statistic) / (na * np)
-
 	R <- sum(rank(c(p, a))[1:np]) - (np*(np+1)/2)
 	xc@auc <- R / (na * np)
 	

@@ -47,8 +47,8 @@ function (data,                        # the input dataframe
   sp.name <- names(data)[gbm.y]
     
 
-  assign("x.data", x.data, pos = 1)             #and assign them for later use
-  assign("y.data", y.data, pos = 1)
+  # assign("x.data", x.data, pos = 1)             #and assign them for later use
+  # assign("y.data", y.data, pos = 1)
 
 # fit the gbm model 
 

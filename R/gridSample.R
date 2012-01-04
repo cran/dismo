@@ -9,29 +9,56 @@ gridSample <- function(xy, r, n=1, chess='') {
 	if (inherits(xy, 'Spatial')) {
 		xy <- coordinates(xy)
 	}
-    cell = cellFromXY(r, xy)
-	cell = na.omit(cell)
-    uc = unique(cell)
+	
+	r <- raster(r)
+	cell <- cellFromXY(r, xy)
+    uc <- unique(na.omit(cell))
 	
 	chess <- trim(chess)
 	if (chess != '') {
-		chess = tolower(chess)
-		if (chess == 'white') {
-			tf <- 1:ceiling(ncell(r)/2) * 2 - 1
-		} else if (chess == 'black') {
-			tf <- 1:ceiling(ncell(r)/2) * 2
+		chess <- tolower(chess)
+		stopifnot(chess %in% c('black', 'white'))
+		nc <- ncol(r)
+		if (nc %% 2 == 1) {
+			if (chess=='white') {
+				tf <- 1:ceiling(ncell(r)/2) * 2 - 1
+			} else {
+				tf <- 1:ceiling((ncell(r)-1)/2) * 2 
+			}
 		} else {
-			stop("The value of 'chess' should be '', 'black' or 'white'")
+			nr <- nrow(r)
+			row1 <- 1:(ceiling(nr / 2)) * 2 - 1
+			row2 <- row1 + 1
+			row2 <- row2[row2 <= nr]
+			
+			if (chess=='white') {
+				col1 <- 1:(ceiling(nc / 2)) * 2 - 1
+				col2 <- col1 + 1
+				col2 <- col2[col2 <= nc]
+			} else {
+				col1 <- 1:(ceiling(nc / 2)) * 2
+				col2 <- col1 - 1
+				col1 <- col1[col1 <= nc]
+			}
+				
+			cells1 <- cellFromRowColCombine(r, row1, col1)
+			cells2 <- cellFromRowColCombine(r, row2, col2)
+			tf <- c(cells1, cells2)
 		}	
 		uc <- uc[uc %in% tf]
 	}
 	
-    xy = cbind(xy, cell, runif( nrow(xy)))
-    xy =  xy[order(xy[,4]), ]
-    pts = matrix(nrow=0, ncol=2)
+    cell <- cellFromXY(r, xy)
+    xy <- cbind(xy, cell, runif( nrow(xy)))
+	xy <- na.omit(xy)
+    xy <- unique(xy)
+
+
+    xy <-  xy[order(xy[,4]), ]
+    pts <- matrix(nrow=0, ncol=2)
     for (u in uc) {
-        ss = subset(xy, xy[,3] == u)
-        pts = rbind(pts, ss[1:min(n, nrow(ss)), 1:2])
+        ss <- subset(xy, xy[,3] == u)
+        pts <- rbind(pts, ss[1:min(n, nrow(ss)), 1:2])
     }
     return(pts)
 	

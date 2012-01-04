@@ -17,7 +17,7 @@ function(object, x, ext=NULL, filename='', ...) {
 		
 	} else {
 	
-		if (! all(colnames(object@presence) %in% layerNames(x)) ) {
+		if (! all(colnames(object@presence) %in% names(x)) ) {
 			stop('missing variables in Raster object ')
 		}
 	

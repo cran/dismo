@@ -1,4 +1,4 @@
-# Author: Robert J. Hijmans, r.hijmans@gmail.com
+# Author: Robert J. Hijmans
 # Date :  July 2010
 # Version 1.0
 # Licence GPL v3
@@ -6,27 +6,28 @@
 # Based on functions in R package 'RgoogleMaps' 
 # by Markus Loecher, Sense Networks <markus at sensenetworks.com>
 
+# October 2012
+# Updated with contributions by Sébastien Rochette
 
+gmap <- function(x, exp=1, type='terrain', filename='', style=NULL, scale=1, zoom=NULL, size=c(640, 640), rgb=FALSE, lonlat=FALSE, ...) {
 
-gmap <- function (x, exp=1, type='terrain', filename='', style=NULL, ...) {
-
-	if (! require(rgdal)) { stop('rgdal not available') }
+	if (! require(rgdal) ) { 
+		stop('rgdal not available') 
+	}
 	
 	if (! type %in% c('roadmap', 'satellite', 'hybrid', 'terrain')) {
-		warning("type should be: roadmap, satellite, hybrid, or terrain.") 
-		type <- 'roadmap'
+		warning("type should be: roadmap, satellite, hybrid, or terrain: Terrain chosen by default") 
+		type <- 'terrain'
 	}
-
-	mxzoom <- function (latrange, lonrange, size = c(640, 640)) {
-	# function from in R package 'RgoogleMaps' 
-	# by Markus Loecher, Sense Networks <markus at sensenetworks.com>
-		SinPhi = sin(latrange * pi/180)
-		normX = lonrange / 180
-		normY = (0.5 * log(abs((1 + SinPhi)/(1 - SinPhi))))/pi
-		MaxZoom.lon <- floor(1 + log2(abs(size[1]/256/diff(normX))))
-		MaxZoom.lat <- floor(1 + log2(abs(size[2]/256/diff(normY))))
-		return(c(MaxZoom.lat = MaxZoom.lat, MaxZoom.lon = MaxZoom.lon))
-	}
+	
+	mxzoom <- function(latrange, lonrange, size=size) {
+        SinPhi = sin(latrange * pi/180)
+        normX = lonrange/180
+        normY = (0.5 * log(abs((1 + SinPhi)/(1 - SinPhi))))/pi
+        MaxZoom.lon <- floor(1 + log2(abs(size[1]/256/diff(normX))))
+        MaxZoom.lat <- floor(1 + log2(abs(size[2]/256/diff(normY))))
+        return(c(MaxZoom.lat = MaxZoom.lat, MaxZoom.lon = MaxZoom.lon))
+    }	
 
 	ll2XY <- function (lat, lon, zoom) {
 	# function from in R package 'RgoogleMaps' 
@@ -117,8 +118,10 @@ gmap <- function (x, exp=1, type='terrain', filename='', style=NULL, ...) {
 		lonR <- c(e@xmin, e@xmax)
 		latR <- c(e@ymin, e@ymax)
 
-		size <- c(640, 640)
-		zoom <- min(mxzoom(latR, lonR, size))
+# 		size <- c(640, 640)
+		if(is.null(zoom)){
+		  zoom <- min(mxzoom(latR, lonR, size))
+		}
 		center <- c(mean(latR), mean(lonR))
  	
 		ll <- ll2XY(latR[1], lonR[1], zoom)
@@ -137,7 +140,7 @@ gmap <- function (x, exp=1, type='terrain', filename='', style=NULL, ...) {
 
 		ctr <- paste(center, collapse = ",")
 	
-		gurl <- paste(gurl, "center=", ctr, "&zoom=", zoom, "&size=", s, "&maptype=", type, "&format=gif", "&sensor=false", sep = "")
+		gurl <- paste(gurl, "center=", ctr, "&zoom=", zoom, "&size=", s, "&maptype=", type, "&format=gif&sensor=false&scale=", scale, sep = "")
 		if (!is.null(style)) {
 			style <- gsub("\\|", "%7C", style)
 			style <- gsub(" ", "", style)
@@ -145,12 +148,15 @@ gmap <- function (x, exp=1, type='terrain', filename='', style=NULL, ...) {
 		}
 #		cat(gurl, "\n")
 	
-	if (trim(filename) == '') filename <- rasterTmpFile()
+	filename <- trim(filename)
+	if (filename == '') {
+		filename <- rasterTmpFile()
+	}
 	extension(filename) <- 'gif'
-	download.file(gurl, filename, mode = "wb", quiet = TRUE)
+	download.file(gurl, filename, mode="wb", quiet=TRUE)
     
 	MyMap <- list(lat.center = center[1], lon.center = center[2], zoom = zoom)
-	bb <- list(ll = xy2ll(MyMap, X = -size[1]/2 + 0.5, Y = -size[2]/2 - 0.5), ur = xy2ll(MyMap, X = size[1]/2 +  0.5, Y = size[2]/2 - 0.5))
+	bb <- list(ll = xy2ll(MyMap, X=-size[1]/2 + 0.5, Y=-size[2]/2 - 0.5), ur=xy2ll(MyMap, X=size[1]/2 + 0.5, Y=size[2]/2 - 0.5))
 
 	r <- raster(filename, warn=FALSE)
 	ext <- extent(bb$ll[2], bb$ur[2], bb$ll[1], bb$ur[1])
@@ -163,32 +169,22 @@ gmap <- function (x, exp=1, type='terrain', filename='', style=NULL, ...) {
 	try( hdr(r, format='worldfile', extension='.gfw') )
 	extension(filename) <- 'prj'
 	showWKT(projection(r), file=filename, morphToESRI=TRUE)
+	
+	if (lonlat) {
+		ct <- r@legend@colortable 
+		r <- projectRaster(r, crs="+proj=longlat +datum=WGS84", method='ngb')
+		r@legend@colortable <- ct
+	}
+	
+    if (rgb) {
+		d <- t( col2rgb(r@legend@colortable) )
+		d <- data.frame(id=0:255, d)
+		r <- subs(r, d, which=2:4)
+    }
+	
     return(r)
 }
 
 #e = extent( -121.9531 , -120.3897 , 35.36 , 36.61956 )
 #r = gmap(e)
 #plot(r)
-
-
-# not relevant without gmap
-Mercator <- function (p, inverse = FALSE) {
-#author: RH
-	r = 6378137
-    toRad <- pi/180
-    if (inverse) {
-        p <- .pointsToMatrix(p, checkLonLat = FALSE)
-        p[, 2] <- pi/2 - 2 * atan(exp(-p[, 2]/r))
-        p[, 1] <- p[, 1]/r
-        colnames(p) <- c("lon", "lat")
-        return(p/toRad)
-    }
-    else {
-        p <- .pointsToMatrix(p) * toRad
-        p[, 2] <- log(tan(p[, 2]) + (1/cos(p[, 2])))
-        p <- p * r
-        colnames(p) <- c("x", "y")
-        return(p)
-    }
-}
-

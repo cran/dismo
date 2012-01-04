@@ -1,34 +1,168 @@
-#author: Jean-Pierre Rossi <jean-pierre.rossi@supagro.inra.fr>
+# author: Jean-Pierre Rossi <jean-pierre.rossi@supagro.inra.fr>
+# modifications by Robert Hijmans
+# messi2 function by Paulo van Breugel
 
-mess <- function(x, v, full=TRUE) {
 
-	messi <-function(p,v) {
-		niinf <- length(which(v<=p))
-		f<-100 * niinf / length(v)
-		if(f==0) simi <- 100*(p-min(v))/(max(v)-min(v))
-		if(0<f & f<=50) simi <- 2*f
-		if(50<=f & f<100) simi <- 2*(100-f)
-		if(f==100) simi <- 100*(max(v)-p)/(max(v)-min(v))
-		return(simi)
-    }
+.messi2 <- function(p,v){
+  f<-100*findInterval(p,sort(v))/length(v)
+  a <- length(p)
+  maxv <- max(v)
+  minv <- min(v)
+  opt1 <- 100*(p-minv)/(maxv-minv)
+  opt2 <- 2*f
+  opt3 <- 2 * (100-f)
+  opt4 <- 100*(maxv-p)/(maxv-minv)
+  simi <- ifelse(f==0, opt1, ifelse(f<=50, opt2, ifelse(f<100, opt3,opt4)))
+  return(simi)
+}
 
-	E <- extract(x, y=1:ncell(x))
-	r_mess <- x
-	for (i in 1:(dim(E)[2])) {
-		e <- data.frame(E[,i])
-		r_mess[[i]][] <- apply(X=e, MARGIN=1, FUN=messi, v=v[,i])
-    }
+
+.messi2b <- function(p,v) {
+# seems slightly faster than messi2
+	v <- na.omit(v)
+	f <- 100*findInterval(p, sort(v)) / length(v)
+	minv <- min(v)
+	maxv <- max(v)
+	ifelse(f == 0, 100*(p-minv)/(maxv-minv), 
+		ifelse(f <= 50, 2*f, 
+		ifelse(f < 100, 2*(100-f),
+			100*(maxv-p)/(maxv-minv)
+	)))
+}
+
+
+.messi3 <- function(p,v) {
+# seems 2-3 times faster than messi2
+	v <- na.omit(v)
+	f <- 100*findInterval(p, sort(v)) / length(v)
+	minv <- min(v)
+	maxv <- max(v)
+	res <- 2*f 
+	f[is.na(f)] <- -99
+	i <- f==0 
+	res[i] <- 100*(p[i]-minv)/(maxv-minv)
+	#i <- f>0 & f<=50
+	#res[] <- 2 * f[i]
+	i <- f>50 & f<100
+	res[i] <- 2*(100-f[i])
+	i <- f==100
+	res[i] <- 100*(maxv-p[i])/(maxv-minv)
+	res
+}
+
+
+#P = runif(100000)
+#V=runif(25)
+#system.time(x <- .messi2a(P,V))
+#system.time(y <- .messi2b(P,V))
+#system.time(z <- .messi3(P,V))
+
+
+.messOld <- function(x, v, full=FALSE) {
+	stopifnot(NCOL(v) == nlayers(x))
+	out <- raster(x)
+	E <- getValues(x)
+
+	nl <- nlayers(x)
+	if (nl == 1) {
+		rmess <- .messi2(E, v)
+		names(out) <- 'mess'
+		return( setValues(out, rmess) )
+
+	} else {
+		E <- sapply(1:ncol(E), function(i) .messi2(E[,i], v[,i]))
+		rmess <- raster:::.rowMin(E)
+		if (full) {
+			out <- brick(out, nl=nl+1)
+			names(out) <- c(names(x), "mess")
+			return( setValues(out, cbind(E, rmess)) )
+		} else {
+			names(out) <- 'mess'
+			return( setValues(out, rmess) )
+		}
+	}	
+}
+
+
+mess <- function(x, v, full=FALSE, filename='', ...) {
+
+	stopifnot(NCOL(v) == nlayers(x))
+	out <- raster(x)
+	nl <- nlayers(x)
+	filename <- trim(filename)
+	nms <- paste(names(x), '_mess', sep='')
 	
-	rmess <- r_mess[[1]]
-	E <- extract(x=r_mess, y=1:ncell(r_mess[[1]]))
-	
-	rmess[] <- apply(X=E, MARGIN=1, FUN=min)
+	if (canProcessInMemory(x)) {
+		x <- getValues(x)
+		if (nl == 1) {
+			rmess <- .messi3(x, v)
+			names(out) <- 'mess'
+			out <- setValues(out, rmess)
+		} else {
+			x <- sapply(1:ncol(x), function(i) .messi3(x[,i], v[,i]))
+			rmess <- raster:::.rowMin(x)
+			if (full) {
+				out <- brick(out, nl=nl+1)
+				names(out) <- c(nms, "mess")
+				out <- setValues(out, cbind(x, rmess))
+			} else {
+				names(out) <- 'mess'
+				out <- setValues(out, rmess)
+			}
+		}	
+		if (filename != '') {
+			out <- writeRaster(out, filename, ...)
+		}
+		return(out)
+		
+	} else {
 
-	if(full==TRUE) {
-		out <- addLayer(r_mess,rmess)
-		layerNames(out)<-c(layerNames(x),"mess")
-	}
+		if (nl == 1) {
+		
+			names(out) <- "mess"
+			tr <- blockSize(out)
+			pb <- pbCreate(tr$n, ...)	
+			out <- writeStart(out, filename, ...)
+			for (i in 1:tr$n) {
+				vv <- getValues(x, row=tr$row[i], nrows=tr$nrows[i])
+				vv <- .messi3(vv, v)
+				out <- writeValues(out, vv, tr$row[i])
+				pbStep(pb) 
+			}
+		
+		} else {
 	
-	if(full==FALSE) out <- rmess
-	return(out)
+			if (full) {
+				out <- brick(out, nl=nl+1)
+				names(out) <- c(nms, "mess")
+				tr <- blockSize(out)
+				pb <- pbCreate(tr$n, ...)	
+				out <- writeStart(out, filename, ...)
+				for (i in 1:tr$n) {
+					vv <- getValues(x, row=tr$row[i], nrows=tr$nrows[i])
+					vv <- sapply(1:ncol(v), function(i) .messi3(vv[,i], v[,i]))
+					m <- raster:::.rowMin(vv)
+					out <- writeValues(out, cbind(vv, m), tr$row[i])
+					pbStep(pb) 
+				}
+				
+			} else {
+			
+				names(out) <- "mess"
+				tr <- blockSize(out)
+				pb <- pbCreate(tr$n, ...)	
+				out <- writeStart(out, filename, ...)
+				for (i in 1:tr$n) {
+					vv <- getValues(x, row=tr$row[i], nrows=tr$nrows[i])
+					vv <- sapply(1:ncol(v), function(i) .messi3(vv[,i], v[,i]))
+					m <- raster:::.rowMin(vv)
+					out <- writeValues(out, m, tr$row[i])
+					pbStep(pb) 
+				}
+			}
+		}
+		out <- writeStop(out)
+		pbClose(pb) 
+	}	
+	out
 }

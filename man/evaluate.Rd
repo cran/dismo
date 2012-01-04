@@ -47,18 +47,18 @@ Robert J. Hijmans
 Fielding, A.H. and J.F. Bell, 1997. A review of methods for the assessment of prediction errors in conservation presence/absence models. Environmental Conservation 24:38-49
 }
 
+\seealso{ \code{\link{threshold}} }
+
 \examples{
-# p = the predicted value for 50 known cases (locations) with presence of the phenomenon (species)
-p = rnorm(50, mean=0.7, sd=0.3)
-# b = the predicted value for 50 known cases (locations) with absence of the phenomenon (species)
-a = rnorm(50, mean=0.4, sd=0.4)
-e = evaluate(p=p, a=a)
+## See ?maxent for an example with real data.
+# this is a contrived example:
+# p has the predicted values for 50 known cases (locations) with presence of the phenomenon (species)
+p <- rnorm(50, mean=0.7, sd=0.3)
+# b has the predicted values for 50 background locations (or absence)
+a <- rnorm(50, mean=0.4, sd=0.4)
+e <- evaluate(p=p, a=a)
 
-# threshold at maximum kappa
-e@t[which.max(e@kappa)]
-
-# threshold at maximum of the sum of the sensitivity (true positive rate) and specificity (true negative rate)
-e@t[which.max(e@TPR + e@TNR)]
+threshold(e)
 
 plot(e, 'ROC')
 plot(e, 'TPR')

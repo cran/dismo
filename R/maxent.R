@@ -96,6 +96,8 @@ if (!isGeneric("maxent")) {
 
 .rJava <- function() {
 	if (is.null(getOption('dismo_rJavaLoaded'))) {
+		# to avoid trouble on macs
+		Sys.setenv(NOAWT=TRUE)
 		if ( require(rJava) ) {
 			.jpackage('dismo')
 			options(dismo_rJavaLoaded=TRUE)
@@ -106,11 +108,17 @@ if (!isGeneric("maxent")) {
 }
 
 .getMeVersion <- function() {
+	jar <- paste(system.file(package="dismo"), "/java/maxent.jar", sep='')
+	if (!file.exists(jar)) {
+		stop('file missing:\n', jar, '.\nPlease download it here: http://www.cs.princeton.edu/~schapire/maxent/')
+	}
 	.rJava()
 	mxe <- .jnew("meversion") 
 	v <- try(.jcall(mxe, "S", "meversion") )
 	if (class(v) == 'try-error') {
-		stop('"dismo" needs a more recent version of Maxent (3.3.3b or later) \nPlease download it here: http://www.cs.princeton.edu/~schapire/maxent/')
+		stop('"dismo" needs a more recent version of Maxent (3.3.3b or later) \nPlease download it here: http://www.cs.princeton.edu/~schapire/maxent/
+		\n and put it in this folder:\n',
+		system.file("java", package="dismo"))
 	} else if (v == '3.3.3a') { 
 		stop("please update your maxent program to version 3.3.3b or later. This version is no longer supported. \nYou can download it here: http://www.cs.princeton.edu/~schapire/maxent/'")
 	}
@@ -120,17 +128,11 @@ if (!isGeneric("maxent")) {
 
 setMethod('maxent', signature(x='missing', p='missing'), 
 	function(x, p, silent=FALSE, ...) {
-		.rJava()
-		jar <- paste(system.file(package="dismo"), "/java/maxent.jar", sep='')
-		if (!file.exists(jar)) {
-			warning('maxent program is missing: ', jar, '\nPlease download it here: http://www.cs.princeton.edu/~schapire/maxent/')
-			return(FALSE)
-		}
 		v <- .getMeVersion()
 		if (!silent) {
 			cat('This is MaxEnt version', v, '\n' )
 		}
-		return(TRUE)
+		invisible(TRUE)
 	}
 )
 
@@ -261,15 +263,10 @@ setMethod('maxent', signature(x='Raster', p='ANY'),
 }
 
 
+
 setMethod('maxent', signature(x='data.frame', p='vector'), 
 	function(x, p, args=NULL, path, silent=FALSE, ...) {
 	
-		jar <- paste(system.file(package="dismo"), "/java/maxent.jar", sep='')
-		if (!file.exists(jar)) {
-			stop('file missing:\n', jar, '.\nPlease download it here: http://www.cs.princeton.edu/~schapire/maxent/')
-		}
-		.rJava()
-		
 		MEversion <- .getMeVersion()
 
 		x <- cbind(p, x)

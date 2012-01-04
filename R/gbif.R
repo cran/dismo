@@ -124,21 +124,29 @@ gbif <- function(genus, species='', ext=NULL, args=NULL, geo=TRUE, sp=FALSE, rem
     for (group in ss:iter) {
         start <- group * nrecs
 		if (feedback > 1) {
-			if (group == iter) { end <- n-1 } else { end <- start + nrecs - 1 }
-			if (group == ss) { cat(ss, '-', end+1, sep='')  
-			} else { cat('-', end+1, sep='')  }
+			if (group == iter) { 
+				end <- n-1 
+				nrecs <- 1+end-start
+			} else { 
+				end <- start + nrecs - 1 
+			}
+			if (group == ss) { 
+				cat(start, '-', end+1, sep='')  
+			} else { 
+				cat('-', end+1, sep='')  
+			}
 			if ((group > ss & group %% 20 == 0)  |  group == iter ) { cat('\n') }
 			flush.console()
 		}
-		
-        aurl <- paste(base, 'list?scientificname=', spec, '&mode=processed&format=darwin&startindex=', format(start, scientific=FALSE), cds, ex, args, sep='')
+				
+        aurl <- paste(base, 'list?scientificname=', spec, '&mode=processed&format=darwin&startindex=', format(start, scientific=FALSE), '&maxresults=', format(nrecs, scientific=FALSE), cds, ex, args, sep='')
 
 		tries <- 0
         #======= if download fails due to server problems, keep trying  =======#
         while (TRUE) {
 			tries <- tries + 1
 			if (tries > ntries) {
-				warning('GBIF did not return the data in ', ntries)
+				warning('GBIF did not return the data in ', ntries, '  tries.')
 				breakout <- TRUE
 				break
 			}

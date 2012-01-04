@@ -62,7 +62,9 @@ setMethod('biovars', signature(prec='Raster', tmin='Raster', tmax='Raster'),
 	if (nlayers(tmin) != 12) stop('nlayers(tmin) is not 12')
 	if (nlayers(tmax) != 12) stop('nlayers(tmax) is not 12')
 	
-	compare(prec, tmin, tmax)
+	
+	# temporary fix to avoid warning
+	compareRaster(prec, tmin, tmax)
 
 	out <- brick(prec, values=FALSE)
 	out@data@nlayers <- as.integer(19)

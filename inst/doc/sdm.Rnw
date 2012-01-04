@@ -38,11 +38,11 @@ set.seed(0)
 
 \chapter{Introduction}
 
-This document provides an introduction to species distribution modeling with \R. Species distribution modeling (SDM) is also known under other names including climate envelope-modeling, habitat modeling, and (environmental or ecological) niche-modeling. The assumption of SDM is that you can predict the entire, or potential, spatial distribution of a phenomenon, by relating sites of known occurence (and perhaps non-occurrence) with predictor variables known for these sites and for all other sites. The common application of this method is to predict species ranges with climate data as predictors.  
+This document provides an introduction to species distribution modeling with \R. Species distribution modeling (SDM) is also known under other names including climate envelope-modeling, habitat modeling, and (environmental or ecological) niche-modeling. The assumption of SDM is that you can predict the entire, or potential, spatial distribution of a phenomenon, by relating sites of known occurrence (and perhaps non-occurrence) with predictor variables known for these sites and for all other sites. The common application of this method is to predict species ranges with climate data as predictors.  
 
-In SDM, the following steps are usually taken: (1) locations of occurrence (and perhaps non-occurrence) of a species (or other phenomenon) are compiled. (2) values of environmental predictor variables (such as climate) at these locations are determined. (3) the environmental values are used  to fit a model predicting likelihood of presence, or another measure such as abundance of the species. (4) The model is used to predict the likelihood of presence at all locations of an area of interest (and perhaps in a future climate).
+In SDM, the following steps are usually taken: (1) locations of occurrence of a species (or other phenomenon) are compiled. (2) values of environmental predictor variables (such as climate) at these locations are extracted from spatial databases (3) the environmental values are used  to fit a model predicting likelihood of presence, or another measure such as abundance of the species. (4) The model is used to predict the likelihood of presence across an area of interest (and perhaps for a future or past climate).
 
-In this text we assume that you are familiar with most of the concepts in SDM. If in doubt, you could consult, for example, Richard Pearson's introduction to the subject: \url{http://biodiversityinformatics.amnh.org/index.php?section_id=111}, the book by Janet Franklin (2009), and the recent review by Elith and Leathwick (2009). It is important to have a good understanding of the interplay of environmental (niche) and geographic (biotope) space – see Colwell and Rangel (2009) for a good overview. SDM is a widely used approach but there is much debate on when and how to best use this method. While we refer to some of these issues, in this document we do not provide an in-depth discussion of this scientific debate. Rather, our objective is to provide practical guidance to implemeting the basic steps of SDM. We leave it to the you to use other sources to determine the appropriate methods for their research; and to use the ample opportunities provided by the \R environment to improve existing approaches and to develop new ones. 
+In this text we assume that you are familiar with most of the concepts in SDM. If in doubt, you could consult, for example, Richard Pearson's introduction to the subject: \url{http://biodiversityinformatics.amnh.org/index.php?section_id=111}, the book by Janet Franklin (2009), or the somewhat more theoretical book by Peterson et al. (2011), or the recent review article by Elith and Leathwick (2009). It is important to have a good understanding of the interplay of environmental (niche) and geographic (biotope) space – see Colwell and Rangel (2009) and Peterson et al. (2011) for a discussion. SDM is a widely used approach but there is much debate on when and how to best use this method. While we refer to some of these issues, in this document we do not provide an in-depth discussion of this scientific debate. Rather, our objective is to provide practical guidance to implemeting the basic steps of SDM. We leave it to you to use other sources to determine the appropriate methods for their research; and to use the ample opportunities provided by the \R environment to improve existing approaches and to develop new ones. 
 
 We also assume that you are already familiar with the \R language and environment. It would be particularly useful if you already had some experience with statistical model fitting (e.g. the \texttt{glm} function) and with the '\verb@raster@' package. To familiarize yourself with model fitting see, for instance, the Documentation section on the CRAN webpage (http://cran.r-project.org/) and any introduction to \R txt. For the  '\verb@raster@' package you could consult its vignette. When we present code we will give some hints on how to understand the code, if we think it might be confusing. We will do more of this earlier on in this document, so if you are relatively inexperienced with \R and would like to ease into it, read this text in the presented order.   
 
@@ -263,8 +263,8 @@ r <- raster(acgeo)
 # set the resolution of the cells to 1 degrees
 res(r) <- 1
 
-# expand the RasterLayer a little
-r <- expand(r, extent(r)+1)
+# expand (extend) the extent of the RasterLayer a little
+r <- extend(r, extent(r)+1)
 
 # get the cell number for each point
 cell <- cellFromXY(r, acgeo)
@@ -374,7 +374,7 @@ plot(x@polygons, add=T)
 \section{Raster data}
 
 
-In species distribution modeling, predictor variables are typically organized as raster (grid) type files. Each predictor should be a 'raster' representing a variable of interest. Variables can include climatic, soil, terrain, vegetation, land use, and other variables. These data are typically stored in files in some kind of GIS format. Almost all relevant formats can be used (including ESRI grid, geoTiff, netCDF, IDRISI). Avoid ASCII files if you can, as they tend to considerably slow down processing speed. For any particular study the layers should all have the same spatial extent, resolution, origin, and projection. If necessary, use functions like \texttt{crop, expand, aggregate, resample, and projectRaster} from the '\texttt{raster}' package to prepare your predictor variable data. See the help files and the vignette of the raster package for more info on how to do this. 
+In species distribution modeling, predictor variables are typically organized as raster (grid) type files. Each predictor should be a 'raster' representing a variable of interest. Variables can include climatic, soil, terrain, vegetation, land use, and other variables. These data are typically stored in files in some kind of GIS format. Almost all relevant formats can be used (including ESRI grid, geoTiff, netCDF, IDRISI). Avoid ASCII files if you can, as they tend to considerably slow down processing speed. For any particular study the layers should all have the same spatial extent, resolution, origin, and projection. If necessary, use functions like \texttt{crop, extend, aggregate, resample, and projectRaster} from the '\texttt{raster}' package to prepare your predictor variable data. See the help files and the vignette of the raster package for more info on how to do this. 
 The set of predictor variables (rasters) can be used to make a '\texttt{RasterStack}', which is a collection of '\texttt{RasterLayer}' objects (see the \texttt{raster} package for more info). 
 
 Here we make a list of files that are installed with the dismo package and then create a rasterStack from these, show the names of each layer, and finally plot them all.
@@ -605,7 +605,10 @@ We can extract several things from the objects in 'e', but let's restrict oursel
 auc <- sapply( e, function(x){slot(x, 'auc')} )
 auc
 mean(auc)
-sapply( e, function(x){ x@t[which.max(x@TPR + x@TNR)] } )
+
+ sapply( e, function(x){ x@t[which.max(x@TPR + x@TNR)] } )
+# equivalent  
+# sapply( e, function(x){ x@t[which.max(x@TPR + x@TNR)] } )
 @
 
 
@@ -715,10 +718,17 @@ plot(bc, a=1, b=2, p=0.85)
 @
 
 We evaluate the model in a similar way, by providing presence and background (absence) points, the model, and a RasterStack:
-<<sdm61>>=
+<<sdm61a>>=
 e <- evaluate(pres_test, backg_test, bc, pred_nf)
 e
 @
+
+Find a threshold
+<<sdm61b>>=
+tr <- threshold(e, 'spec_sens')
+e
+@
+
 
 And we use the RasterStack with predictor variables to make a prediction to a RasterLayer:
 
@@ -728,8 +738,7 @@ pb
 par(mfrow=c(1,2))
 plot(pb, main='Bioclim, raw values')
 plot(wrld_simpl, add=TRUE, border='dark grey')
-threshold <- e@t[which.max(e@TPR + e@TNR)]
-plot(pb > threshold, main='presence/absence')
+plot(pb > tr, main='presence/absence')
 plot(wrld_simpl, add=TRUE, border='dark grey')
 points(pres_train, pch='+')
 @
@@ -756,8 +765,8 @@ pd = predict(pred_nf, dm, ext=ext, progress='')
 par(mfrow=c(1,2))
 plot(pd, main='Domain, raw values')
 plot(wrld_simpl, add=TRUE, border='dark grey')
-threshold <- e@t[which.max(e@TPR + e@TNR)]
-plot(pd > threshold, main='presence/absence')
+tr <- threshold(e, 'spec_sens')
+plot(pd > tr, main='presence/absence')
 plot(wrld_simpl, add=TRUE, border='dark grey')
 points(pres_train, pch='+')
 @
@@ -776,8 +785,8 @@ par(mfrow=c(1,2))
 pm[pm < -10] <- -10
 plot(pm, main='Mahalanobis distance')
 plot(wrld_simpl, add=TRUE, border='dark grey')
-threshold <- e@t[which.max(e@TPR + e@TNR)]
-plot(pm > threshold, main='presence/absence')
+tr <- threshold(e, 'spec_sens')
+plot(pm > tr, main='presence/absence')
 plot(wrld_simpl, add=TRUE, border='dark grey')
 points(pres_train, pch='+')
 @
@@ -836,8 +845,8 @@ pg <- predict(predictors, gm2, ext=ext)
 par(mfrow=c(1,2))
 plot(pg, main='GLM/gaussian, raw values')
 plot(wrld_simpl, add=TRUE, border='dark grey')
-threshold <- e2@t[which.max(e@TPR + e@TNR)]
-plot(pg > threshold, main='presence/absence')
+tr <- threshold(e2, 'spec_sens')
+plot(pg > tr, main='presence/absence')
 plot(wrld_simpl, add=TRUE, border='dark grey')
 points(pres_train, pch='+')
 points(backg_train, pch='-', cex=0.25)
@@ -895,8 +904,8 @@ if (file.exists(jar)) {
 	par(mfrow=c(1,2))
 	plot(px, main='Maxent, raw values')
 	plot(wrld_simpl, add=TRUE, border='dark grey')
-	threshold <- e@t[which.max(e@TPR + e@TNR)]
-	plot(px > threshold, main='presence/absence')
+	tr <- threshold(e, 'spec_sens')
+	plot(px > tr, main='presence/absence')
 	plot(wrld_simpl, add=TRUE, border='dark grey')
 	points(pres_train, pch='+')
 } else {	
@@ -931,8 +940,8 @@ pr <- predict(predictors, rf1, ext=ext)
 par(mfrow=c(1,2))
 plot(pr, main='Random Forest, regression')
 plot(wrld_simpl, add=TRUE, border='dark grey')
-threshold <- e@t[which.max(e@TPR + e@TNR)]
-plot(pr > threshold, main='presence/absence')
+tr <- threshold(e, 'spec_sens')
+plot(pr > tr, main='presence/absence')
 plot(wrld_simpl, add=TRUE, border='dark grey')
 points(pres_train, pch='+')
 points(backg_train, pch='-', cex=0.25)
@@ -958,8 +967,8 @@ ps <- predict(predictors, svm, ext=ext)
 par(mfrow=c(1,2))
 plot(ps, main='Support Vector Machine')
 plot(wrld_simpl, add=TRUE, border='dark grey')
-threshold <- e@t[which.max(e@TPR + e@TNR)]
-plot(ps > threshold, main='presence/absence')
+tr <- threshold(e, 'spec_sens')
+plot(ps > tr, main='presence/absence')
 plot(wrld_simpl, add=TRUE, border='dark grey')
 points(pres_train, pch='+')
 points(backg_train, pch='-', cex=0.25)
@@ -988,8 +997,8 @@ e
 par(mfrow=c(1,2))
 plot(ds, main='Geographic Distance')
 plot(wrld_simpl, add=TRUE, border='dark grey')
-threshold <- e@t[which.max(e@TPR + e@TNR)]
-plot(ds > threshold, main='presence/absence')
+tr <- threshold(e, 'spec_sens')
+plot(ds > tr, main='presence/absence')
 plot(wrld_simpl, add=TRUE, border='dark grey')
 points(pres_train, pch='+')
 points(backg_train, pch='-', cex=0.25)
@@ -1029,8 +1038,8 @@ e
 par(mfrow=c(1,2))
 plot(pc, main='Circles')
 plot(wrld_simpl, add=TRUE, border='dark grey')
-threshold <- e@t[which.max(e@TPR + e@TNR)]
-plot(pc > threshold, main='presence/absence')
+tr <- threshold(e, 'spec_sens')
+plot(pc > tr, main='presence/absence')
 plot(wrld_simpl, add=TRUE, border='dark grey')
 points(pres_train, pch='+')
 points(backg_train, pch='-', cex=0.25)
@@ -1054,8 +1063,8 @@ par(mfrow=c(1,2))
 
 plot(iw, main='Inv. Dist. Weighted')
 plot(wrld_simpl, add=TRUE, border='dark grey')
-threshold <- e@t[which.max(e@TPR + e@TNR)]
-pa <- mask(iw > threshold, seamask)
+tr <- threshold(e, 'spec_sens')
+pa <- mask(iw > tr, seamask)
 plot(pa, main='presence/absence')
 plot(wrld_simpl, add=TRUE, border='dark grey')
 points(pres_train, pch='+')
@@ -1214,6 +1223,8 @@ using uncertainty field in georeferences. How to target the "important" uncertai
 \noindent Nix, H.A., 1986. A biogeographic analysis of Australian elapid snakes. In: Atlas of Elapid Snakes of Australia. (Ed.) R. Longmore, pp. 4-15. Australian Flora and Fauna Series Number 7. Australian Government Publishing Service: Canberra.
 
 \noindent Olson, D.M, E. Dinerstein, E.D. Wikramanayake, N.D. Burgess, G.V.N. Powell, E.C. Underwood, J.A. D'amico, I. Itoua, H.E. Strand, J.C. Morrison, C.J. Loucks, T.F. Allnutt, T.H. Ricketts, Y. Kura, J.F. Lamoreux, W.W. Wettengel, P. Hedao, and K.R. Kassem. 2001. Terrestrial Ecoregions of the World: A New Map of Life on Earth. BioScience 51:933-938
+
+\noindent Peterson, A.T., J. Soberón, R.G. Pearson, R.P. Anderson, E. Martínez-Meyer, M. Nakamura & M.B. Araújo, 2011. Ecological Niches and Geographic Distributions. Monographs in Population Biology 49. Princeton University Press, 328p.
 
 \noindent Phillips S.J., Elith J. (2011 in press) Logistic methods for resource selection functions and presence-only species distribution models, AAAI (Association for the Advancement of Artificial Intelligence), San Francisco, USA.
 

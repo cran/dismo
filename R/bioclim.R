@@ -1,7 +1,6 @@
 # Author: Robert J. Hijmans
-# contact: r.hijmans@gmail.com
 # Date : December 2009
-# Version 0.1
+# Version 1.0
 # Licence GPL v3
 
 setClass('Bioclim',

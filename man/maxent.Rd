@@ -52,7 +52,10 @@ Some people have reported problems when using this function on a Mac (Apple) com
 \code{Error in .jcall(mxe, "S", "fit", c("autorun", "-e", afn, "-o", dirout, : java.lang.InternalError: Can't start the AWT because
 Java was started on the first thread. Make sure StartOnFirstThread is not specified in your application's Info.plist or on the command line.}
 
-This is a known problem with certain Java applications on Macs. The only work around that we are aware of, is to run the maxent function from the JGR interface (a Java based R GUI), instead of from, e.g., Rgui. You can install JGR from here: \url{http://www.rforge.net/JGR/}
+This is a known problem with certain Java applications on Macs. There are two work-arounds that we are aware of:
+1) run \code{Sys.setenv(NOAWT=TRUE)} before running \code{library rJava} (this is what dismo does if rJava is not loaded).
+
+2) use the JGR interface (a Java based R GUI). You can install JGR from here: \url{http://www.rforge.net/JGR/}
 }
 
 
@@ -80,7 +83,9 @@ Jane Elith, Steven J. Phillips, Trevor Hastie, Miroslav Dudik, Yung En Chee, Col
 \examples{
 # only run if the maxent.jar file is available, in the right folder
 jar <- paste(system.file(package="dismo"), "/java/maxent.jar", sep='')
-if (file.exists(jar)) {
+
+# checking if maxent can be run (normally not part of your script)
+if (file.exists(jar) & require(rJava)) {
 
 # get predictor variables
 predictors <- stack(list.files(path=paste(system.file(package="dismo"), '/ex', sep=''), 
@@ -125,14 +130,14 @@ points(occ)
 bg <- randomPoints(predictors, 1000)
 
 #simplest way to use 'evaluate'
-e1 = evaluate(me, p=occtest, a=bg, x=predictors)
+e1 <- evaluate(me, p=occtest, a=bg, x=predictors)
 
 # alternative 1
 # extract values
 pvtest <- data.frame(extract(predictors, occtest))
 avtest <- data.frame(extract(predictors, bg))
 
-e2 = evaluate(me, p=pvtest, a=avtest)
+e2 <- evaluate(me, p=pvtest, a=avtest)
 
 # alternative 2 
 # predict to testing points 
@@ -140,8 +145,10 @@ testp <- predict(me, pvtest)
 head(testp)
 testa <- predict(me, avtest) 
 
-e3 = evaluate(p=testp, a=testa)
+e3 <- evaluate(p=testp, a=testa)
 e3
+threshold(e3)
+
 plot(e3, 'ROC')
 }
 }
