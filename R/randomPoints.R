@@ -85,7 +85,7 @@ randomPoints <- function(mask, n, p, ext=NULL, extf=1.1, excludep=TRUE, cellnumb
 	}
 	
 	nn = n * tryf
-	nn = max(nn, 250)
+	nn = max(nn, 10)
 
 	
 	if (canProcessInMemory(mask2)) {
@@ -114,7 +114,7 @@ randomPoints <- function(mask, n, p, ext=NULL, extf=1.1, excludep=TRUE, cellnumb
 	} else {
 	
 		nn <- min(ncell(mask2), nn)
-		if (raster:::.couldBeLonLat(mask)) {
+		if (raster:::.couldBeLonLat(mask2)) {
 	
 			cells <- .randomCellsLonLat(mask2, nn)
 			
@@ -125,11 +125,12 @@ randomPoints <- function(mask, n, p, ext=NULL, extf=1.1, excludep=TRUE, cellnumb
 				cells <- sampleInt(ncell(mask2), nn)
 			}
 		
-			xy <- xyFromCell(mask2, cells)
-			cells <- cellFromXY(mask, xy)
 		}
-
+		xy <- xyFromCell(mask2, cells)
+		cells <- cellFromXY(mask, xy)
+		
 		if (hasValues(mask)) {
+			
 			vals <- cbind(cells, extract(mask, cells))
 			cells <- na.omit(vals)[,1]
 		}

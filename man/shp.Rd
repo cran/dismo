@@ -1,8 +1,10 @@
+
 \name{shapefile}
+
 \alias{shapefile}
 
 \title{
-read a shapefile
+Read a shapefile
 }
 
 \description{
@@ -11,11 +13,12 @@ Simple wrapper around readOGR (rgdal package)
 
 
 \usage{
-shapefile(filename)
+shapefile(filename, verbose=FALSE)
 }
  
 \arguments{
   \item{filename}{Character. Full filename of a ESRI shapefile}
+  \item{verbose}{Logical. If \code{TRUE}, information about the file is printed}
 }
 
 \value{

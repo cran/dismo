@@ -1,5 +1,5 @@
 1a94c8fddf78c4087a3dba8efbcd684d *ChangeLog
-2cb747cd26b4e25897bea063fafb0671 *DESCRIPTION
+a581554ab323511597c43e9a430b0ec6 *DESCRIPTION
 9230bb62111d1790ed52a3e6810a485d *NAMESPACE
 8e40b84686821508043d29fb0c62c9c2 *R/AAAclasses.R
 85e40f0760a28d974510b55884d205e3 *R/Mahalanobis.R
@@ -25,7 +25,7 @@ f245bb08813f19f9148e1047b627c2b7 *R/ecocrop.R
 1da76c56851cf913971f60b20fba8475 *R/errorReport.R
 6e1f76a917f554ec67e0772381a0e78a *R/estimators.R
 87f7e7cefa3ff00e5fe77e5a5297508d *R/evaluate.R
-ee611513bcd9af4ace6dcfcf96cd4187 *R/gbif.R
+758dab4c1844099e6a02389f65c7772f *R/gbif.R
 56a30b5b9a9aa02e4bd8b84d9ef3b988 *R/gbm.fixed.R
 41bfcfa325230facddd4bf277b803833 *R/gbm.holdout.R
 0af19eab2bdabfc84c02f256cbf63aa4 *R/gbm.interactions.R
@@ -60,10 +60,10 @@ a957f0fcd925f892229d1e50bd015ff1 *R/pointInPolygon.R
 4ed21a3ad83e797c2ddee140e4ff5ddb *R/precision.R
 ac6c48fe434057094cc89c87e62d328c *R/prepareData.R
 0088e38138606c627c3889cd7ae597ca *R/pwdSample.R
-7f658fb3c1650cd04b9e390653b22af8 *R/randomPoints.R
+6c96815ee245dbfdb60296655b11ebb2 *R/randomPoints.R
 925948372eee1b46a2660375489fba84 *R/reserves.R
 bf693bf5a0b41c9502601f8d38805864 *R/response.R
-9e16de899cc7b27a826abc20af7df821 *R/shp.R
+5aafbf060c6dcacdc1da044dab2087d7 *R/shp.R
 323e27b8acc72fa5ce437e3c145c67e5 *R/ssb.R
 aea310266397947e7ad1c8eed203f04a *R/voronoiHull.R
 20c91c4c16d952197e945ab1e176b5d9 *R/voronoiHull.predict.R
@@ -143,6 +143,6 @@ ea2d94f5e75f83fe3c827648ee7516bd *man/prepareData.Rd
 8cacb76d58670cd3e95e5ceee8246c67 *man/pwdSample.Rd
 2a0d699885d564569466d11ed47aee38 *man/randomPoints.Rd
 aa84c5395a0b9c074fe11a822ef445c7 *man/response.Rd
-149b361780e255224c23e7e440f9b99e *man/shp.Rd
+5e4301a02c415d7c14f0621233628f4d *man/shp.Rd
 57017b9f59dc94afff237b97aeed94a0 *man/ssb.Rd
 2a25eef76b9010dd0c513511c40614f9 *man/voronoiHulll.Rd

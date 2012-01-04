@@ -1,6 +1,5 @@
 # Author: Robert J. Hijmans
-# contact: r.hijmans@gmail.com
-# Date : December 2009
+# Date : December 2009-2011
 # Version 1.0
 # Licence GPL v3
 
@@ -60,14 +59,14 @@ gbif <- function(genus, species='', ext=NULL, geo=TRUE, sp=FALSE, removeZeros=TR
     base <- 'http://data.gbif.org/ws/rest/occurrence/'
     url <- paste(base, 'count?scientificname=', spec, cds, ex, sep='')
 	
-    if (exists('x')) rm(x)  
 	tries <- 0
-    while (!exists('x'))  {
-		if (tries == 5) { # if you cannot do this in 5 tries, you might as well stop
-			stop('GBIF server does not return a valid answer')
-		}
-    	tryCatch(x <- readLines(url, warn = FALSE), error = function(e) cat('failed.\n'))
+    while (TRUE)  {
 		tries <- tries + 1
+		if (tries > 5) { # if you cannot do this in 5 tries, you might as well stop
+			stop('GBIF server does not return a valid answer after 5 tries')
+		}
+    	x <- try(readLines(url, warn = FALSE))
+		if (class(x) != 'try-error') break
     }
     x <- x[grep('totalMatched', x)]
     n <- as.integer(unlist(strsplit(x, '\"'))[2])
@@ -90,13 +89,13 @@ gbif <- function(genus, species='', ext=NULL, geo=TRUE, sp=FALSE, removeZeros=TR
 	nrecs <- min(max(nrecs, 1), 1000)
 	
     iter <- n %/% nrecs
-	first <- TRUE
 	breakout <- FALSE
 	if (start > 1) {
 		ss <- floor(start/nrecs)
 	} else {
 		ss <- 0
 	}
+	z <- NULL
     for (group in ss:iter) {
         start <- group * nrecs
 		if (feedback > 1) {
@@ -110,31 +109,22 @@ gbif <- function(genus, species='', ext=NULL, geo=TRUE, sp=FALSE, removeZeros=TR
         aurl <- paste(base, 'list?scientificname=', spec, '&mode=processed&format=darwin&startindex=', format(start, scientific=FALSE), cds, ex, sep='')
 
 		tries <- 0
-	    if (exists('zz')) rm(zz)
         #======= if download fails due to server problems, keep trying  =======#
-        while (!exists('zz')) {
-			if (tries > 1) {
-				if (tries > ntries) {
-					warning('GBIF did not return the data in ', ntries, ' tries\nreturning incomplete data')
-					breakout <- TRUE
-					break
-				} else {
-					cat('(try:',tries,')')
-				}
-			}
+        while (TRUE) {
 			tries <- tries + 1
-	    	tryCatch( zz <- gbifxmlToDataFrame(aurl), error = function(e) cat('failed.\n') )
+			if (tries > ntries) {
+				warning('GBIF did not return the data in ', ntries)
+				breakout <- TRUE
+				break
+			}
+	    	zz <- try( gbifxmlToDataFrame(aurl))
+			if (class(zz) != 'try-error') break
 	    }
-        #======================================================================#
 		
-		if (first) {
-			z <- zz
-			first <- FALSE
-		} else {
-			z <- rbind(z, zz)
-		}
 		if (breakout) {
 			break
+		} else {
+			z <- rbind(z, zz)
 		}
 	}
 
