@@ -1,5 +1,5 @@
-1a94c8fddf78c4087a3dba8efbcd684d *ChangeLog
-a581554ab323511597c43e9a430b0ec6 *DESCRIPTION
+e90cfb6f55937bc9191e463b8203510a *ChangeLog
+876374f7d0c261daee9347d6cdbe01e8 *DESCRIPTION
 9230bb62111d1790ed52a3e6810a485d *NAMESPACE
 8e40b84686821508043d29fb0c62c9c2 *R/AAAclasses.R
 85e40f0760a28d974510b55884d205e3 *R/Mahalanobis.R
@@ -45,9 +45,9 @@ bdfe13a5df585692a924a95d8100d368 *R/gmap.R
 05a7506c90f7e41ae5beec2415070802 *R/gridSample.R
 8afacc007a82abe83591f3a58a6fa83c *R/hullls.R
 5af9becf311bd71232a497e863182751 *R/kauc.R
-529b7bc2486c2ebae86d22299a737d9e *R/kfold.R
+606ae01ce592434561eb1a482fdaf642 *R/kfold.R
 8b271467847202d199c04ab887bc9a06 *R/maxent.R
-a1ea1ea6adc60ee8a824633c7dad852a *R/maxent.predict.R
+602a1a60f58a5e4bccec26dcfed2ef35 *R/maxent.predict.R
 c2d52b9507c2412a6a3a854c8c8b8883 *R/nullRandom.R
 6199ab48d03cbbda475f6a387842dc8d *R/onLoad.R
 033e1dd6cc70e5e49029527be61c0c66 *R/pairs.R
@@ -59,7 +59,7 @@ a957f0fcd925f892229d1e50bd015ff1 *R/pointInPolygon.R
 205ef896fe565fee0c5e88c2080f1690 *R/pointsToMatrix.R
 4ed21a3ad83e797c2ddee140e4ff5ddb *R/precision.R
 ac6c48fe434057094cc89c87e62d328c *R/prepareData.R
-0088e38138606c627c3889cd7ae597ca *R/pwdSample.R
+86493896e8f0cdbac9b3c85b4640c2cc *R/pwdSample.R
 6c96815ee245dbfdb60296655b11ebb2 *R/randomPoints.R
 925948372eee1b46a2660375489fba84 *R/reserves.R
 bf693bf5a0b41c9502601f8d38805864 *R/response.R
@@ -74,7 +74,7 @@ ea15beebbfdbc253b278c785160aebc0 *data/Anguilla_test.RData
 e5afab739dd38365e288bf085f40856a *data/acaule.RData
 3b89d76af51a9f31610558422179e7ea *inst/doc/brt.Rnw
 fe4baa09817f7f0f8a11800e0967c9bf *inst/doc/brt.pdf
-c8ca3540c45ab32a3aa7aae16c67a76f *inst/doc/sdm.Rnw
+d554c8e6a56b98ba965bbf677cc814c0 *inst/doc/sdm.Rnw
 50770bc66f4df282e0bdebfc0d8f45fd *inst/doc/sdm.pdf
 246736e1523c8168ae29515dcced5fb8 *inst/ex/bio1.grd
 709be5f5f000c90bf477da7dd833fd29 *inst/ex/bio1.gri
@@ -96,6 +96,7 @@ d4788fc8887d920c440ad90015b5f30b *inst/ex/biome.grd
 337175218b25414d98b06289032aa2ea *inst/ex/biome.gri
 adef9023dab1c990614ae0d6cf09cb81 *inst/ex/bradypus.csv
 57eb178ca5e38cf123b4d70182d820dc *inst/java/dismo.jar
+5cad5b98f7d0eb414a9bdfe597a51738 *inst/javasrc/compile.bat
 436e3d387cd2ca94438b8324b5c2aaef *inst/javasrc/mebridge.java
 12810401a903e9868a9444820a2a3265 *inst/javasrc/meversion.java
 439510552b2db3a20f37f915f8344f06 *man/DistModel.Rd
@@ -132,7 +133,7 @@ cea60006690453a4483595fed390e117 *man/gmap.Rd
 ecf600541ee28ccafc0f1b86e55ab880 *man/kfold.Rd
 75985f01de1efa71df86e24cef490bbf *man/lookUp.Rd
 75fb8be759d51bd5b6e960ef4454b73b *man/mahal.Rd
-4a55d6d8c22352de32c6adc24a1b7f6d *man/maxent.Rd
+0949d61e7f85050241e25132e7146e71 *man/maxent.Rd
 cdb16f192e02abdf5b3e5fa78690093d *man/nullRandom.Rd
 be50eeb7d7442edb24e4973f745784f1 *man/pairs.Rd
 99e3198d33a40a66ff30da9c25ed44e7 *man/plot.Rd
@@ -140,7 +141,7 @@ be50eeb7d7442edb24e4973f745784f1 *man/pairs.Rd
 6a7b1be7d05075fd70295d8c373678f9 *man/pointValues.Rd
 5e1b717f2b0ed038e99819052d1d6ccb *man/predict.Rd
 ea2d94f5e75f83fe3c827648ee7516bd *man/prepareData.Rd
-8cacb76d58670cd3e95e5ceee8246c67 *man/pwdSample.Rd
+6e118cf55a87bbfcf28f13528cec4c2d *man/pwdSample.Rd
 2a0d699885d564569466d11ed47aee38 *man/randomPoints.Rd
 aa84c5395a0b9c074fe11a822ef445c7 *man/response.Rd
 5e4301a02c415d7c14f0621233628f4d *man/shp.Rd

@@ -4,7 +4,7 @@
 # Licence GPL v3
 
 
-pwdSample <- function(fixed, sample, reference, tr=0.33, n=1, lonlat=TRUE, warn=TRUE) {
+pwdSample <- function(fixed, sample, reference, tr=0.33, nearest=TRUE, n=1, lonlat=TRUE, warn=TRUE) {
 
 	distHaversine <- function (p1, p2) {
 		r <- 6378137
@@ -49,6 +49,8 @@ pwdSample <- function(fixed, sample, reference, tr=0.33, n=1, lonlat=TRUE, warn=
 		distfun <- distPlane
 	}
 	
+	stopifnot(tr > 0)
+	
 	n <- round(n)
 	stopifnot(n >= 1)
 	
@@ -76,9 +78,12 @@ pwdSample <- function(fixed, sample, reference, tr=0.33, n=1, lonlat=TRUE, warn=
 		for (i in iter) {
 			d <- abs(tod - fromd[i])
 			if (min(d) < (tr * fromd[i])) {
-				x <- which.min(d)
+				if (nearest) {
+					x <- which.min(d)
+				} else {
+					x <- sample(which(d < (tr * fromd[i])), size=1) 
+				}
 				ngb[i, j] <- x
-			# or  x <- sample(which(d < (tr * fromd[i]))) ?
 				tod[x] <- Inf
 			} 
 		}

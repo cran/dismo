@@ -4,17 +4,15 @@
 # Licence GPL v3
 
 
-
 if (!isGeneric("predict")) {
 	setGeneric("predict", function(object, ...)
 		standardGeneric("predict"))
 }	
 
 
-
 setMethod('predict', signature(object='MaxEntReplicates'), 
 	function(object, x, ext=NULL, filename='', args="", ...) {
-		extension(filename) <- ''
+		filename <- extension(trim(filename), '')
 		lst <- list()
 		for (i in 1:length(object@models)) {
 			if (filename != '') {
@@ -34,17 +32,19 @@ setMethod('predict', signature(object='MaxEnt'),
 
 		args <- c(args, "")
 
-		if (! file.exists(object@path)) {
-			object@path <- .meTmpDir()
-			# dir.create(object@path, recursive=TRUE, showWarnings=TRUE)
-		}
-		lambdas <- paste(object@path, '/lambdas.csv', sep="")
-
-
-		variables = colnames(object@presence)
-		write.table(object@lambdas, file=lambdas, row.names=FALSE, col.names=FALSE, quote=FALSE)
+		#if (! file.exists(object@path)) {
+		#	object@path <- paste(.meTmpDir(), '/', paste(round(runif(10) * 10), collapse = ""), sep='')
+		#	if (! file.exists(object@path)) {
+		#		dir.create(object@path, recursive=TRUE, showWarnings=TRUE)
+		#	}
+		#}
+		#lambdas <- paste(object@path, '/lambdas.csv', sep="")
+		#write.table(object@lambdas, file=lambdas, row.names=FALSE, col.names=FALSE, quote=FALSE)
 		
-		MEversion <- dismo:::.getMeVersion()
+		lambdas <- paste(object@lambdas, collapse='\n')
+		variables <- colnames(object@presence)
+		
+		#MEversion <- .getMeVersion()
 
 		mxe <- .jnew("mebridge") 		
 		args <- c("-z", args)

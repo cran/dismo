@@ -1,9 +1,9 @@
 Package: dismo
 Type: Package
 Title: Species distribution modeling
-Version: 0.7-15
-Date: 4-January-2012
-Depends: R (>= 2.10.0), methods, raster (>= 1.7-0), sp
+Version: 0.7-17
+Date: 6-February-2012
+Depends: R (>= 2.11.0), methods, raster (>= 1.9-0), sp
 Suggests: rJava (>= 0.5-0), rgdal, gbm, splines, XML, ROCR, deldir,
         gstat, randomForest, kernlab, maptools
 Author: Robert J. Hijmans, Steven Phillips, John Leathwick and Jane
@@ -14,8 +14,6 @@ Description: Functions for species distribution modeling, that is,
         specific sites.
 License: GPL (>= 3)
 LazyLoad: yes
+Packaged: 2012-02-07 05:12:28 UTC; rhijmans
 Repository: CRAN
-Repository/R-Forge/Project: dismo
-Repository/R-Forge/Revision: 374
-Date/Publication: 2012-01-13 08:05:53
-Packaged: 2012-01-05 22:17:09 UTC; rforge
+Date/Publication: 2012-02-07 08:43:59

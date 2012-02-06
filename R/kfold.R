@@ -8,22 +8,25 @@
 kfold <- function(x, k=5, by=NULL) {
 
 	singlefold <- function(obs, k) {
-		i <- obs / k
-		if (i < 1) {
-			stop('insufficient records:', obs, ', with k=', k)
-		}
-		i <- round(c(0, i * 1:(k-1), obs))
-		times = i[-1] - i[-length(i)]
+		if (k==1) {
+			return(rep(1, obs))
+		} else {
+			i <- obs / k
+			if (i < 1) {
+				stop('insufficient records:', obs, ', with k=', k)
+			}
+			i <- round(c(0, i * 1:(k-1), obs))
+			times = i[-1] - i[-length(i)]
 
-		group <- c()
-		for (j in 1:(length(times))) {
-			group <- c( group, rep(j, times=times[j]) )
+			group <- c()
+			for (j in 1:(length(times))) {
+				group <- c( group, rep(j, times=times[j]) )
+			}
+		
+			r <- order(runif(obs))
+			return(group[r]) 
 		}
-	
-		r <- order(runif(obs))
-		return(group[r]) 
 	}
-
 
 	if (is.vector(x)) {
 		obs <- length(x)

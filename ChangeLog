@@ -1,3 +1,10 @@
+--- 6-February-2012, version 0.7-17
+New argument to pwdSample, "nearest", suggested by Kumar Mainali 
+maxent no longer needs to write a parameters file to disk to make a prediction (this led in some cases to problems when using a cluster; reported by Rafael Wüest). 
+
+--- January-2012, version 0.7-14
+function gbif now attempts to download the data n times if downloads are interrupted (likely because of high traffic loads at the gbif server). Suggestion and changed code provided by John Baumgartner.
+
 --- 30-November-2011, version 0.7-13
 New 'ext' argument to gbif function to allow for querying for a geographic region
 imrovements to 'response'
@@ -9,7 +16,7 @@ Fixed bug in biogeomancer function
 Fixed bug in .pointsInPolygon function that (randomly) affected evaluation of the circles, voronoiHull, and convHull models.
 
 --- 6-September-2011, version 0.7-8
-maxent argument 'replicates= '  is now supported
+maxent argument 'replicates= ' is now supported
 
 --- 1-September-2011, version 0.7-6
 New functions ssb (spatial sorting bias) and pwdSample (pair-wise distance sampling)

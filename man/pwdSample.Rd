@@ -7,13 +7,13 @@
 \description{
 Select pairs of points from two sets (without replacement) that have a similar distance to their nearest point in another set of points. 
 
-For each point in "\code{fixed}", a random point is selected from "\code{sample}" that has a similar distance (as defined by \code{threshold}) to its nearest point in "\code{reference}" (note that these are likely to be different points in \code{reference}). If no such point within the threshold distance is found in \code{sample}, the point in \code{fixed} is dropped.
+For each point in "\code{fixed}", a point is selected from "\code{sample}" that has a similar distance (as defined by \code{threshold}) to its nearest point in "\code{reference}" (note that these are likely to be different points in \code{reference}). The select point is either the nearest point \code{nearest=TRUE}, or a randomly select point \code{nearest=FALSE} that is within the threshold distance. If no point within the threshold distance is found in \code{sample}, the point in \code{fixed} is dropped.
 
-Hijmans (2011) proposes this sampling approach to remove 'spatial sorting bias' (\code{\link{ssb}}) from evaluation data used in cross-validation of presence-only species distribution models. In that context, \code{fixed} are the testing-presence points, \code{sample} the testing-absence (or testing-background) points, and \code{reference} the training-presence points.
+Hijmans (in press) proposes this sampling approach to remove 'spatial sorting bias' (\code{\link{ssb}}) from evaluation data used in cross-validation of presence-only species distribution models. In that context, \code{fixed} are the testing-presence points, \code{sample} the testing-absence (or testing-background) points, and \code{reference} the training-presence points.
 }
 
 \usage{
-pwdSample(fixed, sample, reference, tr=0.33, n=1, lonlat=TRUE, warn=TRUE) 
+pwdSample(fixed, sample, reference, tr=0.33, nearest=TRUE, n=1, lonlat=TRUE, warn=TRUE) 
 }
  
 \arguments{
@@ -21,7 +21,8 @@ pwdSample(fixed, sample, reference, tr=0.33, n=1, lonlat=TRUE, warn=TRUE)
   \item{sample}{as above for point locations from which to sample to make a pair with a point from \code{fixed}}
   \item{reference}{as above for reference point locations to which distances are computed}
   \item{n}{How many pairs do you want for each point in \code{fixed}}
-  \item{tr}{ the threshold distance for a pair of points (one of \code{fixed} and one of \code{sample}) to their respective nearest point in \code{reference}. The absolute difference in distance between the candidate point pairs in \code{fixed} and \code{reference} (dfr) and the distance between candidate point pairs in \code{sample} and \code{reference} (dsr) must be smaller than \code{tr} * dfr. I.e. if the dfr = 100 km, and tr = 0.1, dsr must be between >90 and <110 km to be considered a valid pair.}
+  \item{tr}{Numeric, normally below 1. The threshold distance for a pair of points (one of \code{fixed} and one of \code{sample}) to their respective nearest points in \code{reference} to be considered a valid pair. The absolute difference in distance between the candidate point pairs in \code{fixed} and \code{reference} (dfr) and the distance between candidate point pairs in \code{sample} and \code{reference} (dsr) must be smaller than \code{tr} * dfr. I.e. if the dfr = 100 km, and tr = 0.1, dsr must be between >90 and <110 km to be considered a valid pair.}
+  \item{nearest}{Logical. If \code{TRUE}, the pair with the smallest difference in distance to their nearest \code{reference} point is selected. If \code{FALSE}, a random point from the valid pairs (with a difference in distance below the threshold defined by \code{tr}) is selected (generally leading to higher \code{\link{ssb})}}
   \item{lonlat}{ Logical. Use \code{TRUE} if the coordinates are spherical (in degrees), and use \code{FALSE} if they are planar }
   \item{warn}{ Logical. If \code{TRUE} a warning is given if \code{nrow(fixed) < nrow(sample)} }
 }

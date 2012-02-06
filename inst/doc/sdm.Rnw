@@ -609,7 +609,7 @@ sapply( e, function(x){ x@t[which.max(x@TPR + x@TNR)] } )
 @
 
 
-The use of AUC in evaluating SDMs has been criticized (Lobo et al. 2008, Jiménez-Valverde 2011). A particularly sticky problem is that the values of AUC vary with the spatial extent used to select background points. Generally, the larger that extent, the higher the AUC value. Therefore, AUC values are generally biased and cannot be directly compared. Hijmans (2011) suggested that one could remove "spatial sorting bias" (the difference between the distance from testing-presence to training-prsence and testing-absence to training-absence points) through "point-wise distance sampling". 
+The use of AUC in evaluating SDMs has been criticized (Lobo et al. 2008, Jiménez-Valverde 2011). A particularly sticky problem is that the values of AUC vary with the spatial extent used to select background points. Generally, the larger that extent, the higher the AUC value. Therefore, AUC values are generally biased and cannot be directly compared. Hijmans (2011) suggested that one could remove "spatial sorting bias" (the difference between the distance from testing-presence to training-presence and the distance from testing-absence to training-presence points) through "point-wise distance sampling". 
 
 <<sdm45b, echo=TRUE>>=
 nr <- nrow(bradypus)
