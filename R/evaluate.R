@@ -29,6 +29,18 @@ evaluateROCR <- function(model, p, a, x) {
 }
 
 
+
+
+.auc <- function(p, a) {
+	#p <- na.omit(p)
+	#a <- na.omit(a)
+	#if (length(p) == 0 | length(a) == 0) {
+	#	return(NA)
+	#}
+}
+
+
+
 evaluate <- function(p, a, model, x, tr, ...) {
 	if (! missing(x) ) {
 		p <- predict(model, data.frame(extract(x, p)), ...)
@@ -70,13 +82,18 @@ evaluate <- function(p, a, model, x, tr, ...) {
 	xc@presence = p
 	xc@absence = a
 		
-	mv <- wilcox.test(p, a)
-	xc@pauc <- mv$p.value
-	xc@auc <- as.vector(mv$statistic) / (na * np)
+	#mv <- wilcox.test(p, a)
+	#xc@pauc <- mv$p.value
+	#xc@auc <- as.vector(mv$statistic) / (na * np)
+
+	R <- sum(rank(c(p, a))[1:np]) - (np*(np+1)/2)
+	xc@auc <- R / (na * np)
 	
-	cr <- cor.test(c(p,a), 	c(rep(1, length(p)), rep(0, length(a))) )
-	xc@cor <- cr$estimate
-	xc@pcor <- cr$p.value
+	cr <- try( cor.test(c(p,a), c(rep(1, length(p)), rep(0, length(a))) ), silent=TRUE )
+	if (class(cr) != 'try-error') {
+		xc@cor <- cr$estimate
+		xc@pcor <- cr$p.value
+	}
 	
 	res <- matrix(ncol=4, nrow=length(tr))
 	colnames(res) <- c('tp', 'fp', 'fn', 'tn')

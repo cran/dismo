@@ -9,8 +9,8 @@
 	xy <- round(xy)
 	xy[xy<0] <- 0
 	xy[xy>0] <- 1
-	nspecies <- length(xy[,1])
-	nsites <- length(xy[1,])
+	nspecies <- nrow(xy)
+	nsites <- ncol(xy[1,])
 	res <- matrix(ncol=2, nrow=nsites)
 	for (i in 1:nsites) {
 		sitesppcount <- colSums(xy)

@@ -19,7 +19,7 @@
 \newcommand{\R}{{\normalfont\textsf{R }}{}}
 
 \SweaveOpts{png=TRUE}
-% \SweaveOpts{resolution=100}
+\SweaveOpts{resolution=100}
 \SweaveOpts{keep.source=TRUE}
 
 <<foo,include=FALSE,echo=FALSE>>=
@@ -242,16 +242,16 @@ Among the first records is an old acquaintance. The record, with catalog number 
 
 We recommend using a tool like BioGeomancer: \url{http://bg.berkeley.edu/latest} (Guralnick \textit{et al}., 2006) to georeference textual locality descriptions. An important feature of BioGeomancer is that it attempts to capture the uncertainty associated with each georeference (Wieczorek \textit{et al}., 2004). The dismo package has a function \texttt{biogeomancer} that you can use for this, and that we demonstrate below, but its use is generally not recommended because you really need a detailed map interface for accurate georeferencing. 
 
-Here is an example for one of the records with longitude = 0. We put the biogeomancer function into a 'try' function, to assure elegant error handling if the computer is not connected to the Internet.
+Here is an example for one of the records with longitude = 0, using Google's geocoding service. We put the function into a 'try' function, to assure elegant error handling if the computer is not connected to the Internet.
 
 <<sdm9>>=
 args(biogeomancer)
 # the first locality:
-lonzero$locality[1]
-b <- try( biogeomancer('Peru', locality=lonzero$locality[1], progress=''))
+loc <- paste(lonzero$locality[1], ", Peru")
+loc
+b <- try(  geocode(loc, oneRecord=T) )
 b
 @
-
 
 
 \section{Sampling bias}
@@ -609,7 +609,7 @@ sapply( e, function(x){ x@t[which.max(x@TPR + x@TNR)] } )
 @
 
 
-The use of AUC in evaluating SDMs has been criticized (Lobo et al. 2008, Jiménez-Valverde 2011). A particularly sticky problem is that the values of AUC vary with the spatial extent used to select background points. Generally, the larger that extent, the higher the AUC value. Therefore, AUC values are generally biased and cannot be directly compared. Hijmans (2011) suggested that one could remove "spatial sorting bias" (the difference between the distance from testing-presence to training-presence and the distance from testing-absence to training-presence points) through "point-wise distance sampling". 
+The use of AUC in evaluating SDMs has been criticized (Lobo et al. 2008, Jiménez-Valverde 2011). A particularly sticky problem is that the values of AUC vary with the spatial extent used to select background points. Generally, the larger that extent, the higher the AUC value. Therefore, AUC values are generally biased and cannot be directly compared. Hijmans (2012) suggests that one could remove "spatial sorting bias" (the difference between the distance from testing-presence to training-presence and the distance from testing-absence to training-presence points) through "point-wise distance sampling". 
 
 <<sdm45b, echo=TRUE>>=
 nr <- nrow(bradypus)
@@ -968,7 +968,7 @@ points(backg_train, pch='-', cex=0.25)
 
 \chapter{Geographic models}
 
-The 'geograhic models' described here are not commonly used in species distribution modeling. They use the geographic location of known occurences, and do not rely on the values of predictor variables at these locations. We are exploring their use in comparing and contrasting them with the other approaches (Bahn and McGill, 2007); in model evaluation as as null-models (Hijmans 2011); to sample background points; and generally to help think about the duality between geographic and environmental space (Colwel and Rangel, 2009). Below we show examples of these different types of models.
+The 'geograhic models' described here are not commonly used in species distribution modeling. They use the geographic location of known occurences, and do not rely on the values of predictor variables at these locations. We are exploring their use in comparing and contrasting them with the other approaches (Bahn and McGill, 2007); in model evaluation as as null-models (Hijmans 2012); to sample background points; and generally to help think about the duality between geographic and environmental space (Colwel and Rangel, 2009). Below we show examples of these different types of models.
 
 \section{Geographic Distance}
 
@@ -1181,7 +1181,7 @@ using uncertainty field in georeferences. How to target the "important" uncertai
 
 \noindent Hastie, T., R. Tibshirani and J. Friedman, 2009. The Elements of Statistical Learning: Data Mining, Inference, and Prediction (Second Edition) \url{http://www-stat.stanford.edu/~tibs/ElemStatLearn/}
 
-\noindent Hijmans, R.J., 2011 (in press). Cross-validation of species distribution models: removing spatial sorting bias and calibration with a null-model. Ecology.
+\noindent Hijmans, R.J., 2012. Cross-validation of species distribution models: removing spatial sorting bias and calibration with a null-model. Ecology 93: 679-688.
 
 \noindent Hijmans R.J., and C.H. Graham, 2006. Testing the ability of climate envelope models to predict the effect of climate change on species distributions. Global change biology 12: 2272-2281. \url{http://dx.doi.org/10.1111/j.1365-2486.2006.01256.x}
 

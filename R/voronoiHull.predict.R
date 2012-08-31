@@ -8,7 +8,7 @@
 setMethod('predict', signature(object='VoronoiHull'), 
 	function(object, x, ext=NULL, filename='', mask=FALSE, ...) {
 	
-		if ( extends(class(x), 'Raster'))  {
+		if ( inherits(x, 'Raster'))  {
 			if (! mask) {
 				x <- raster(x)
 			}
@@ -17,10 +17,10 @@ setMethod('predict', signature(object='VoronoiHull'),
 			}
 			
 			if (mask) {
-				xx <- rasterize(object@polygons, raster(x), field=1, fun='max', mask=FALSE, update=FALSE, getCover=FALSE, silent=TRUE, ...)
+				xx <- rasterize(object@polygons, raster(x), field='pa', mask=FALSE, update=FALSE, getCover=FALSE, silent=TRUE, ...)
 				xx <- mask(xx, x, filename=filename, ...)
 			} else {
-				xx <- rasterize(object@polygons, raster(x), field=1, fun='max', mask=FALSE, update=FALSE, getCover=FALSE, silent=TRUE, filename=filename, ...)
+				xx <- rasterize(object@polygons, raster(x), field='pa', mask=FALSE, update=FALSE, getCover=FALSE, silent=TRUE, filename=filename, ...)
 			}
 			
 			return(xx)
@@ -29,12 +29,11 @@ setMethod('predict', signature(object='VoronoiHull'),
 		
 			if (! inherits(x, 'SpatialPoints') )  {
 				x <- data.frame(x[,1:2])
-				colnames(x) = c('x', 'y')
-				coordinates(x) = ~ x + y
+				colnames(x) <- c('x', 'y')
+				coordinates(x) <- ~ x + y
 			}
 			
-			v <- .pointsInPolygons(x, object@polygons) 			
-			return(v)
+			return( .pointsInPolygons(x, object@polygons, sum) )
 		}
 	}
 )

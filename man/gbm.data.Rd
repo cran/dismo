@@ -21,7 +21,8 @@ Segment \tab SegSumT \tab Summer air temperature (degrees C) \tab 16.3, 8.9 to 1
 Downstream \tab DSDist \tab distance to coast (km) \tab  74, 0.03 to 433.4 \cr
  \tab DSDam \tab presence of known downstream obstructions, mostly dams \tab 0.18, 0 or 1 \cr
  \tab DSMaxSlope \tab  maximum downstream slope (degrees) \tab  3.1, 0 to 29.7 \cr
-Upstream / catchment scale \tab USAvgT \tab  average temperature in catchment (degrees C) compared to segment, normalised with respect to SegJanT \tab  -0.38, -7.7 to 2.2 \cr
+Upstream 
+/ catchment \tab USAvgT \tab  average temperature in catchment (deg C) compared to segment, normalised with respect to SegJanT \tab  -0.38, -7.7 to 2.2 \cr
  \tab USRainDays \tab days/month with rain greater than 25 mm \tab 1.22, 0.21 to 3.30 \cr
  \tab USSlope \tab average slope in the upstream catchment (degrees) \tab 14.3, 0 to 41.0 \cr
  \tab USNative \tab  area with indigenous forest (proportion) \tab  0.57, 0 to 1 \cr

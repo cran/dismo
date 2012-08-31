@@ -16,10 +16,10 @@ setMethod('predict', signature(object='CirclesRange'),
 				x = crop(x, ext) 
 			}
 			if (mask) {
-				xx <- rasterize(object@polygons, raster(x), field=-1, fun='sum', mask=FALSE, update=FALSE, updateValue="NA", getCover=FALSE, silent=TRUE, ...)
+				xx <- rasterize(object@polygons, raster(x), field=1, fun='sum', mask=FALSE, update=FALSE, updateValue="NA", getCover=FALSE, silent=TRUE, ...)
 				xx <- mask(xx, x, filename=filename, ...)
 			} else {
-				xx <- rasterize(object@polygons, raster(x), field=-1, fun='sum', mask=FALSE, update=FALSE, updateValue="NA", getCover=FALSE, silent=TRUE, filename=filename, ...)
+				xx <- rasterize(object@polygons, raster(x), field=1, fun='sum', mask=FALSE, update=FALSE, updateValue="NA", getCover=FALSE, silent=TRUE, filename=filename, ...)
 			}
 
 			#nc <- length(object@polygons@polygons) 
@@ -28,13 +28,11 @@ setMethod('predict', signature(object='CirclesRange'),
 			return(xx)
 		} else {
 			if (! inherits(x, 'SpatialPoints') )  {
-				x = data.frame(x[,1:2])
-				colnames(x) = c('x', 'y')
-				coordinates(x) = ~ x + y
+				x <- data.frame(x[,1:2])
+				colnames(x) <- c('x', 'y')
+				coordinates(x) <-~ x + y
 			}
-			#v <- .pointsInPolygons(x, object@polygons, sum) / length(object@polygons@polygons) 
-			v <- .pointsInPolygons(x, object@polygons, sum) 
-			return(v)
+			return( .pointsInPolygons(x, object@polygons, sum) )
 		}
 	}
 )

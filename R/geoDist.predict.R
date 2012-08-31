@@ -9,13 +9,13 @@ setMethod('predict', signature(object='GeographicDistance'),
 	function(object, x, ext=NULL, mask=FALSE, scale=1, fun=NULL, filename='', ...) {
 			
 		if (is.null(fun)) {
-			inverse <- function(x) {
+			inverse <- function(x, ...) {
 				x <- x / scale
 				x[x < 1] <- 1
 				1/x
 			}
 		} else {
-			inverse <- function(x) {
+			inverse <- function(x, ...) {
 				x <- x / scale
 				x[x < 1] <- 1
 				fun(1/x)

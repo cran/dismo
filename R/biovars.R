@@ -66,7 +66,7 @@ setMethod('biovars', signature(prec='Raster', tmin='Raster', tmax='Raster'),
 
 	out <- brick(prec, values=FALSE)
 	out@data@nlayers <- as.integer(19)
-	out@layernames <- paste('bio', 1:19, sep="")
+	names(out) <- paste('bio', 1:19, sep="")
 	
 	filename <- trim(filename)
 	if (!canProcessInMemory(out, 18)) {

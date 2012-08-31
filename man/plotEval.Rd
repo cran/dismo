@@ -1,4 +1,4 @@
-\name{evaluation plots}
+\name{Evaluation plots}
 
 \docType{methods}
 
@@ -17,13 +17,13 @@ Make a ROC curve, or a plot of a threshold dependent measure against threshold v
 usage:  \code{plot(x, y, ...)}
 \tabular{rll}{
 \tab \code{x}  \tab  Object of class ModelEvaluation  \cr
-\tab \code{y}  \tab  Character. Either 'ROC' or a threshold dependent measure in objects of class ModelEvaluation such as 'kappa', 'TPR' \cr
+\tab \code{y}  \tab  Character. Either 'ROC' or a threshold dependent measure such as 'kappa', 'TPR' \cr
 \tab \code{...}  \tab  Additional arguments that can be passed to \link[graphics]{plot} \cr
 }
 }
 
 \seealso{
-\code{\link[dismo]{density}, \link[dismo]{pairs}, \link[graphics]{plot} }
+\code{\link{ModelEvaluation-class}, \link[dismo]{density}, \link[dismo]{pairs}, \link[graphics]{plot} }
 }
 
 \author{

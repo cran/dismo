@@ -7,8 +7,12 @@
 \alias{predict,Domain-method}
 \alias{predict,Mahalanobis-method}
 \alias{predict,MaxEnt-method}
+\alias{predict,MaxEntReplicates-method}
 \alias{predict,ConvexHull-method}
-\alias{predict,geoDist-method}
+\alias{predict,CirclesRange-method}
+\alias{predict,GeographicDistance-method}
+\alias{predict,InvDistWeightModel-method}
+\alias{predict,VoronoiHull-method}
 
 \title{Distribution model predictions}
 
@@ -38,7 +42,6 @@ For \link[dismo]{bioclim} models, there is an additional argument \code{'tails'}
 
 
 For \link{geoDist} models, there is an additional argument \code{fun} that allows you to use your own (inverse) distance function, and argument \code{scale=1} that allows you to scale the values (distances smaller than this value become one, and the others are divided by this value before computing the inverse distance).
-   
 }}
 
 \value{

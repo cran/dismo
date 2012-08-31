@@ -24,7 +24,11 @@ from the cross-validation selection process
 }
 
 \usage{
-gbm.step(data, gbm.x, gbm.y, offset = NULL, fold.vector = NULL, tree.complexity = 1, learning.rate = 0.01, bag.fraction = 0.75, site.weights = rep(1, nrow(data)), var.monotone = rep(0, length(gbm.x)), n.folds = 10, prev.stratify = TRUE, family = "bernoulli", n.trees = 50, step.size = n.trees, max.trees = 10000, tolerance.method = "auto", tolerance = 0.001, keep.data = FALSE, plot.main = TRUE, plot.folds = FALSE, verbose = TRUE, silent = FALSE, keep.fold.models = FALSE, keep.fold.vector = FALSE, keep.fold.fit = FALSE, ...)
+gbm.step(data, gbm.x, gbm.y, offset = NULL, fold.vector = NULL, tree.complexity = 1, learning.rate = 0.01,
+  bag.fraction = 0.75, site.weights = rep(1, nrow(data)), var.monotone = rep(0, length(gbm.x)), n.folds = 10,
+  prev.stratify = TRUE, family = "bernoulli", n.trees = 50, step.size = n.trees, max.trees = 10000,
+  tolerance.method = "auto", tolerance = 0.001, keep.data = FALSE, plot.main = TRUE, plot.folds = FALSE,
+  verbose = TRUE, silent = FALSE, keep.fold.models = FALSE, keep.fold.vector = FALSE, keep.fold.fit = FALSE, ...)
 }
 
 \arguments{

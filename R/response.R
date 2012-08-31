@@ -6,13 +6,15 @@ if (!isGeneric("response")) {
 
 
 setMethod("response", signature(x='DistModel'), 
-function(x, var=NULL, at=median, range='pa', expand=10, rug=TRUE, ylim=c(0,1), col='red', lwd=2, add=FALSE, ... ) {
+function(x, var=NULL, at=median, range='pa', expand=10, rug=TRUE, ylim=c(0,1), col='red', lwd=2, add=FALSE, data=NULL, ... ) {
 	stopifnot(range %in% c('p', 'pa'))
-	d <- x@presence
-	if (range == 'pa' & x@hasabsence) {
-		d <- rbind(d, x@absence)
+	if (is.null(data)) {
+		data <- x@presence
+		if (range == 'pa' & x@hasabsence) {
+			data <- rbind(data, x@absence)
+		}
 	}
-	cn <- colnames(d)
+	cn <- colnames(data)
 	if (is.null(var)) {
 		var <- cn
 	}
@@ -23,9 +25,11 @@ function(x, var=NULL, at=median, range='pa', expand=10, rug=TRUE, ylim=c(0,1), c
 		# ?
 	}
 	var <- var[var %in% cn]
-	if (length(var) == 0) { stop('var not found')	}
+	if (length(var) == 0) { 
+		stop('var not found')	
+	}
 
-	.doResponse(x, var, at, d, cn, expand, rug, ylim, col, lwd, add, ... )
+	.doResponse(x, var, at, data, cn, expand, rug, ylim, col, lwd, add, ... )
 
 }
 )
@@ -38,11 +42,13 @@ function(x, var=NULL, at=median, range='pa', expand=10, rug=TRUE, ylim=c(0,1), c
 		if (i > 1) {
 			add = TRUE
 		}
-		d <- x[[i]]@presence
-		if (range == 'pa' & x@hasabsence) {
-			d <- rbind(d, x@absence)
+		if (is.null(data)) {
+			data <- x@presence
+			if (range == 'pa' & x@hasabsence) {
+				data <- rbind(data, x@absence)
+			}
 		}
-		cn <- colnames(d)
+		cn <- colnames(data)
 		if (is.null(var)) {
 			var <- cn
 		}
@@ -55,18 +61,26 @@ function(x, var=NULL, at=median, range='pa', expand=10, rug=TRUE, ylim=c(0,1), c
 		var <- var[var %in% cn]
 		if (length(var) == 0) { stop('var not found')	}
 
-		.doResponse(x[[i]], var, at, d, cn, expand, rug, ylim, col, lwd, add, ... )
+		.doResponse(x[[i]], var, at, data, cn, expand, rug, ylim, col, lwd, add, ... )
 	}
 }
 )
 
 
 setMethod("response", signature(x='ANY'), 
-function(x, var=NULL, at=median, range='pa', expand=10, rug=TRUE, ylim=c(0,1), col='red', lwd=2, add=FALSE, ... ) {
+function(x, var=NULL, at=median, range='pa', expand=10, rug=TRUE, ylim=c(0,1), col='red', lwd=2, add=FALSE, data=NULL, ... ) {
 	stopifnot(range %in% c('p', 'pa'))
 
 	cn <- names(attr(x$terms, "dataClasses")[-1])
-	d <- x$model
+	if (is.null(data)) {
+		data <- x$model
+	}
+	if (is.null(data)) {
+		data <- x$data
+	}
+	if (is.null(data)) {
+		stop('The model object does not seem to have the data used to fit it. Provide these with a "data= " argument')
+	}
 	
 	if (range != 'pa') {
 		warning("range='p' is ignored")
@@ -75,7 +89,7 @@ function(x, var=NULL, at=median, range='pa', expand=10, rug=TRUE, ylim=c(0,1), c
 		var <- cn
 	}
 	if (is.numeric(var)) {
-		cn <- names(attr(model$terms, "dataClasses")[-1])
+		cn <- names(attr(x$terms, "dataClasses")[-1])
 		var <- cn[var]
 	}
 	if (length(var)==1) {
@@ -84,8 +98,8 @@ function(x, var=NULL, at=median, range='pa', expand=10, rug=TRUE, ylim=c(0,1), c
 #	var <- var[var %in% cn]
 	if (length(var) == 0) { stop('var not found')	}
 
-	d <- d[, var]
-	.doResponse(x, var, at, d, cn, expand, rug, ylim, col, lwd, add, ... )
+	data <- data[, var]
+	.doResponse(x, var, at, data, cn, expand, rug, ylim, col, lwd, add, ... )
 
 }
 )
@@ -104,52 +118,80 @@ function(x, var=NULL, at=median, range='pa', expand=10, rug=TRUE, ylim=c(0,1), c
 	f <- sapply(d, is.factor)
 	notf <- !f
 	m <- matrix(nrow=1, ncol=ncol(d))
-	if (is.function(at)) {
+	
+	if (is.null(at)) {
+		m <- d
+		nrm <- nrow(m)
+	} else if (is.function(at)) {
 		if (sum(notf) > 0) {
 			m[notf] <- as.numeric(apply(d[,notf,drop=FALSE], 2, at))
 		} 
 		if (sum(f) > 0) {
 			m[f] <- as.numeric(apply(d[,f,drop=FALSE], 2, modal))
 		}
-		m <- matrix(m, nrow=1)
+		m <- matrix(m, nrow=100, ncol=length(m), byrow=TRUE)
 		colnames(m) <- cn
 	} else {
 		at <- at[cn]
 		m <- as.vector(at)
-		m <- matrix(m, nrow=1)
+		#m <- matrix(m, nrow=1)
+		m <- matrix(m, nrow=100, ncol=length(m), byrow=TRUE)
 		colnames(m) <- names(at)
 	}
+	m <- data.frame(m)
 	
 	for (vr in var) {
 		i <- which(cn==vr)
-		v <- d[,i]
-		if (is.factor(v)) {
-			v <- as.numeric(levels(v))
-			fact <- TRUE
-		} else {
-			fact <- FALSE
-			v <- range(v)
-			expand <- round(abs(expand))
-			v <- v[1] + (-expand):(100+expand) * (v[2]-v[1])/100
-		}
+		if (is.null(at)) {
+			nr <- ifelse(length(var)==1, 25, 10)
+			v <- d[,i]
+			if (is.factor(v)) {
+				v <- as.numeric(levels(v))				
+				fact <- TRUE
+			} else {
+				fact <- FALSE
+				r <- range(v)
+				expand <- round(abs(expand))
+				v <- (r[1]-expand) + 0:(nr-1) * (r[2]-r[1] + 2*expand)/(nr-1)
+			}
+	
+			mm <- m[rep(1:nrm, length(v)), ]
+			mm[, vr] <- rep(v, each=nrm)
+			p <- predict(x, mm)
+			pd <- cbind(v, colMeans(matrix(p, nrow=nrm), na.rm=TRUE))
 
-		mm <- matrix(rep(m[,-i], length(v)), nrow=length(v), byrow=T)
-		colnames(mm) <- colnames(m)[-i]
-		a <- cbind(v, mm)
-		colnames(a)[1] <- vr
+		} else {
+			nr <- 100
+			v <- d[,i]
+			if (is.factor(v)) {
+				v <- as.numeric(levels(v))
+				v <- rep(v, ceiling(100/length(v)))
+				v <- v[1:100]	
+				fact <- TRUE
+			} else {
+				fact <- FALSE
+				r <- range(v)
+				expand <- round(abs(expand))
+				v <- (r[1]-expand) + 0:(nr-1) * (r[2]-r[1] + 2*expand)/(nr-1)
+			}
+
+			mm <- m
+			mm[, vr] <- v
+			p <- predict(x, mm)
+			pd <- cbind(mm[, vr], p)
+		}
 		
-		p <- predict(x, a)
 		if (add) {
 			if (fact) {
-				points(a[,1], p, col=col, lwd=lwd, ...)
+				points(pd, col=col, lwd=lwd, ...)
 			} else {
-				points(a[,1], p, col=col, lwd=lwd, type='l', ...)			
+				points(pd, col=col, lwd=lwd, type='l', ...)			
 			}
 		} else {
 			if (fact) {
-				plot(a[,1], p, xlab=vr, ylab='predicted value', col=col, lwd=lwd, ylim=ylim, ...)
+				plot(pd, xlab=vr, ylab='predicted value', col=col, lwd=lwd, ylim=ylim, ...)
 			} else {
-				plot(a[,1], p, xlab=vr, ylab='predicted value', col=col, lwd=lwd, ylim=ylim, type='l', ...)
+				plot(pd, xlab=vr, ylab='predicted value', col=col, lwd=lwd, ylim=ylim, type='l', ...)
 			}
 			if (rug) {
 				if (!is.factor(d[,i])) {
@@ -160,7 +202,7 @@ function(x, var=NULL, at=median, range='pa', expand=10, rug=TRUE, ylim=c(0,1), c
 	}
 	
 	if (length(var) == 1) {
-		return(invisible(cbind(a[,1], p)))
+		return(invisible(pd))
 	}
 }
 

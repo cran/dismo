@@ -29,7 +29,8 @@ four lowest contributing predictors.
 }
 
 \usage{
-gbm.simplify(gbm.object, n.folds = 10, n.drops = "auto", alpha = 1, prev.stratify = TRUE, eval.data = NULL, plot = TRUE)
+gbm.simplify(gbm.object, n.folds = 10, n.drops = "auto", alpha = 1, prev.stratify = TRUE, 
+   eval.data = NULL, plot = TRUE)
 }
 
 

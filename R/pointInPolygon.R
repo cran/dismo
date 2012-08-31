@@ -1,5 +1,4 @@
 # Author: Robert J. Hijmans
-# contact: r.hijmans@gmail.com
 # Date : Febrary 2010
 # Version 0.1
 # Licence GPL v3
@@ -27,7 +26,8 @@
 			for (j in 1:length(poly@Polygons)) {
 				pol.x <- poly@Polygons[[j]]@coords[,1]
 				pol.y <- poly@Polygons[[j]]@coords[,2]
-				resj <- .Call("R_point_in_polygon_sp", as.numeric(p[,1]), as.numeric(p[,2]), as.numeric(pol.x), as.numeric(pol.y), PACKAGE = "sp")
+				resj <- sp:::point.in.polygon(p[,1], p[,2], pol.x, pol.y)
+				#resj <- .Call("R_point_in_polygon_sp", as.numeric(p[,1]), as.numeric(p[,2]), as.numeric(pol.x), as.numeric(pol.y), PACKAGE = "sp")
 				resj <- as.logical(resj)
 				if (poly@Polygons[[j]]@hole) {
 					resj[resj == 1] <- NA
@@ -44,6 +44,23 @@
 	}
 	return(result)
 }
+
+
+# a =  pointInPolygon(xy, wrld_simpl)
+# b = apply(a, 1, max)
+# c = apply(a, 1, which.max)
+# c[b==0] = NA
+
+
+#..xpointsInPolygons <- function(xy, polygons, fun=NULL) {
+#	stopifnot( require(rgeos) )
+	#proj4string(xy) <- proj4string(polygons)
+#	result <- gIntersects(xy, polygons, byid=TRUE)
+#	if (! is.null(fun)) {
+#		result <- apply(result, 1, fun)
+#	}
+#	result * 1
+#}
 
 
 # a =  pointInPolygon(xy, wrld_simpl)

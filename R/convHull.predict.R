@@ -17,13 +17,13 @@ setMethod('predict', signature(object='ConvexHull'),
 		nc <- nrow(object@polygons@data)
 		if ( extends(class(x), 'Raster'))  {
 			if (! mask) {
-				x = raster(x)
+				x <- raster(x)
 			}
 			if (! is.null(ext)) { 
-				x = crop(x, ext) 
+				x <- crop(x, ext) 
 			}
 			
-			xx <- rasterize(object@polygons, raster(x), field=-1, fun='sum', background=0, mask=FALSE, update=FALSE, updateValue="NA", getCover=FALSE, silent=TRUE, ...)
+			xx <- rasterize(object@polygons, raster(x), field=1, fun='sum', background=0, mask=FALSE, update=FALSE, updateValue="NA", getCover=FALSE, silent=TRUE, ...)
 			if (mask) {
 				xx <- mask(xx, x, ...)
 			}
@@ -35,11 +35,11 @@ setMethod('predict', signature(object='ConvexHull'),
 		} else {
 		
 			if (! inherits(x, 'SpatialPoints') )  {
-				x = data.frame(x[,1:2])
-				colnames(x) = c('x', 'y')
-				coordinates(x) = ~ x + y
+				x <- data.frame(x[,1:2])
+				colnames(x) <- c('x', 'y')
+				coordinates(x) <- ~ x + y
 			}
-			v <- .pointsInPolygons(x, object@polygons, sum) / nc
+			v <- .pointsInPolygons(x, object@polygons, sum)
 			return(v)
 			
 		}

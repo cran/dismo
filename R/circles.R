@@ -126,7 +126,13 @@ setMethod('circles', signature(p='SpatialPoints'),
 
 setMethod("plot", signature(x='CirclesRange', y='missing'), 
 	function(x, ...) {
-		plot(x@polygons, ...)
+		sp::plot(x@polygons, ...)
+	}
+)
+
+setAs('CirclesRange', 'SpatialPolygons', 
+	function(from) {
+		from@polygons
 	}
 )
 

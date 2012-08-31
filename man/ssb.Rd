@@ -26,7 +26,7 @@ Distance is in meters if \code{lonlat=TRUE}, and in mapunits (typically also met
 }
 
 \references{
-Hijmans, R.J., in press. Cross-validation of species distribution models: removing spatial sorting bias and calibration with a null-model. Ecology. 
+Hijmans, R.J., 2012. Cross-validation of species distribution models: removing spatial sorting bias and calibration with a null-model. Ecology 93: 679-688. 
 }
 
 \author{

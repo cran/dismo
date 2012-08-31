@@ -27,7 +27,7 @@ circles(p, ...)
 \details{
 The following additional arguments can be supplied to the circles function:
 \tabular{rll}{
- \tab \code{d}  \tab The radius of each circle in meters. Can be a single number of a vector with elements corresponding to rows in 'p'. If missing the diameter is computed from the inter-point distance \cr
+ \tab \code{d}  \tab The radius of each circle in meters. A single number of a vector with elements corresponding to rows in 'p'. If missing the diameter is computed from the inter-point distance \cr
  \tab \code{n}  \tab How many vertices in the circle? Default is 360 \cr
  \tab \code{lonlat} \tab  Are these longitude/latidue data? Default value is FALSE \cr
   \tab \code{r}  \tab  Radius of the earth. Only relevant for longitude/latitude data. Default is 6378137 m\cr
@@ -52,7 +52,8 @@ Robert J. Hijmans
 \examples{
 r <- raster(system.file("external/rlogo.grd", package="raster"))
 #presence data
-pts <- matrix(c(17, 42, 85, 70, 19, 53, 26, 84, 84, 46, 48, 85, 4, 95, 48, 54, 66, 74, 50, 48, 28, 73, 38, 56, 43, 29, 63, 22, 46, 45, 7, 60, 46, 34, 14, 51, 70, 31, 39, 26), ncol=2)
+pts <- matrix(c(17, 42, 85, 70, 19, 53, 26, 84, 84, 46, 48, 85, 4, 95, 48, 54, 66,
+ 74, 50, 48, 28, 73, 38, 56, 43, 29, 63, 22, 46, 45, 7, 60, 46, 34, 14, 51, 70, 31, 39, 26), ncol=2)
 train <- pts[1:12, ]
 test <- pts[13:20, ]
 				 

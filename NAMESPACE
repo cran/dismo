@@ -1,4 +1,5 @@
-importFrom("graphics", plot, points, pairs, boxplot, persp)
-importFrom("stats", density)
-importFrom("raster", predict)
+import("raster")
+importFrom("graphics", plot, points)
+exportMethods("predict")
 exportPattern("^[^\\.]")
+exportClasses(DistModel,MaxEnt)

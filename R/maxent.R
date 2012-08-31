@@ -119,15 +119,18 @@ if (!isGeneric("maxent")) {
 
 
 setMethod('maxent', signature(x='missing', p='missing'), 
-	function(x, p, ...) {
+	function(x, p, silent=FALSE, ...) {
 		.rJava()
 		jar <- paste(system.file(package="dismo"), "/java/maxent.jar", sep='')
 		if (!file.exists(jar)) {
-			stop('maxent program is missing: ', jar, '\nPlease download it here: http://www.cs.princeton.edu/~schapire/maxent/')
+			warning('maxent program is missing: ', jar, '\nPlease download it here: http://www.cs.princeton.edu/~schapire/maxent/')
+			return(FALSE)
 		}
 		v <- .getMeVersion()
-		cat('This is MaxEnt version', v, '\n' )
-		return(invisible(v))
+		if (!silent) {
+			cat('This is MaxEnt version', v, '\n' )
+		}
+		return(TRUE)
 	}
 )
 
@@ -135,7 +138,7 @@ setMethod('maxent', signature(x='SpatialGridDataFrame', p='ANY'),
 	function(x, p, a=NULL,...) {
 		factors = NULL
 		for (i in 1:ncol(x@data)) {
-			if (is.factor(x@data[,i])) { 
+			if (is.factor(x@data[,i]) | is.character(x@data[,i])) { 
 				factors = c(factors, colnames(x@data)[i]) 
 			}
 		}
@@ -185,7 +188,7 @@ setMethod('maxent', signature(x='Raster', p='ANY'),
 			if (nas >= 0.5 * lpv) {
 				stop('more than half of the presence points have NA predictor values')
 			} else {
-				warning(round(100*nas/lpv,6), '% of the presence points have NA predictor values')
+				warning(nas, ' (', round(100*nas/lpv,2), '%) of the presence points have NA predictor values')
 			}
 		} 
 		
@@ -199,7 +202,7 @@ setMethod('maxent', signature(x='Raster', p='ANY'),
 				if (nas >= 0.5 * avr) {
 					stop('more than half of the absence points have NA predictor values')
 				} else {
-					warning(100*nas/avr, '% of the presence points have NA predictor values')
+					warning(nas, ' (', round(100*nas/avr, 2), '%) of the presence points have NA predictor values')
 				}
 			}
 		} else { 
@@ -400,7 +403,7 @@ setMethod('maxent', signature(x='data.frame', p='vector'),
 
 
 .meTmpDir <- function() {
-	return( paste(dirname(tempdir()), '/R_raster_tmp/maxent', sep="") )
+	return( paste(raster:::.tmpdir(), 'maxent', sep="") )
 }
 
 
@@ -414,11 +417,13 @@ setMethod('maxent', signature(x='data.frame', p='vector'),
 setMethod("plot", signature(x='MaxEnt', y='missing'), 
 	function(x, sort=TRUE, main='Variable contribution', xlab='Percentage', ...) {
 		r <- x@results
-		rnames = rownames(r)
+		rnames <- rownames(r)
 		i <- grep('.contribution', rnames)
 		r <- r[i, ]
 		names(r) <- gsub('.contribution', '', names(r))
-		if (sort) r = sort(r)
+		if (sort) {
+			r <- sort(r)
+		}
 		dotchart(r, main=main, xlab=xlab, ...)
 	}
 )

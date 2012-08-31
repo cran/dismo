@@ -89,6 +89,8 @@ setMethod('voronoiHull', signature(p='SpatialPoints', a='SpatialPoints'),
 
 setMethod("plot", signature(x='VoronoiHull', y='missing'), 
 	function(x, ...) {
-		plot(x@polygons[x@polygons@data[,1]==1, ], ...)
+		sp <- x@polygons
+		sp <- sp[sp$pa == 1, ]
+		plot( sp, ... )
 	}
 )

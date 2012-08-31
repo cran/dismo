@@ -32,7 +32,7 @@ A matrix of nrow(fixed) and ncol(n), that indicates, for each point (row) in \co
 }
 
 \references{
-Hijmans, R.J., in press. Cross-validation of species distribution models: removing spatial sorting bias and calibration with a null-model. Ecology. 
+Hijmans, R.J., 2012. Cross-validation of species distribution models: removing spatial sorting bias and calibration with a null-model. Ecology 93: 679-688
 }
 
 \author{

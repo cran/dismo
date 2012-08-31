@@ -7,7 +7,7 @@
 # implemented trycatch to deal with poor response from GBIF server
 # suggestion and changed code provided by John Baumgartner
 
-gbif <- function(genus, species='', ext=NULL, geo=TRUE, sp=FALSE, removeZeros=TRUE, download=TRUE, getAlt=TRUE, ntries=5, nrecs=1000, start=1, end=NULL, feedback=3) {
+gbif <- function(genus, species='', ext=NULL, args=NULL, geo=TRUE, sp=FALSE, removeZeros=TRUE, download=TRUE, getAlt=TRUE, ntries=5, nrecs=1000, start=1, end=NULL, feedback=3) {
 	
 	if (! require(XML)) { stop('You need to install the XML package to use this function') }
 
@@ -40,8 +40,15 @@ gbif <- function(genus, species='', ext=NULL, geo=TRUE, sp=FALSE, removeZeros=TR
 
 	
 	if (!is.null(ext)) { 
-		ex <- round(extent(ext), 5)
-		ex <- paste('&minlatitude=',max(-90, ex@ymin),'&maxlatitude=',min(90, ex@ymax),'&minlongitude=',max(-180, ex@xmin),'&maxlongitude=',min(180, ex@xmax), sep='')
+		ext <- round(extent(ext), 5)
+		global <- extent(-180,180,-90,90)
+		ex <- intersect(ext, global)
+		if (!is.null(ex)) {
+			ex <- paste('&minlatitude=', ex@ymin,'&maxlatitude=', 
+			ex@ymax, '&minlongitude=', ex@xmin, '&maxlongitude=', ex@xmax, sep='')
+		} else {
+			warning('invalid extent')
+		}
 	} else {
 		ex <- NULL
 	}
@@ -57,7 +64,11 @@ gbif <- function(genus, species='', ext=NULL, geo=TRUE, sp=FALSE, removeZeros=TR
 	if (geo) { cds <- '&coordinatestatus=true' 
 	} else { cds <- '' }
     base <- 'http://data.gbif.org/ws/rest/occurrence/'
-    url <- paste(base, 'count?scientificname=', spec, cds, ex, sep='')
+	if (!is.null(args)) {
+		args <- trim(as.character(args))
+		args <- paste('&', paste(args, collapse='&'), sep='')
+	}
+    url <- paste(base, 'count?scientificname=', spec, cds, ex, args, sep='')
 	
 	tries <- 0
     while (TRUE)  {
@@ -68,8 +79,22 @@ gbif <- function(genus, species='', ext=NULL, geo=TRUE, sp=FALSE, removeZeros=TR
     	x <- try(readLines(url, warn = FALSE))
 		if (class(x) != 'try-error') break
     }
-    x <- x[grep('totalMatched', x)]
-    n <- as.integer(unlist(strsplit(x, '\"'))[2])
+    xn <- x[grep('totalMatched', x)]
+	if (length(xn) == 0) {
+		xe <- x[grep('gbif:exception', x)]
+		if (length(xe)== 1) {
+			xe <- unlist(strsplit(unlist(strsplit(xe, '>'))[2], '<'))[1]		
+			cat(url, "\n")
+			stop(xe)
+		} else if (length(xe) > 1) {
+			cat(url, "\n")
+			stop(xe)
+		} else {
+			cat(url, "\n")
+			stop("invalid request")
+		}	
+	}
+    n <- as.integer(unlist(strsplit(xn, '\"'))[2])
     if (!download) {
         return(n)
     }
@@ -106,7 +131,7 @@ gbif <- function(genus, species='', ext=NULL, geo=TRUE, sp=FALSE, removeZeros=TR
 			flush.console()
 		}
 		
-        aurl <- paste(base, 'list?scientificname=', spec, '&mode=processed&format=darwin&startindex=', format(start, scientific=FALSE), cds, ex, sep='')
+        aurl <- paste(base, 'list?scientificname=', spec, '&mode=processed&format=darwin&startindex=', format(start, scientific=FALSE), cds, ex, args, sep='')
 
 		tries <- 0
         #======= if download fails due to server problems, keep trying  =======#

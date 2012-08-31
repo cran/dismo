@@ -12,15 +12,18 @@ if (!isGeneric("predict")) {
 
 setMethod('predict', signature(object='MaxEntReplicates'), 
 	function(object, x, ext=NULL, filename='', args="", ...) {
-		filename <- extension(trim(filename), '')
+		n <- length(object@models)
+		if (filename != '') {
+			filename <- trim(filename)
+			fxt <- extension(filename)
+			extension(filename) <- ''
+			fname <- paste(filename, '_', 1:n, fxt, sep='')
+		} else {
+			fname <- rep('', n)
+		}
 		lst <- list()
-		for (i in 1:length(object@models)) {
-			if (filename != '') {
-				fname <- paste(fname, '_', i, sep='')
-			} else {
-				fname <- ''
-			}
-			lst[[i]] <- predict(object@models[[i]], x, ext=ext, filename=fname, args=args, ...)
+		for (i in 1:n) {
+			lst[[i]] <- predict(object@models[[i]], x, ext=ext, filename=fname[i], args=args, ...)
 		}
 		return(stack(lst))
 	}
@@ -30,6 +33,7 @@ setMethod('predict', signature(object='MaxEntReplicates'),
 setMethod('predict', signature(object='MaxEnt'), 
 	function(object, x, ext=NULL, args="", filename='', ...) {
 
+		.rJava()
 		args <- c(args, "")
 
 		#if (! file.exists(object@path)) {

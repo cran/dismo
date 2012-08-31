@@ -83,7 +83,8 @@ jar <- paste(system.file(package="dismo"), "/java/maxent.jar", sep='')
 if (file.exists(jar)) {
 
 # get predictor variables
-predictors <- stack(list.files(path=paste(system.file(package="dismo"), '/ex', sep=''), pattern='grd', full.names=TRUE ))
+predictors <- stack(list.files(path=paste(system.file(package="dismo"), '/ex', sep=''), 
+              pattern='grd', full.names=TRUE ))
 #plot(predictors)
 
 # file with presence points

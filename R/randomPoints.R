@@ -78,7 +78,7 @@ randomPoints <- function(mask, n, p, ext=NULL, extf=1.1, excludep=TRUE, cellnumb
 	if (! is.null(ext)) {
 		ext <- extent(ext)
 		ext <- ext * extf
-		ext <- intersectExtent(ext, extent(mask))
+		ext <- intersect(ext, extent(mask))
 		mask2 <- crop(raster(mask), ext)
 	}  else {
 		mask2 <- raster(mask)
