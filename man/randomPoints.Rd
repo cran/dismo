@@ -12,19 +12,20 @@ If the coordinate reference system (of \code{mask}) is longitude/latitude, sampl
 }
 
 \usage{
-randomPoints(mask, n, p, ext=NULL, extf=1.1, excludep=TRUE, cellnumbers=FALSE, tryf=5, warn=2)
+randomPoints(mask, n, p, ext=NULL, extf=1.1, excludep=TRUE, prob=FALSE, cellnumbers=FALSE, tryf=5, warn=2)
 }
  
 \arguments{
-  \item{mask}{Raster* object; Cells with NA in this object (or first layer of the object) are excluded}
-  \item{n}{Integer. Number of points}
+  \item{mask}{Raster* object. If the object has cell values, cells with \code{NA} are excluded (or the first layer of the object if there are multiple layers), unless \code{weights=TRUE}}
+  \item{n}{integer. Number of points}
   \item{p}{Presence points (if provided, random points won't be in the same cells (as defined by mask)}
-  \item{ext}{Exent; to restrict sampling to a spatial extent}
-  \item{extf}{Numeric. Multiplyer to adjust the size of extent 'ext'. The default increases of 1.1 increases the extent a little (5\% at each side of the extent)}
-  \item{excludep}{Logical. If \code{TRUE}, presence points are exluded from background}
-  \item{cellnumbers}{Logical. If \code{TRUE}, cell numbers for ]code{mask} are returned rather than coordinates }
+  \item{ext}{\link{Extent} object. Can be used to restrict sampling to a spatial extent}
+  \item{extf}{numeric. Multiplyer to adjust the size of extent 'ext'. The default increases of 1.1 increases the extent a little (5\% at each side of the extent)}
+  \item{excludep}{logical. If \code{TRUE}, presence points are exluded from background}
+  \item{prob}{logical. If \code{TRUE} the values in \code{mask} are interpreted as probability weights (and the values should be positive numbers (or NA)). NOTE:  this currently only works for rasters of a relatively modest size (that can be loaded into RAM)}
+  \item{cellnumbers}{logical. If \code{TRUE}, cell numbers for ]code{mask} are returned rather than coordinates }
   \item{tryf}{numeric > 1. Multiplyer used for initial sample size from which the requested sample size is extracted after removing NA points (outside of mask) }
-  \item{warn}{integer. 2 or higher give most warnings. 0 or lower give no warnings if sample size n is not reached }
+  \item{warn}{integer. 2 or higher gives most warnings. 0 or lower gives no warnings if sample size \code{n} is not reached }
 }
 
 \value{

@@ -130,7 +130,7 @@ function (data,                        # the input dataframe
   gbm.object$self.statistics <- list(null.deviance = total.deviance, resid.deviance = resid.deviance)
   gbm.object$weights <- site.weights
 
-  rm(x.data,y.data, pos=1)           #finally, clean up the temporary dataframes
+#  rm(x.data,y.data, pos=1)           #finally, clean up the temporary dataframes
 
   return(gbm.object)
 }

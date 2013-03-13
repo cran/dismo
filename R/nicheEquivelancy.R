@@ -21,9 +21,9 @@ nicheEquivalency <- function (sp1, sp2, predictors, n=99, model=maxent, verbose=
 		D <- 1 - 0.5 * cellStats(d, 'sum', na.rm = TRUE)
 
 		h  <- overlay(s, fun = function(i, j) { (sqrt(i) - sqrt(j))^2 } )
-		H <- sqrt(cellStats(h, 'sum', na.rm = TRUE))
+		H2 <- cellStats(h, 'sum', na.rm = TRUE)
 		
-		I <- 1 - H^2 * 0.5
+		I <- 1 - H2 * 0.5
 		return(c(D = D, I = I))
 	}
 

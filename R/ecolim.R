@@ -21,11 +21,11 @@ setClass('EcoLim',
 
 if (!isGeneric("ecolim")) {
 	setGeneric("ecolim", function(x, y, ...)
-		standardGeneric("ecoLim"))
+		standardGeneric("ecolim"))
 }	
 
 setMethod('ecolim', signature(x='matrix', y='matrix'), 
-	function(x, y=matrix(c(0,0,1,1,0,0)), ...) {
+	function(x, y=matrix(c(0,0,1,1,0,0)), extrapolate=TRUE,...) {
 		stopifnot(NCOL(x) == NCOL(y))
 		cn <- colnames(x)
 		if (any(cn == "")) {
@@ -33,9 +33,11 @@ setMethod('ecolim', signature(x='matrix', y='matrix'),
 		}
 		m <- new('EcoLim')
 		f <- list()
+		extrapolate <- as.logical(extrapolate)+1
+		extrapolate <- rep(extrapolate, length.out=ncol(x))
 		for (i in 1:ncol(x)) {
 			xy <- na.omit(cbind(x[,i], y[,i]))
-			f[[i]] <- approxfun(xy[,1], xy[,2], ...)
+			f[[i]] <- approxfun(xy[,1], xy[,2], rule=extrapolate[i],...)
 		}
 		m@funs <- f
 		m@x <- x
@@ -60,7 +62,7 @@ function(x, ...) {
 	par(mfrow=c(nr,nc))
 	nm <- colnames(x@x)
 	for (i in 1:n) {
-		plot(x@x[,i], x@funs[[i]](x@x[,i]), type='l', xlab=nm[i], ylab='response')
+		plot(x@x[,i], x@funs[[i]](x@x[,i]), type='l', xlab=nm[i], ylab='response', ...)
 	}
 } )
 
@@ -76,7 +78,7 @@ function(object, x, fun=min, ext=NULL, filename='', ...) {
 			stop('missing variables in x')
 		}
 		x <- x[, fn ,drop=FALSE]
-		ec <- matrix(ncol=length(ln), nrow=nrow(x))
+		ec <- matrix(ncol=length(fn), nrow=nrow(x))
 		for (i in 1:ncol(ec)) {
 			ec[,i] <- object@funs[[i]](x[,i])
 		}
@@ -98,8 +100,8 @@ function(object, x, fun=min, ext=NULL, filename='', ...) {
 		if (! all(fn %in% ln )) {
 			stop('missing variables in Raster object')
 		}
-		if ( inherits(x, 'RasterStack') & (length(fn) < length(ln))) {
-			x <- x[[ln]]
+		if ( (inherits(x, 'RasterStack')) & (length(fn) < length(ln))) {
+			x <- x[[fn]]
 		}
 		
 		if (canProcessInMemory(out, 2)) {
@@ -118,7 +120,7 @@ function(object, x, fun=min, ext=NULL, filename='', ...) {
 		
 		for (i in 1:tr$n) {
 			rr <- firstrow + tr$row[i] - 1
-			vals <- getValuesBlock(x, row=rr, nrows=tr$nrows[i], firstcol, ncols)[, ln, drop=FALSE]
+			vals <- getValuesBlock(x, row=rr, nrows=tr$nrows[i], firstcol, ncols)[, fn, drop=FALSE]
 	
 			ec <- matrix(0, ncol=ncol(vals), nrow=nrow(vals))
 			for (j in 1:length(fn)) {

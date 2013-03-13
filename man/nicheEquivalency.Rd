@@ -25,7 +25,7 @@ nicheEquivalency(sp1, sp2, predictors, n=99, model=maxent, verbose=TRUE, ...)
 
 \value{numeric}
 
-\author{ Brian Anacker. Based on a function in SDMTools by Jeremy VanDerWal }
+\author{Brian Anacker. Based on a similar function in by Christoph Heibl in the phyloclim package}
 
-\references{ Warren, D.L., R.E. Glor, M. Turelli, and D. Funk. 2009. Environmental niche equivalency versus conservatism: quantitative approaches to niche evolution. Evolution 62:2868-2883. }
+\references{ Warren, D.L., R.E. Glor, M. Turelli, 2008. Environmental niche equivalency versus conservatism: quantitative approaches to niche evolution. Evolution 62:2868-2883. }
 

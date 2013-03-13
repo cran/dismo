@@ -179,7 +179,7 @@ function (data,                        # the input data frame
   gbm.object$weights <- weights
   gbm.object$gbm.call <- gbm.detail
 
-  rm(x.data,y.data, pos=1)           #finally, clean up the temporary dataframes
+#  rm(x.data,y.data, pos=1)           #finally, clean up the temporary dataframes
 
   return(gbm.object)
 }

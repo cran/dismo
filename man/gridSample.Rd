@@ -15,7 +15,7 @@ gridSample(xy, r, n=1, chess='')
 
 \arguments{
   \item{xy}{A two column matrix or data.frame with x and y coordinates (or longitude and latitude), or a SpatialPoints* object}
-  \item{r}{RasterLayer}
+  \item{r}{Raster* object}
   \item{n}{Maximum number of samples per cell}  
   \item{chess}{Character. '', 'black', or 'white'. If 'black' or 'white', "chess-board" sampling is used. I.e. only the 'white' fields, or only the 'black' fields are sampled. Cell number 1 (the upper left corner of \code{r}) is white.}  
 }

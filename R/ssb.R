@@ -63,7 +63,9 @@ ssb <- function(p, a, reference, lonlat=TRUE, avg=TRUE) {
 	ad <- apply(adist, 1, min)
 	
 	if (avg) {
-		return( cbind(mean(pd), mean(ad)) )
+		res <- cbind(mean(pd), mean(ad))
+		colnames(res) <- c('p', 'a')
+		return(res)
 	} else {
 		return( list(pd, ad) )
 	}

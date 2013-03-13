@@ -9,7 +9,7 @@ Select pairs of points from two sets (without replacement) that have a similar d
 
 For each point in "\code{fixed}", a point is selected from "\code{sample}" that has a similar distance (as defined by \code{threshold}) to its nearest point in "\code{reference}" (note that these are likely to be different points in \code{reference}). The select point is either the nearest point \code{nearest=TRUE}, or a randomly select point \code{nearest=FALSE} that is within the threshold distance. If no point within the threshold distance is found in \code{sample}, the point in \code{fixed} is dropped.
 
-Hijmans (in press) proposes this sampling approach to remove 'spatial sorting bias' (\code{\link{ssb}}) from evaluation data used in cross-validation of presence-only species distribution models. In that context, \code{fixed} are the testing-presence points, \code{sample} the testing-absence (or testing-background) points, and \code{reference} the training-presence points.
+Hijmans (2012) proposed this sampling approach to remove 'spatial sorting bias' (\code{\link{ssb}}) from evaluation data used in cross-validation of presence-only species distribution models. In that context, \code{fixed} are the testing-presence points, \code{sample} the testing-absence (or testing-background) points, and \code{reference} the training-presence points.
 }
 
 \usage{

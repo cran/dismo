@@ -6,7 +6,7 @@
 
 nullRandom <- function(x, model, n=25, rep=25, pa=FALSE) {
 	e <- list()
-	stopifnot(n < nrow(x))
+	stopifnot( n < nrow(x) )
 	for (r in 1:rep) {
 		#select n presence records
 		i <- sample(nrow(x), n)

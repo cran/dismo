@@ -1,6 +1,10 @@
 --- development version
+
+--- 4-January-2013, version 0.8-5
 Improved "mess" function (for speed and for large raster)
 new functions "nicheEquivalency" and "nicheOverlap"
+bug fix in gridSample
+new function 'threshold'
 
 --- 1-September-2012, version 0.7-23
 Running Sys.setenv(NOAWT=TRUE) before calling rJava, to solve maxent/mac issues. Suggested by Pascal Title.

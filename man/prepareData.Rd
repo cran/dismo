@@ -18,7 +18,7 @@ prepareData(x, p, b, factors, xy=FALSE)
 \item{x}{Raster* object}
 \item{p}{presence points}
 \item{b}{background (or absence) points}
-\item{factors}{vectors indicating which variables are factors (using layerNames or layer numbers)}
+\item{factors}{vectors indicating which variables are factors (using layer names or numbers)}
 \item{xy}{logical. If \code{TRUE}, the first two columns of the returned data.frame will be the coordinates of p and b (labeled 'x' and 'y')}
 }
 

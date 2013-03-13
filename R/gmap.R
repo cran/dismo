@@ -81,7 +81,7 @@ gmap <- function(x, exp=1, type='terrain', filename='', style=NULL, scale=1, zoo
 		if (any(is.na(x))) {
 			stop('location not found')
 		}
-		x <- extent(as.vector(as.matrix(x[4:7])))
+		x <- extent(as.vector(as.matrix(x[5:8])))
 
 	} else {
 		prj <- projection(x, asText=TRUE)

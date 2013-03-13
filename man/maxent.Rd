@@ -88,8 +88,9 @@ jar <- paste(system.file(package="dismo"), "/java/maxent.jar", sep='')
 if (file.exists(jar) & require(rJava)) {
 
 # get predictor variables
-predictors <- stack(list.files(path=paste(system.file(package="dismo"), '/ex', sep=''), 
-              pattern='grd', full.names=TRUE ))
+fnames <- list.files(path=paste(system.file(package="dismo"), '/ex', sep=''), 
+              pattern='grd', full.names=TRUE )
+predictors <- stack(fnames)
 #plot(predictors)
 
 # file with presence points
@@ -117,10 +118,10 @@ plot(me)
 # response(me)
 
 # predict to entire dataset
-r <- predict(me, predictors, progress='window') 
+r <- predict(me, predictors) 
 
-# with options:
-# r <- predict(me, predictors, progress='text', args=c("outputformat=raw"))
+# with some options:
+# r <- predict(me, predictors, args=c("outputformat=raw"), progress='text', filename='maxent_prediction.grd')
 
 plot(r)
 points(occ)

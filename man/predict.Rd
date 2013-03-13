@@ -19,7 +19,7 @@
 \description{
 Make a RasterLayer with a prediction based on a model object of class the inherits from 'DistModel', including: Bioclim, Domain, MaxEnt, Mahalanobis, and GeographicDistance. Predictions with model objects that do not inherit from DistModel can be made using the similar \code{\link[raster]{predict}} function in the 'raster' package. 
 
-Provide a Raster* object with the independent variables. The layerNames in the Raster* object should include those expected by the model. 
+Provide a Raster* object with the independent variables. The names of the layers in the Raster* object should include those expected by the model. 
 }
 
 \section{Methods}{

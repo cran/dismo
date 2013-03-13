@@ -100,9 +100,9 @@ setMethod('circles', signature(p='data.frame'),
 			stop("you must provide a 'lonlat' argument")
 		}
 		if (missing(d)) {
-			d <- .avgDist(p, lonlat=lonlat, r=r) / 2
+			d <- .avgDist(p, lonlat=lonlat, ...) / 2
 		}
-		ci@polygons <- .generateCircles(p, d=d, lonlat=lonlat)
+		ci@polygons <- .generateCircles(p, d=d, lonlat=lonlat, ...)
 		return(ci)
 	}
 )

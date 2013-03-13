@@ -39,23 +39,51 @@
 	maxv <- max(v)
 	res <- 2*f 
 	f[is.na(f)] <- -99
+	i <- f>50 & f<100
+	res[i] <- 200-res[i]
+
 	i <- f==0 
 	res[i] <- 100*(p[i]-minv)/(maxv-minv)
-	#i <- f>0 & f<=50
-	#res[] <- 2 * f[i]
-	i <- f>50 & f<100
-	res[i] <- 2*(100-f[i])
 	i <- f==100
 	res[i] <- 100*(maxv-p[i])/(maxv-minv)
 	res
 }
 
 
-#P = runif(100000)
+.messi4 <- function(p,v) {
+	v <- na.omit(v)
+	f <- findInterval(p, sort(v)) / length(v)
+	r <- range(v)
+	res <- 2*f 
+	f[is.na(f)] <- -99
+	i <- f > 0.5 & f < 1
+	res[i] <- 2-res[i]
+	i <- f==0 
+	res[i] <- (p[i]-r[1])/(r[2]-r[1])
+	i <- f==1
+	res[i] <- (r[2]-p[i])/(r[2]-r[1])
+	res * 100
+}
+
+
+
+.messix <- function(p,v) {
+# a little bit different, no negative values.
+	a <- ecdf(v)(p)
+	a[a>0.5] <- 1-a[a>0.5]
+	200 * a
+}
+
+
+
+#P = runif(1000)
 #V=runif(25)
 #system.time(x <- .messi2a(P,V))
 #system.time(y <- .messi2b(P,V))
 #system.time(z <- .messi3(P,V))
+#system.time(a <- .messi4(P,V))
+
+	
 
 
 .messOld <- function(x, v, full=FALSE) {

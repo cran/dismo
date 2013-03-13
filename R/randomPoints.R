@@ -46,14 +46,13 @@
 
 
 
-randomPoints <- function(mask, n, p, ext=NULL, extf=1.1, excludep=TRUE, cellnumbers=FALSE, tryf=5, warn=2) {
+randomPoints <- function(mask, n, p, ext=NULL, extf=1.1, excludep=TRUE, prob=FALSE, cellnumbers=FALSE, tryf=5, warn=2) {
 	
-	if (nlayers(mask) > 1) { mask <- raster(mask, 1)	}
-	
-	if (n > ncell(mask)) {
-		n <- ncell(mask)
-		if (warn>0) { warning('changed n to ncell(mask)') }
+	if (nlayers(mask) > 1) { 
+		mask <- raster(mask, 1)	
 	}
+	
+
 	tryf <- max(tryf, 1)
 	
 	if (missing(p)) { 
@@ -84,11 +83,35 @@ randomPoints <- function(mask, n, p, ext=NULL, extf=1.1, excludep=TRUE, cellnumb
 		mask2 <- raster(mask)
 	}
 	
+	if (n > ncell(mask2)) {
+		n <- ncell(mask2)
+		if (warn>0) { warning('changed n to ncell of the mask (extent)') }
+	}
+	
 	nn = n * tryf
 	nn = max(nn, 10)
 
-	
-	if (canProcessInMemory(mask2)) {
+	if (prob) {
+		stopifnot(hasValues(mask))
+		cells <- crop(mask, mask2)
+		cells <- try( na.omit(cbind(1:ncell(cells), getValues(cells))))
+		if (class(cells) == 'try-error') {
+			stop("the raster is too large to be used with 'prob=TRUE'")
+		}
+		prob <- cells[,2]
+		cells <- cells[,1]
+		if (raster:::.couldBeLonLat(mask)) {
+			rows <- rowFromCell(mask2, cells)
+			y <- yFromRow(mask2, rows)
+			dx <- pointDistance(cbind(0, y), cbind(xres(mask2), y), longlat=TRUE)  
+			prob <- prob * dx
+		}
+
+		cells <- sample(cells, nn, prob=prob)
+		xy <- xyFromCell(mask2, cells)
+		cells <- cellFromXY(mask, xy)
+		
+	} else 	if (canProcessInMemory(mask2)) {
 	
 		cells <- crop(mask, mask2)
 		if (hasValues(cells)) {
