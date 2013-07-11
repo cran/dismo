@@ -12,7 +12,7 @@ if (!isGeneric("threshold")) {
 
 
 setMethod('threshold', signature(x='ModelEvaluation'),
-	function(x, stat='', ...) {
+	function(x, stat='', sensitivity=0.9, ...) {
 		r <- list()
 		# maximum kappa
 		r$kappa <- x@t[which.max(x@kappa)]
@@ -21,6 +21,17 @@ setMethod('threshold', signature(x='ModelEvaluation'),
 		# no omission
 		r$no_omission <- x@t[max(which(x@confusion[, 'fn'] == 0))]
 		# etc
+		
+
+		# Suggestions by Diego Nieto-Lugilde		
+		# equal prevalence
+		r$prevalence = x@t[which.min(abs(x@t - x@prevalence[1]))] 
+		# equal sensitivity and specificity
+		r$equal_sens_spec <- x@t[which.min(abs(x@TPR - x@TNR))]
+		# fixed sensitivity
+		r$sensitivty <- x@t[which.min(x@TPR > sensitivity)]
+		
+    # etc		
 		
 		r <- data.frame(r)
 		rownames(r) <- 'thresholds'

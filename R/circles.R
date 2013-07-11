@@ -1,10 +1,7 @@
 # Author: Robert J. Hijmans
-# contact: r.hijmans@gmail.com
 # Date : Febrary 2010
 # Version 0.1
 # Licence GPL v3
-
-
 
 
 .avgDist <- function(xy, lonlat, r=6378137) {
@@ -40,7 +37,7 @@
 	brng <- 1:n * 360/n
 	brng <- brng * toRad
 	if (lonlat) { 
-		xy = xy * toRad 
+		xy <- xy * toRad 
 	}
 	pols <- list()
 	for (i in 1:nrow(xy)) {
@@ -86,11 +83,17 @@ setClass('CirclesRange',
 )
 
 
+setMethod("polygons", "CirclesRange",
+	function(obj) {
+		obj@polygons
+	}
+)
+
+
 if (!isGeneric("circles")) {
 	setGeneric("circles", function(p, ...)
 		standardGeneric("circles"))
 }	
-
 
 setMethod('circles', signature(p='data.frame'), 
 	function(p, d, lonlat, ...) {
@@ -102,7 +105,11 @@ setMethod('circles', signature(p='data.frame'),
 		if (missing(d)) {
 			d <- .avgDist(p, lonlat=lonlat, ...) / 2
 		}
+		
 		ci@polygons <- .generateCircles(p, d=d, lonlat=lonlat, ...)
+		if (require(rgeos)) {
+			ci@polygons <- gUnionCascaded(ci@polygons)
+		}
 		return(ci)
 	}
 )

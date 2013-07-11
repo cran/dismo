@@ -51,7 +51,6 @@ y <- cbind(r1, r2)
 e <- ecolim(x, y) 
 plot(e, lwd=2, col='red')
 p <- predict(e, env)
-x11()
 plot(p)
 
 # no extrapolation:

@@ -53,7 +53,8 @@ plot(ms)
 filename <- paste(system.file(package="dismo"), '/ex/bradypus.csv', sep='')
 bradypus <- read.table(filename, header=TRUE, sep=',')
 bradypus <- bradypus[,2:3]
-files <- list.files(path=paste(system.file(package="dismo"),'/ex', sep=''), pattern='grd', full.names=TRUE )
+files <- list.files(path=paste(system.file(package="dismo"),'/ex', sep=''), 
+   pattern='grd', full.names=TRUE )
 predictors <- stack(files)
 predictors <- dropLayer(x=predictors,i=9)
 reference_points <- extract(predictors, bradypus)

@@ -18,6 +18,14 @@ voronoi <- function(xy){
 		prj <- proj4string(xy)
 		sp <- TRUE
 		xy <- coordinates(xy)
+		dups <- duplicated(xy)
+		if (any(dups)) {
+			xy <- xy[!dups, ,drop=FALSE]
+			dat <- dat[!dups, ,drop=FALSE]
+		}
+	} else {
+		xy <- na.omit(xy[, 1:2])
+		xy <- unique(xy)
 	}
 	
 	z <- deldir(xy[,1], xy[,2])

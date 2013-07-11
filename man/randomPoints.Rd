@@ -12,7 +12,8 @@ If the coordinate reference system (of \code{mask}) is longitude/latitude, sampl
 }
 
 \usage{
-randomPoints(mask, n, p, ext=NULL, extf=1.1, excludep=TRUE, prob=FALSE, cellnumbers=FALSE, tryf=5, warn=2)
+randomPoints(mask, n, p, ext=NULL, extf=1.1, excludep=TRUE, prob=FALSE, 
+             cellnumbers=FALSE, tryf=5, warn=2)
 }
  
 \arguments{

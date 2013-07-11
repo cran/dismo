@@ -1,4 +1,7 @@
---- development version
+--- 8-July-2013, version 0.8-15
+Added argument "concept" to function gbif to allow querying for synonyms. Suggested by Aaron Dodd
+Added additional threshold statistics suggested by Diego Nieto-Lugilde
+Some general clean-up to stay in sync with CRAN requirements
 
 --- 4-January-2013, version 0.8-5
 Improved "mess" function (for speed and for large raster)

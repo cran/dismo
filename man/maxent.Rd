@@ -121,7 +121,8 @@ plot(me)
 r <- predict(me, predictors) 
 
 # with some options:
-# r <- predict(me, predictors, args=c("outputformat=raw"), progress='text', filename='maxent_prediction.grd')
+# r <- predict(me, predictors, args=c("outputformat=raw"), progress='text', 
+#      filename='maxent_prediction.grd')
 
 plot(r)
 points(occ)

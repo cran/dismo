@@ -1,5 +1,4 @@
 # Author: Robert J. Hijmans
-# contact: r.hijmans@gmail.com
 # Date : Febrary 2010
 # Version 0.1
 # Licence GPL v3
@@ -17,6 +16,12 @@ setClass('ConvexHull',
 	}
 )
 
+
+setMethod("polygons", "ConvexHull",
+	function(obj) {
+		obj@polygons
+	}
+)
 
 if (!isGeneric("convHull")) {
 	setGeneric("convHull", function(p, ...)

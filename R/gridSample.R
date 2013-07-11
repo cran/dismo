@@ -80,7 +80,7 @@ gridSample <- function(xy, r, n=1, chess='') {
 		}
 		e <- extent(as.vector(apply(rbind(p, a), 2, range)))
 		r <- raster(e, nrow=rowcol[1], ncol=rowcol[2])
-		r <- expand(r, 1)
+		r <- extend(r, 1)
 	}
 	
 	fc <- cellFromXY(r, p)

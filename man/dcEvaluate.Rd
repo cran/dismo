@@ -9,7 +9,8 @@ Evaluate a model for intervals of distances to the nearest point in a reference 
 }
 
 \usage{
-dcEvaluate(p, a, reference, lonlat=TRUE, binsize=15, predp, preda, model, predictors, fun=predict) 
+dcEvaluate(p, a, reference, lonlat=TRUE, binsize=15, predp, preda, model, 
+               predictors, fun=predict) 
 }
  
 \arguments{

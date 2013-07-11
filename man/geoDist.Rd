@@ -52,12 +52,13 @@ train <- pts[1:12, ]
 test <- pts[13:20, ]
 				 
 gd <- geoDist(train, lonlat=FALSE)
-predict(gd, test)
+p <- predict(gd, r)
 
-p = predict(gd, r, progress='')
+\dontrun{
 plot(p)
 points(test, col='black', pch=20, cex=2)
 points(train, col='red', pch=20, cex=2)
+}
 }
 
 \keyword{spatial}

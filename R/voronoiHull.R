@@ -1,5 +1,4 @@
 # Author: Robert J. Hijmans
-# contact: r.hijmans@gmail.com
 # Date : Febrary 2010
 # Version 0.0
 # Licence GPL v3
@@ -48,15 +47,26 @@ setMethod('voronoiHull', signature(p='SpatialPoints', a='SpatialPoints'),
 
 # adapted from code by Carson Farmer
 # http://www.carsonfarmer.com/?p=455
-.voronoi <- function(p, a){
+.voronoi <- function(p, a=NULL, dissolve=FALSE){
 
-	if (!require(deldir)) { stop('you need to first install the "deldir" package') }
+	if (!require(deldir)) { 
+		stop('you need to first install the "deldir" package') 
+	}
 
-	xy = rbind(p,a)
-	pa = c(rep(1, nrow(p)), rep(0, nrow(a)))
-	paxy = unique(cbind(pa, xy)) 
-	paxy[duplicated(paxy[, 2:3]),1] = 1  # duplicates are present
-	paxy = unique(paxy)
+	if (is.null(a)) {
+		xy <- na.omit(unique(p))
+		paxy <- cbind(pa=1, xy) 
+		pa <- paxy[,1,drop=FALSE]
+	
+	} else {
+		p <- na.omit(unique(p))
+		a <- na.omit(unique(a))
+		xy <- rbind(p,a)
+		pa <- c(rep(1, nrow(p)), rep(0, nrow(a)))
+		paxy <- cbind(pa, xy) 
+		paxy[duplicated(paxy[, 2:3]),1] <- 1  # duplicates are present, become '1'
+		paxy <- unique(paxy)
+	}
 	
 	z <- deldir(xy[,1], xy[,2])
 	w <- tile.list(z)
@@ -70,18 +80,18 @@ setMethod('voronoiHull', signature(p='SpatialPoints', a='SpatialPoints'),
 	
 	polys <- SpatialPolygons(polys)
 	
-	#if (require(rgeos)) {
-	#	p <- polys[pa==1]
-	#	a <- polys[pa==0]
-	#	p <- gUnionCascaded(p)
-	#	a <- gUnionCascaded(a)
-	#	a@polygons[[1]]@ID = "2"
-	#	polys <- SpatialPolygons(list(p@polygons[[1]], a@polygons[[1]]))
-	#	pa <- data.frame(pa=c(1,0))
-	#	polys <- SpatialPolygonsDataFrame(polys, data=data.frame(pa))
-	#} else {
-		polys <- SpatialPolygonsDataFrame(polys, data=data.frame(pa))
-	#}
+	if (dissolve) {
+		if (require(rgeos)) { 
+			p <- polys[pa==1]
+			a <- polys[pa==0]
+			p <- gUnionCascaded(p)
+			a <- gUnionCascaded(a)
+			a@polygons[[1]]@ID = "2"
+			polys <- SpatialPolygons(list(p@polygons[[1]], a@polygons[[1]]))
+			pa <- data.frame(pa=c(1,0))
+		}
+	}
+	polys <- SpatialPolygonsDataFrame(polys, data=data.frame(pa))
 	
 	return(polys)
 }
@@ -90,7 +100,8 @@ setMethod('voronoiHull', signature(p='SpatialPoints', a='SpatialPoints'),
 setMethod("plot", signature(x='VoronoiHull', y='missing'), 
 	function(x, ...) {
 		sp <- x@polygons
-		sp <- sp[sp$pa == 1, ]
-		plot( sp, ... )
+		sp::plot( sp, ... )
 	}
 )
+
+

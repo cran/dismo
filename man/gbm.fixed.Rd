@@ -10,9 +10,9 @@ Mostly used as a utility function, e.g., when being called by gbm.simplify. It t
 }
 
 \usage{
-gbm.fixed(data, gbm.x, gbm.y, tree.complexity = 1, site.weights = rep(1, nrow(data)), verbose = TRUE,
-    learning.rate = 0.001, n.trees = 2000, bag.fraction = 0.5, family = "bernoulli", keep.data = FALSE, 
-	var.monotone = rep(0, length(gbm.x)))
+gbm.fixed(data, gbm.x, gbm.y, tree.complexity = 1, site.weights = rep(1, nrow(data)),
+ verbose = TRUE, learning.rate = 0.001, n.trees = 2000, bag.fraction = 0.5, 
+ family = "bernoulli", keep.data = FALSE, var.monotone = rep(0, length(gbm.x)))
 }
 
 \arguments{

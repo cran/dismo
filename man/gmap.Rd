@@ -10,7 +10,7 @@ Retrieve a 'Google Map' that can be used as a background for plotting points and
 
 You should check the terms of service before you use these maps: \url{http://code.google.com/apis/maps/terms.html}
 
-The projection of the returned Raster object is "Mercator" (unless you use \code{lonlat=TRUE}, and other spatial data may need to be transformed before it can be plotted on top of the Google map. You can use the \code{Mercator} function to transform map coordinates and points between Mercator and longitude/latitude. For Spatial* objects, use \code{spTransform} in the \code{rgdal} package.
+The projection of the returned Raster object is "Mercator" (unless you use \code{lonlat=TRUE}), and other spatial data may need to be transformed before it can be plotted on top of the Google map. You can use the \code{Mercator} function to transform points from longitude/latitude to Mercator. For SpatialLines and SpatialPolygons objects, use \code{spTransform} in the \code{rgdal} package.
 
 This function uses the Google static maps web-service, and is based on functions by Markus Loecher for the \code{RgoogleMaps} package. 
 
@@ -18,7 +18,8 @@ The purpose of using this function should be to display the map in a browser. Yo
 }
 
 \usage{
-gmap(x, exp=1, type='terrain', filename='', style=NULL, scale=1, zoom=NULL, size=c(640, 640), rgb=FALSE, lonlat=FALSE, ...)
+gmap(x, exp=1, type='terrain', filename='', style=NULL, scale=1, zoom=NULL, 
+      size=c(640, 640), rgb=FALSE, lonlat=FALSE, ...)
 
 Mercator(p, inverse = FALSE)
 }
@@ -99,11 +100,13 @@ Mercator(ptm, inverse=TRUE)
 pt <- data.frame(pt)
 coordinates(pt) <- ~X1 + X2
 proj4string(pt) <-"+proj=longlat +datum=WGS84 +ellps=WGS84"
-ptm2 <- spTransform(pt, CRS("+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs"))
+ptm2 <- spTransform(pt, CRS("+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 
+      +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs"))
 points(ptm, col='red', pch='x', cex=3)
 
 # styles:
-d = gmap("Brooklyn", type='roadmap',  style="feature:road.local|element:geometry|hue:0x00ff00|saturation:100&style=feature:landscape|element:geometry|lightness:-100")
+gmap("Brooklyn", style="feature:road.local|element:geometry|hue:0x00ff00|saturation:100
+  &style=feature:landscape|element:geometry|lightness:-100", type='roadmap')
 }
 }
 

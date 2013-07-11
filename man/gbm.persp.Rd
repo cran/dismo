@@ -16,9 +16,10 @@ and its desired value, e.g., c(name1 = 12.2, name2 = 57.6)
 }
 
 \usage{
-gbm.perspec(gbm.object, x = 1, y = 2, pred.means = NULL, x.label = NULL, x.range = NULL, y.label = NULL,
- z.label = "fitted value", y.range = NULL, z.range = NULL, leg.coords = NULL, ticktype = "detailed", 
- theta = 55, phi = 40, smooth = "none", mask = FALSE, perspective = TRUE, ...)
+gbm.perspec(gbm.object, x = 1, y = 2, pred.means = NULL, x.label = NULL, x.range = NULL,
+ y.label = NULL, z.label = "fitted value", y.range = NULL, z.range = NULL, 
+ leg.coords = NULL, ticktype = "detailed", theta = 55, phi = 40, smooth = "none",
+ mask = FALSE, perspective = TRUE, ...)
 }
 
 \arguments{

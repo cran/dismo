@@ -16,10 +16,11 @@ BY DEFAULT randomly reordered each time the function is run.
 }
 
 \usage{
-gbm.holdout(data, gbm.x, gbm.y, learning.rate = 0.001, tree.complexity = 1, family = "bernoulli",
- n.trees = 200, add.trees = n.trees, max.trees = 20000, verbose = TRUE, train.fraction = 0.8, 
- permute = TRUE, prev.stratify = TRUE, var.monotone = rep(0, length(gbm.x)), 
- site.weights = rep(1, nrow(data)), refit = TRUE, keep.data = TRUE)
+gbm.holdout(data, gbm.x, gbm.y, learning.rate = 0.001, tree.complexity = 1, 
+ family = "bernoulli", n.trees = 200, add.trees = n.trees, max.trees = 20000, 
+ verbose = TRUE, train.fraction = 0.8, permute = TRUE, prev.stratify = TRUE,
+ var.monotone = rep(0, length(gbm.x)), site.weights = rep(1, nrow(data)), 
+ refit = TRUE, keep.data = TRUE)
 }
 
 \arguments{

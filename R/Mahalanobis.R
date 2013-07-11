@@ -30,45 +30,66 @@ setMethod('mahal', signature(x='data.frame', p='missing'),
 				x <- x[, -i]
 			}
 		}
-		if (ncol(x) == 0) {	stop('no usable variables') 	}
+		if (ncol(x) == 0) {	
+			stop('no usable variables') 	
+		}
 
 		m <- new('Mahalanobis')
 		
-		x = na.omit(x)
-		if (ncol(x) == 0) {	stop('no usable variables') 	}
-		if (nrow(x) < 2) {	stop('insufficient records') 	}
-		
+		x <- na.omit(x)
+		if (ncol(x) == 0) {	
+			stop('no usable variables')
+		}
+		if (nrow(x) < 2) {
+			stop('insufficient records')
+		}
 		
 		m@presence <- x
-		m@cov <- solve( var(x) )
+		dots <- list(...)
+		
+		if (is.null(dots$cov)) {
+			m@cov <- solve( var(x) )
+		} else {
+			if (!isTRUE(all.equal(dim(cov), dim(x)))) {
+				stop('covariance matrix supplied does not fit the data')
+			}
+			if (!is.null(dots$inverted)) {
+				if (! dots$inverted) {		
+					cov <- solve( var(cov) )
+				}
+			} else {
+				cov <- solve( var(cov) )			
+			}
+			m@cov <- cov
+		}
 		m
 	}
 )
 
 setMethod('mahal', signature(x='matrix', p='missing'), 
 	function(x, p, ...) {
-		mahal(as.data.frame(x))
+		mahal(as.data.frame(x), ...)
 	}
 )
 
 setMethod('mahal', signature(x='Raster', p='matrix'), 
 	function(x, p, ...) {
 		m <- extract(x, p)
-		mahal(m)
+		mahal(m, ...)
 	}
 )
 
 setMethod('mahal', signature(x='Raster', p='data.frame'), 
 	function(x, p, ...) {
 		m <- extract(x, p)
-		mahal(m)
+		mahal(m, ...)
 	}
 )
 
 setMethod('mahal', signature(x='Raster', p='SpatialPoints'), 
 	function(x, p, ...) {
 		m <- extract(x, p)
-		mahal(m)
+		mahal(m, ...)
 	}
 )
 

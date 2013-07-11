@@ -11,8 +11,28 @@
 # translate ISO2 codes to full country names
 # add "cloc"
 
+# 2013-06-19
+# added 'species concept' option
+# suggested by Aaron Dodd
 
-gbif <- function(genus, species='', ext=NULL, args=NULL, geo=TRUE, sp=FALSE, removeZeros=FALSE, download=TRUE, getAlt=TRUE, ntries=5, nrecs=1000, start=1, end=NULL, feedback=3) {
+.GBIFKey <- function(species) {
+#	if (! require(XML)) { stop('You need to install the XML package to use this function') }
+	url <- "http://data.gbif.org/ws/rest/taxon/list?dataproviderkey=1&rank=species&scientificname="
+	url <- paste0(url, species)
+   	doc <- xmlInternalTreeParse(url)
+	
+	node <- getNodeSet(doc, "//gbif:summary")
+	m <- xmlGetAttr(node[[1]], 'totalReturned')
+	if (!(as.integer(m) > 0)) {
+		return(NA)
+	} else {
+		node <- getNodeSet(doc, "//tc:TaxonConcept")
+		xmlGetAttr(node[[1]], 'gbifKey')
+	}
+}
+
+
+gbif <- function(genus, species='', concept=FALSE, ext=NULL, args=NULL, geo=TRUE, sp=FALSE, removeZeros=FALSE, download=TRUE, getAlt=TRUE, returnConcept=FALSE,ntries=5, nrecs=1000, start=1, end=NULL, feedback=3) {
 	
 	if (! require(XML)) { stop('You need to install the XML package to use this function') }
 
@@ -33,12 +53,12 @@ gbif <- function(genus, species='', ext=NULL, args=NULL, geo=TRUE, sp=FALSE, rem
 
 		nodes <- getNodeSet(doc, "//to:Identification")
 		varNames <- c("taxonName")
-		dims = c(length(nodes), length(varNames)) 
-		tax = as.data.frame(replicate(dims[2], rep(as.character(NA), dims[1]), simplify = FALSE), stringsAsFactors = FALSE)
-		names(tax) = varNames
+		dims <- c(length(nodes), length(varNames)) 
+		tax <- as.data.frame(replicate(dims[2], rep(as.character(NA), dims[1]), simplify = FALSE), stringsAsFactors = FALSE)
+		names(tax) <- varNames
     # Fill in the rows based on the names.
 		for(i in seq(length = dims[1])) {
-			tax[i,] = xmlSApply(nodes[[i]], xmlValue)[varNames]
+			tax[i,] <- xmlSApply(nodes[[i]], xmlValue)[varNames]
 		}
 		cbind(tax, ans)
 	}
@@ -57,13 +77,23 @@ gbif <- function(genus, species='', ext=NULL, args=NULL, geo=TRUE, sp=FALSE, rem
 	} else {
 		ex <- NULL
 	}
-	genus <- trim(genus)
-	species <- trim(species)
-	gensp <- paste(genus, species)
-	spec <- gsub("   ", " ", species) 
-	spec <- gsub("  ", " ", spec) 	
-	spec <- gsub(" ", "%20", spec)  # for genus species var. xxx
-    spec <- paste(genus, '+', spec, sep='')
+	
+	getkey <- TRUE
+	if (is.logical(concept)) {
+		genus <- trim(genus)
+		species <- trim(species)
+		gensp <- paste(genus, species)
+		spec <- gsub("   ", " ", species) 
+		spec <- gsub("  ", " ", spec) 	
+		spec <- gsub(" ", "%20", spec)  # for genus species var. xxx
+		spec <- paste(genus, '+', spec, sep='')
+	} else {
+		key <- round(as.numeric(concept))
+		if (key < 1) stop('concept should be a positive integer')
+		gensp <- concept
+		concept <- TRUE
+		getkey <- FALSE
+	}
 	
 	if (sp) geo <- TRUE
 	if (geo) { cds <- '&coordinatestatus=true' 
@@ -73,10 +103,26 @@ gbif <- function(genus, species='', ext=NULL, args=NULL, geo=TRUE, sp=FALSE, rem
 		args <- trim(as.character(args))
 		args <- paste('&', paste(args, collapse='&'), sep='')
 	}
-    url <- paste(base, 'count?scientificname=', spec, cds, ex, args, sep='')
+	
+	if (returnConcept) concept <- TRUE
+	if (concept) {
+		if (getkey) {
+			key <- .GBIFKey(spec)
+		}
+		if (returnConcept) return(key)
+		if (is.na(key)) {
+			concept <- FALSE
+			url <- paste(base, 'count?scientificname=', spec, cds, ex, args, sep='')
+		} else {
+			url <- paste(base, 'count?taxonconceptkey=', key, cds, ex, args, sep='')
+		}
+	} else {
+		url <- paste(base, 'count?scientificname=', spec, cds, ex, args, sep='')
+	}	
 	
 	tries <- 0
     while (TRUE)  {
+	
 		tries <- tries + 1
 		if (tries > 5) { # if you cannot do this in 5 tries, you might as well stop
 			stop('GBIF server does not return a valid answer after 5 tries')
@@ -118,6 +164,16 @@ gbif <- function(genus, species='', ext=NULL, args=NULL, geo=TRUE, sp=FALSE, rem
 	if (! download) { return(n) }
 	nrecs <- min(max(nrecs, 1), 1000)
 	
+	start <- max(1, start)
+	if (start > n) {
+		stop('"start" is larger than the number of records')
+	}
+	if (is.null(end)) {
+		end <- n
+	} else {
+		stopifnot(end >= start)
+	}
+	
     iter <- n %/% nrecs
 	breakout <- FALSE
 	if (start > 1) {
@@ -126,26 +182,35 @@ gbif <- function(genus, species='', ext=NULL, args=NULL, geo=TRUE, sp=FALSE, rem
 		ss <- 0
 	}
 	z <- NULL
+	start <- start-1
     for (group in ss:iter) {
-        start <- group * nrecs
+		if (group > 0) {
+			start <- group * nrecs
+			if (end < start) break
+		}	
+		if (group == iter) { 
+			thisend <- min(end, n) - 1
+			nrecs <- thisend-start+1
+		} else { 
+			thisend <- start+nrecs-1 
+			thisend <- min(end, thisend)
+		}
+		
 		if (feedback > 1) {
-			if (group == iter) { 
-				end <- n-1 
-				nrecs <- 1+end-start
-			} else { 
-				end <- start + nrecs - 1 
-			}
 			if (group == ss) { 
-				cat(start, '-', end+1, sep='')  
+				cat((start+1), '-', thisend+1, sep='')  
 			} else { 
-				cat('-', end+1, sep='')  
+				cat('-', thisend+1, sep='')  
 			}
 			if ((group > ss & group %% 20 == 0)  |  group == iter ) { cat('\n') }
 			flush.console()
 		}
-				
-        aurl <- paste(base, 'list?scientificname=', spec, '&mode=processed&format=darwin&startindex=', format(start, scientific=FALSE), '&maxresults=', format(nrecs, scientific=FALSE), cds, ex, args, sep='')
 
+		if (concept) {
+			aurl <- paste(base, 'list?taxonconceptkey=', key, '&mode=processed&format=darwin&startindex=', format(start, scientific=FALSE), '&maxresults=', format(nrecs, scientific=FALSE), cds, ex, args, sep='')
+		} else {
+			aurl <- paste(base, 'list?scientificname=', spec, '&mode=processed&format=darwin&startindex=', format(start, scientific=FALSE), '&maxresults=', format(nrecs, scientific=FALSE), cds, ex, args, sep='')
+		}
 		tries <- 0
         #======= if download fails due to server problems, keep trying  =======#
         while (TRUE) {
@@ -214,26 +279,25 @@ gbif <- function(genus, species='', ext=NULL, args=NULL, geo=TRUE, sp=FALSE, rem
 		alt, 
 		z[ ,c("institution", "collection", "catalogNumber",  "basisOfRecord", "collector", "earliestDateCollected", "latestDateCollected",  "gbifNotes", "downloadDate", "maxElevationM", "minElevationM", "maxDepthM", "minDepthM")])
 	}
+
+	if (dim(z)[1] > 0) {
 	
-	if (sp) {
-		i <- z[!(is.na(z[,'lon'] | is.na(z[,'lat']))), ]
-		if (dim(z)[1] > 0) {
+		iso <- raster:::.ISO()
+		z$ISO2 <- z$country
+		i <- match(z$ISO2, iso[, 'ISO2'])
+		z$country <- iso[i, 1]
+		
+		fullloc <- trim(as.matrix(z[, c('locality', 'adm1', 'adm2', 'country', 'continent')]))
+		fullloc <- apply(fullloc, 1, function(x) paste(x, collapse=', '))
+		fullloc <- gsub("NA, ", "", fullloc)
+		fullloc <- gsub(", NA", "", fullloc)
+		fullloc <- gsub('\"', "", fullloc)
+		z$cloc <- fullloc
+
+		if (sp) {
 			coordinates(z) <- ~lon+lat
 		}
-	}
-
-	iso <- raster:::.ISO()
-	z$ISO2 <- z$country
-	i <- match(z$ISO2, iso[, 'ISO2'])
-	z$country <- iso[i, 1]
-	
-	fullloc <- trim(as.matrix(z[, c('locality', 'adm1', 'adm2', 'country', 'continent')]))
-	fullloc <- apply(fullloc, 1, function(x) paste(x, collapse=', '))
-	fullloc <- gsub("NA, ", "", fullloc)
-	fullloc <- gsub(", NA", "", fullloc)
-	fullloc <- gsub('\"', "", fullloc)
-	z$cloc <- fullloc
-	
+	}	
 #	if (inherits(ext, 'SpatialPolygons')) { overlay	}
 	return(z)
 }

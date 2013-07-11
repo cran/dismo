@@ -12,7 +12,8 @@ Requires a family argument which is set to binomial by default
 }
 
 \usage{
-calc.deviance(obs, pred, weights = rep(1,length(obs)), family="binomial", calc.mean = TRUE)
+calc.deviance(obs, pred, weights = rep(1,length(obs)), 
+                family="binomial", calc.mean = TRUE)
 }
 
 \arguments{

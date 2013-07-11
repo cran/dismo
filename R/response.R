@@ -6,7 +6,8 @@ if (!isGeneric("response")) {
 
 
 setMethod("response", signature(x='DistModel'), 
-function(x, var=NULL, at=median, range='pa', expand=10, rug=TRUE, ylim=c(0,1), col='red', lwd=2, add=FALSE, data=NULL, ... ) {
+function(x, var=NULL, at=median, range='pa', expand=10, rug=TRUE, data=NULL, fun=predict,
+			ylim=c(0,1), col='red', lwd=2, add=FALSE, ... ) {
 	stopifnot(range %in% c('p', 'pa'))
 	if (is.null(data)) {
 		data <- x@presence
@@ -29,13 +30,13 @@ function(x, var=NULL, at=median, range='pa', expand=10, rug=TRUE, ylim=c(0,1), c
 		stop('var not found')	
 	}
 
-	.doResponse(x, var, at, data, cn, expand, rug, ylim, col, lwd, add, ... )
+	.doResponse(x, var, at, data, cn, expand, rug, ylim, col, lwd, add, fun, ... )
 
 }
 )
 
 setMethod("response", signature(x="MaxEntReplicates"), 
-function(x, var=NULL, at=median, range='pa', expand=10, rug=TRUE, ylim=c(0,1), col='red', lwd=2, add=FALSE, ... ) {
+function(x, var=NULL, at=median, range='pa', expand=10, fun=predict, data=NULL, rug=TRUE, ylim=c(0,1), col='red', lwd=2, add=FALSE, ... ) {
 	stopifnot(range %in% c('p', 'pa'))
 	
 	for (i in 1:length(x@models)) {
@@ -61,14 +62,14 @@ function(x, var=NULL, at=median, range='pa', expand=10, rug=TRUE, ylim=c(0,1), c
 		var <- var[var %in% cn]
 		if (length(var) == 0) { stop('var not found')	}
 
-		.doResponse(x[[i]], var, at, data, cn, expand, rug, ylim, col, lwd, add, ... )
+		.doResponse(x[[i]], var, at, data, cn, expand, rug, ylim, col, lwd, add, fun, ... )
 	}
 }
 )
 
 
 setMethod("response", signature(x='ANY'), 
-function(x, var=NULL, at=median, range='pa', expand=10, rug=TRUE, ylim=c(0,1), col='red', lwd=2, add=FALSE, data=NULL, ... ) {
+function(x, var=NULL, at=median, range='pa', expand=10, rug=TRUE, fun=predict, data=NULL, ylim=c(0,1), col='red', lwd=2, add=FALSE, ... ) {
 	stopifnot(range %in% c('p', 'pa'))
 
 	cn <- names(attr(x$terms, "dataClasses")[-1])
@@ -99,13 +100,13 @@ function(x, var=NULL, at=median, range='pa', expand=10, rug=TRUE, ylim=c(0,1), c
 	if (length(var) == 0) { stop('var not found')	}
 
 	data <- data[, var]
-	.doResponse(x, var, at, data, cn, expand, rug, ylim, col, lwd, add, ... )
+	.doResponse(x, var, at, data, cn, expand, rug, ylim, col, lwd, add, fun, ... )
 
 }
 )
 
 
-.doResponse <- function(x, var, at, d, cn, expand, rug, ylim, col, lwd, add, ...) {
+.doResponse <- function(x, var, at, d, cn, expand, rug, ylim, col, lwd, add, fun, ...) {
 	
 	if (length(var) > 1 & !add) {
 		old.par <- par(no.readonly = TRUE) 
@@ -157,7 +158,7 @@ function(x, var=NULL, at=median, range='pa', expand=10, rug=TRUE, ylim=c(0,1), c
 	
 			mm <- m[rep(1:nrm, length(v)), ]
 			mm[, vr] <- rep(v, each=nrm)
-			p <- predict(x, mm)
+			p <- fun(x, mm)
 			pd <- cbind(v, colMeans(matrix(p, nrow=nrm), na.rm=TRUE))
 
 		} else {
@@ -177,7 +178,7 @@ function(x, var=NULL, at=median, range='pa', expand=10, rug=TRUE, ylim=c(0,1), c
 
 			mm <- m
 			mm[, vr] <- v
-			p <- predict(x, mm)
+			p <- fun(x, mm)
 			pd <- cbind(mm[, vr], p)
 		}
 		

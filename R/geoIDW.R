@@ -25,7 +25,11 @@ if (!isGeneric("geoIDW")) {
 setMethod('geoIDW', signature(p='matrix', a='matrix'), 
 	function(p, a, ...) {
 		v <- new('InvDistWeightModel')
-		v@model <- list( .idw(p[,1:2,drop=FALSE], a[,1:2,drop=FALSE]) )
+		p <- p[,1:2,drop=FALSE]
+		a <- a[,1:2,drop=FALSE]
+		v@model <- list( .idw(p, a) )
+		v@presence <- data.frame(p)
+		v@absence <- data.frame(a)
 		return(v)
 	}
 )
@@ -47,7 +51,9 @@ setMethod('geoIDW', signature(p='SpatialPoints', a='SpatialPoints'),
 # adapted from code by Carson Farmer
 # http://www.carsonfarmer.com/?p=455
 .idw <- function(p, a){
-	if (!require(gstat)) { stop('you need to first install the "gstat" package') }
+	if (!require(gstat)) { 
+		stop('you need to first install the "gstat" package') 
+	}
 
 	rownames(p) <- NULL
 	rownames(a) <- NULL

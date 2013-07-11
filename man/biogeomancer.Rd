@@ -10,7 +10,8 @@ See \url{http://bg.berkeley.edu/latest/} for more information and a rich visual 
 }
 
 \usage{
-biogeomancer(country = "", adm1 = "", adm2 = "", locality = "", singleRecord=TRUE, progress="text")
+biogeomancer(country = "", adm1 = "", adm2 = "", locality = "", 
+             singleRecord=TRUE, progress="text")
 }
 
 \arguments{
@@ -40,8 +41,12 @@ International Journal of Geographic Information Science 18: 745-767.
 \author{Robert J. Hijmans}
 
 \examples{
-# biogeomancer(country='United States', adm1='California', adm2='Yolo', locality=c('Davis', 'Woodland'))
-# biogeomancer(country='United States', adm1='California', adm2='Yolo', locality='1.5 miles North of Davis')
+\dontrun{
+biogeomancer(country='United States', adm1='California', adm2='Yolo', 
+   locality=c('Davis', 'Woodland'))
+biogeomancer(country='United States', adm1='California', adm2='Yolo', 
+    locality='1.5 miles North of Davis')
+}	
 }
 
 \keyword{ spatial }
