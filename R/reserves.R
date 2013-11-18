@@ -10,7 +10,7 @@
 	xy[xy<0] <- 0
 	xy[xy>0] <- 1
 	nspecies <- nrow(xy)
-	nsites <- ncol(xy[1,])
+	nsites <- ncol(xy)
 	res <- matrix(ncol=2, nrow=nsites)
 	for (i in 1:nsites) {
 		sitesppcount <- colSums(xy)

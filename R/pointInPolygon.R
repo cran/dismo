@@ -26,7 +26,7 @@
 			for (j in 1:length(poly@Polygons)) {
 				pol.x <- poly@Polygons[[j]]@coords[,1]
 				pol.y <- poly@Polygons[[j]]@coords[,2]
-				resj <- sp:::point.in.polygon(p[,1], p[,2], pol.x, pol.y)
+				resj <- point.in.polygon(p[,1], p[,2], pol.x, pol.y)
 				#resj <- .Call("R_point_in_polygon_sp", as.numeric(p[,1]), as.numeric(p[,2]), as.numeric(pol.x), as.numeric(pol.y), PACKAGE = "sp")
 				resj <- as.logical(resj)
 				if (poly@Polygons[[j]]@hole) {

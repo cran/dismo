@@ -55,9 +55,9 @@ setMethod('predict', signature(object='MaxEnt'),
 
 		mxe <- .jnew("mebridge") 		
 		args <- c("-z", args)
-		str <- .jcall(mxe, "S", "testPredictArgs", lambdas, args) 
-		if (!is.null(str)) {
-			stop("args not understood:\n", str)
+		tst <- .jcall(mxe, "S", "testPredictArgs", lambdas, args) 
+		if (!is.null(tst)) {
+			stop("args not understood:\n", tst)
 		}
 
 		filename <- trim(filename)

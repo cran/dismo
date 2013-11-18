@@ -1,5 +1,5 @@
-import("raster")
-importFrom("graphics", plot, points)
+import("raster", "sp", "methods")
+importFrom("graphics", points)
 exportMethods("predict")
 exportPattern("^[^\\.]")
 exportClasses(DistModel,MaxEnt)

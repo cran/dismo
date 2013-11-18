@@ -27,8 +27,8 @@ nicheEquivalency <- function (sp1, sp2, predictors, n=99, model=maxent, verbose=
 		return(c(D = D, I = I))
 	}
 
-	sp1 <- dismo:::.getMatrix(sp1)
-	sp2 <- dismo:::.getMatrix(sp2)
+	sp1 <- .getMatrix(sp1)
+	sp2 <- .getMatrix(sp2)
 
 	p <- rbind(cbind(sp=1, sp1), cbind(sp=2, sp2))
     bg <- sampleRandom(predictors, size = min(ncell(predictors), 9999), na.rm = TRUE, xy = T)

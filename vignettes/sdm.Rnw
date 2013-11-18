@@ -497,7 +497,7 @@ points(bradypus, col='blue')
 
 The example above uses data representing 'bioclimatic variables' from the WorldClim database (\url{http://www.worldclim.org}, Hijmans \textit{et al}., 2004) and 'terrestrial biome' data from the WWF. (\url{http://www.worldwildlife.org/science/data/item1875.html}, Olsen \textit{et al}., 2001). You can go to these websites if you want higher resolution data. You can also use the \texttt{getData} function from the \texttt{raster} package to download WorldClim climate data.
 
-Predictor variable selection can be important, particularly if the objective of a study is explanation. See, e.g., Austin and Smith (1987), Austin (2002), Mellert \textit{et al}., (2011). The early applications of species modeling tended to focus on explanation (Elith and Leathwick 2009). Nowadays, the objective of SDM tends to be prediction.  For prediction within the same geographic area, variable selection might arguably be relatively less important, but for many prediction tasks (e.g. to new times or places, see below) variable selection is critically important. In all cases it is important to use variables that are relevant to the ecology of the species (rather than with the first data that can be found on the web!).  In some cases it can be useful to develop new, more ecologically relevant, predictor variables from existing data. For example, one could use land cover data and the \texttt{focal} function in the \texttt{raster } package to create a new variable that indicates how much forest area is available within x km of a grid cell, for a species that might have a home range of x. 
+Predictor variable selection can be important, particularly if the objective of a study is explanation. See, e.g., Austin and Smith (1987), Austin (2002), Mellert \textit{et al}., (2011). The early applications of species modeling tended to focus on explanation (Elith and Leathwick 2009). Nowadays, the objective of SDM tends to be prediction.  For prediction within the same geographic area, variable selection might arguably be relatively less important, but for many prediction tasks (e.g. to new times or places, see below) variable selection is critically important. In all cases it is important to use variables that are relevant to the ecology of the species (rather than with the first dataset that can be found on the web!).  In some cases it can be useful to develop new, more ecologically relevant, predictor variables from existing data. For example, one could use land cover data and the \texttt{focal} function in the \texttt{raster } package to create a new variable that indicates how much forest area is available within x km of a grid cell, for a species that might have a home range of x. 
 
 
 
@@ -522,7 +522,7 @@ summary(sdmdata)
 
 There are alternative approaches possible here. For example, one could extract multiple points in a radius as a potential means for dealing with mismatch between location accuracy and grid cell size. If one would make 10 datasets that represent 10 equally valid "samples" of the environment in that radius, that could be then used to fit 10 models and explore the effect of uncertainty in location. 
 
-To visually investigate colinearity in the environmental data (at the occurrence points) you can use a pairs plot. See Dormann \textit{et al}. (2011) for a discussion of methods to remove colinearity. 
+To visually investigate colinearity in the environmental data (at the presence and background points) you can use a pairs plot. See Dormann \textit{et al}. (2011) for a discussion of methods to remove colinearity. 
 <<sdm24b, fig=TRUE>>=
 # pairs plot of the values of the climate data 
 # at the bradypus occurrence sites.
@@ -553,10 +553,10 @@ m2 = glm(pb ~ ., data=sdmdata)
 m2
 @
 
-Models that are implemented in dismo do not use a formula (and most models only take presence points). For example:
+Models that are implemented in dismo do not use a formula (and most models only take presence points). Bioclim is an example. It only uses presence data, so we use 'presvals' instead of 'sdmdata'.
 
 <<sdm26, fig=TRUE>>=
-bc <- bioclim(sdmdata[,c('bio1', 'bio5', 'bio12')])
+bc <- bioclim(presvals[,c('bio1', 'bio5', 'bio12')])
 class(bc)
 bc
 pairs(bc)

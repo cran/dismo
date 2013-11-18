@@ -5,17 +5,18 @@
 
 
 .nobs <- function(x) {
-	return(length((x)))
+	length((na.omit(x)))
 }	
 
 .richness <- function(x) {
-	return(length(unique(x))) 
+	length(unique(na.omit(x)))
 }
 
 .shannon <- function(x) {
 #   H(i) := sum((-P(i) * ln P(i))
 #   P(i) = the Proportion of objects in the i-th class
-	if (length(x) < 1) { return(NA) 
+	if (length(x) < 1) { 
+		return(NA) 
 	} else {
 		spp <- as.matrix(table(x)) / length(x)
 		H <- -1 * spp * log(spp) 	
