@@ -5,7 +5,7 @@
 # October 2008
 
 
-biogeomancer <- function(country='', adm1='', adm2='', locality='', singleRecord=TRUE, progress='text') {
+.biogeomancer <- function(country='', adm1='', adm2='', locality='', singleRecord=TRUE, progress='text') {
 
 	if (! require(XML)) stop('You need to install the XML package to be able use this function')
 

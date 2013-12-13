@@ -37,8 +37,6 @@ The purpose of using this function should be to display the locations on a map i
 
 \note{It is important to compare fields \code{originalPlace} and \code{interpretedPlace} as the Google interpretation of a (perhaps vague) locality description can be very speculative}
 
-\seealso{\code{\link[dismo]{biogeomancer}}}
-
 \author{Robert J. Hijmans}
 
 \examples{

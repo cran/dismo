@@ -90,7 +90,7 @@ gmap <- function(x, exp=1, type='terrain', filename='', style=NULL, scale=1, zoo
 		
 			x <- extent(x)
 		} else {
-			if ( prj == "NA" ) {
+			if ( is.na(prj) ) {
 				bb <- extent(x)
 				extLL <- (bb@xmin > -366 & bb@xmax < 366 & bb@ymin > -90.1 & bb@ymax < 90.1) 
 				if (extLL) {
