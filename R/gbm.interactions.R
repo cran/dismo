@@ -39,7 +39,7 @@ gbm.interactions <- function(gbm.object,
   cat("gbm.interactions - version 2.9 \n")
   cat("Cross tabulating interactions for gbm model with ",n.preds," predictors","\n",sep="")
 
-  data <- eval(parse(text=gbm.call$dataframe))[,gbm.x]  
+  data <- gbm.call$dataframe[,gbm.x]  
 
   for (i in 1:(n.preds - 1)) {  # step through the predictor set
 
@@ -87,10 +87,10 @@ gbm.interactions <- function(gbm.object,
 #
 # form the prediction
 #
-      prediction <- predict.gbm(gbm.object,pred.frame,n.trees = n.trees, type="link")
+      prediction <- gbm::predict.gbm(gbm.object,pred.frame,n.trees = n.trees, type="link")
 
       if (use.weights) {
-        point.prob <- predict.gbm(mask.object[[1]],pred.frame, n.trees = mask.trees, type="response")
+        point.prob <- gbm::predict.gbm(mask.object[[1]],pred.frame, n.trees = mask.trees, type="response")
         interaction.test.model <- lm(prediction ~ as.factor(pred.frame[,1]) + as.factor(pred.frame[,2]), 
           weights = point.prob)
       }

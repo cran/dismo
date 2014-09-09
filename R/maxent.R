@@ -99,7 +99,7 @@ if (!isGeneric("maxent")) {
 		# to avoid trouble on macs
 		Sys.setenv(NOAWT=TRUE)
 		if ( require(rJava) ) {
-			.jpackage('dismo')
+			rJava::.jpackage('dismo')
 			options(dismo_rJavaLoaded=TRUE)
 		} else {
 			stop('rJava cannot be loaded')
@@ -113,8 +113,8 @@ if (!isGeneric("maxent")) {
 		stop('file missing:\n', jar, '.\nPlease download it here: http://www.cs.princeton.edu/~schapire/maxent/')
 	}
 	.rJava()
-	mxe <- .jnew("meversion") 
-	v <- try(.jcall(mxe, "S", "meversion") )
+	mxe <- rJava::.jnew("meversion") 
+	v <- try(rJava::.jcall(mxe, "S", "meversion") )
 	if (class(v) == 'try-error') {
 		stop('"dismo" needs a more recent version of Maxent (3.3.3b or later) \nPlease download it here: http://www.cs.princeton.edu/~schapire/maxent/
 		\n and put it in this folder:\n',
@@ -320,16 +320,16 @@ setMethod('maxent', signature(x='data.frame', p='vector'),
 		write.table(pv, file=pfn, sep=',', row.names=FALSE)
 		write.table(av, file=afn, sep=',', row.names=FALSE)
 
-		mxe <- .jnew("mebridge")
+		mxe <- rJava::.jnew("mebridge")
 		
 		
 		replicates <- .getreps(args) 
 		args <- c("-z", args)
 
 		if (is.null(factors)) {
-			str <- .jcall(mxe, "S", "fit", c("autorun", "-e", afn, "-o", dirout, "-s", pfn, args)) 
+			str <- rJava::.jcall(mxe, "S", "fit", c("autorun", "-e", afn, "-o", dirout, "-s", pfn, args)) 
 		} else {
-			str <- .jcall(mxe, "S", "fit", c("autorun", "-e", afn, "-o", dirout, "-s", pfn, args), .jarray(factors))
+			str <- rJava::.jcall(mxe, "S", "fit", c("autorun", "-e", afn, "-o", dirout, "-s", pfn, args), rJava::.jarray(factors))
 		}
 		if (!is.null(str)) {
 			stop("args not understood:\n", str)
@@ -404,7 +404,7 @@ setMethod('maxent', signature(x='data.frame', p='vector'),
 
 
 .meTmpDir <- function() {
-	return( paste(raster:::.tmpdir(), 'maxent', sep="") )
+	return( paste(raster::tmpDir(), 'maxent', sep="") )
 }
 
 

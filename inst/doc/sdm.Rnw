@@ -18,7 +18,7 @@
 \newcommand{\sub}[1]{\ensuremath{_{\textrm{#1}}}}
 \newcommand{\R}{{\normalfont\textsf{R }}{}}
 
-\SweaveOpts{png=TRUE}
+\SweaveOpts{pdf=FALSE, png=TRUE}
 \SweaveOpts{resolution=100}
 \SweaveOpts{keep.source=TRUE}
 
@@ -38,13 +38,15 @@ set.seed(0)
 
 \chapter{Introduction}
 
-This document provides an introduction to species distribution modeling with \R. Species distribution modeling (SDM) is also known under other names including climate envelope-modeling, habitat modeling, and (environmental or ecological) niche-modeling. The assumption of SDM is that you can predict the entire, or potential, spatial distribution of a phenomenon, by relating sites of known occurrence (and perhaps non-occurrence) with predictor variables known for these sites and for all other sites. The common application of this method is to predict species ranges with climate data as predictors.  
+This document provides an introduction to species distribution modeling with \R. Species distribution modeling (SDM) is also known under other names including climate envelope-modeling, habitat modeling, and (environmental or ecological) niche-modeling. The aim of SDM is to estimate the similarity of the conditions at any site to the conditions at the locations of known occurrence (and perhaps of non-occurrence) of a phenomenon. A common application of this method is to predict species ranges with climate data as predictors.  
 
-In SDM, the following steps are usually taken: (1) locations of occurrence of a species (or other phenomenon) are compiled. (2) values of environmental predictor variables (such as climate) at these locations are extracted from spatial databases (3) the environmental values are used  to fit a model predicting likelihood of presence, or another measure such as abundance of the species. (4) The model is used to predict the likelihood of presence across an area of interest (and perhaps for a future or past climate).
+In SDM, the following steps are usually taken: (1) locations of occurrence of a species (or other phenomenon) are compiled; (2) values of environmental predictor variables (such as climate) at these locations are extracted from spatial databases; (3) the environmental values are used to fit a model to estimate similarity to the sites of occurrence, or another measure such as abundance of the species; (4) The model is used to predict the variable of interest across an the region of interest (and perhaps for a future or past climate).
 
-In this text we assume that you are familiar with most of the concepts in SDM. If in doubt, you could consult, for example, Richard Pearson's introduction to the subject: \url{http://biodiversityinformatics.amnh.org/index.php?section_id=111}, the book by Janet Franklin (2009), or the somewhat more theoretical book by Peterson \textit{et al.} (2011), or the recent review article by Elith and Leathwick (2009). It is important to have a good understanding of the interplay of environmental (niche) and geographic (biotope) space – see Colwell and Rangel (2009) and Peterson \textit{et al.} (2011) for a discussion. SDM is a widely used approach but there is much debate on when and how to best use this method. While we refer to some of these issues, in this document we do not provide an in-depth discussion of this scientific debate. Rather, our objective is to provide practical guidance to implemeting the basic steps of SDM. We leave it to you to use other sources to determine the appropriate methods for your research; and to use the ample opportunities provided by the \R environment to improve existing approaches and to develop new ones. 
+We assume that you are familiar with most of the concepts in SDM. If in doubt, you could consult, for example, Richard Pearson's introduction to the subject: \url{http://biodiversityinformatics.amnh.org/index.php?section_id=111}, the book by Janet Franklin (2009), the somewhat more theoretical book by Peterson \textit{et al.} (2011), or the recent review article by Elith and Leathwick (2009). It is important to have a good understanding of the interplay of environmental (niche) and geographic (biotope) space – see Colwell and Rangel (2009) and Peterson \textit{et al.} (2011) for a discussion. SDM is a widely used approach but there is much debate on when and how to best use this method. While we refer to some of these issues, in this document we do not provide an in-depth discussion of this scientific debate. Rather, our objective is to provide practical guidance to implemeting the basic steps of SDM. We leave it to you to use other sources to determine the appropriate methods for your research; and to use the ample opportunities provided by the \R environment to improve existing approaches and to develop new ones. 
 
-We also assume that you are already somewhat familiar with the \R language and environment. It would be particularly useful if you already had some experience with statistical model fitting (e.g. the \texttt{glm} function) and with spatial data handling as implemented in the packages '\verb@raster@' and '\verb@sp@'. To familiarize yourself with model fitting see, for instance, the Documentation section on the CRAN webpage (http://cran.r-project.org/) and any introduction to \R txt. For the  '\verb@raster@' package you could consult its vignette (available at \url{http://cran.r-project.org/web/packages/raster/vignettes/Raster.pdf}). When we present \R code we will provide some explanation if we think it might be difficult or confusing. We will do more of this earlier on in this document, so if you are relatively inexperienced with \R and would like to ease into it, read this text in the presented order.   
+We also assume that you are already somewhat familiar with the \R language and environment. It would be particularly useful if you already had some experience with statistical model fitting (e.g. the \texttt{glm} function) and with spatial data handling as implemented in the packages '\verb@raster@' and '\verb@sp@'. To familiarize yourself with model fitting see, for instance, the Documentation section on the CRAN webpage (http://cran.r-project.org/) and any introduction to \R txt. For the  '\verb@raster@' package you could consult its vignette (available at \url{http://cran.r-project.org/web/packages/raster/vignettes/Raster.pdf}). 
+
+When we present \R code we will provide some explanation if we think it might be difficult or confusing. We will do more of this earlier on in this document, so if you are relatively inexperienced with \R and would like to ease into it, read this text in the presented order.   
 
 SDM have been implemented in \R in many different ways. Here we focus on the functions in the '\verb@dismo@' and the '\verb@raster@' packages (but we also refer to other packages). If you want to test, or build on, some of the examples presented here, make sure you have the latest versions of these packages, and their dependencies, installed. If you are using a recent version of \R, you can do that with: 
 
@@ -78,9 +80,9 @@ file <- paste(system.file(package="dismo"), "/ex/bradypus.csv", sep="")
 # this is the file we will use:
 file
 
-# let's read it
-bradypus <- read.table(file,  header=TRUE,  sep=',')
-# let’s inspect the values of the file
+# read it
+bradypus <- read.table(file,  header=TRUE,  sep=",")
+# inspect the values of the file
 # first rows
 head(bradypus)
 # we only need columns 2 and 3:
@@ -124,7 +126,7 @@ Below is a simple way to make a map of the occurrence localities of \textit{Sola
 library(maptools)
 data(wrld_simpl)
 plot(wrld_simpl, xlim=c(-80,70), ylim=c(-60,10), axes=TRUE, 
-        col='light yellow')
+        col="light yellow")
 
 # restore the box around the map
 box()
@@ -159,7 +161,7 @@ lonzero = subset(acgeo, lon==0)
 lonzero[, 1:13]
 @
 
-The records are from Bolivia, Peru and Argentina, confirming that coordinates are in error. Alternatively, it could have been that the coordinates were correct, perhaps referring to a location in the Atlantic Ocean where a fish was caught rather than a place where \textit{S. acaule} was collected). Records with the wrong species name can be among the hardest to correct (e.g., distinguishing between brown bears and sasquatch, Lozier \textit{et al.}, 2009). The one record in Ecuador is like that, there is some debate whether that is actually a specimen of texit{S. albicans} or an anomalous hexaploid variety of texit{S. acaule}. 
+The records are from Bolivia, Peru and Argentina, confirming that coordinates are in error. Alternatively, it could have been that the coordinates were correct, perhaps referring to a location in the Atlantic Ocean where a fish was caught rather than a place where \textit{S. acaule} was collected). Records with the wrong species name can be among the hardest to correct (e.g., distinguishing between brown bears and sasquatch, Lozier \textit{et al.}, 2009). The one record in Ecuador is like that, there is some debate whether that is actually a specimen of \textit{S. albicans} or an anomalous hexaploid variety of \textit{S. acaule}. 
 
 
 \subsection{Duplicate records}
@@ -199,50 +201,49 @@ acg <- acg[acg$lon < -50 & acg$lat > -50, ]
 
 
 \section{Cross-checking}
-It is important to cross-check coordinates by visual and other means. One approach is to compare the country (and lower level administrative subdivisions) of the site as specified by the records, with the country implied by the coordinates (Hijmans \textit{et al}., 1999). In the example below we use the \texttt{coordinates} function from the \texttt{sp} package to create a \texttt{SpatialPointsDataFrame}, and then the \texttt{overlay} function, also from \texttt{sp}, to do a point-in-polygon query with the countries polygons.
+It is important to cross-check coordinates by visual and other means. One approach is to compare the country (and lower level administrative subdivisions) of the site as specified by the records, with the country implied by the coordinates (Hijmans \textit{et al}., 1999). In the example below we use the \texttt{coordinates} function from the \texttt{sp} package to create a \texttt{SpatialPointsDataFrame}, and then the \texttt{over} function, also from \texttt{sp}, to do a point-in-polygon query with the countries polygons.
 
-<<sdm6>>=
+We can make a SpatialPointsDataFrame using the statistical function notation (with a tilde):
+<<sdm6a>>=
 library(sp)
-# make a SpatialPointsDataFrame
 coordinates(acg) <- ~lon+lat
-projection(acg) <- CRS('+proj=lonlat')
+crs(acg) <- crs(wrld_simpl)
 class(acg)
-# use the coordinates to do a spatial query of the polygons
-# in wrld_simpl (a SpatialPolygonsDataFrame)
+@
+
+We can now  use the coordinates to do a spatial query of the polygons in wrld\_simpl (a SpatialPolygonsDataFrame)
+<<sdm6b>>=
 class(wrld_simpl)
-ov <- overlay(acg, wrld_simpl)
+ovr <- over(acg, wrld_simpl)
+@
 
-# ov has, for each point, the record number of wrld_simpl
-# we can use the record number to extract the country name 
-# first find the variable name
-names(wrld_simpl)
-head(wrld_simpl)
+Object 'ov' has, for each point, the matching record from wrld\_simpl. We need the variable 'NAME' in the data.frame of wrld\_simpl
 
-# We need the variable 'NAME' in the data.frame of wrld_simpl
 
-cntr <- as.character(wrld_simpl$NAME[ov])
+<<sdm6c>>=
+head(ovr)
+cntr <- ovr$NAME
+@
 
-# which points (identified by their record numbers) do not match 
-# any country (i.e. are in an ocean)
+We should ask these two questions: (1) Which points (identified by their record numbers) do not match any country (that is, they are in an ocean)? (There are none (because we already removed the points that mapped in the ocean)). (2) Which points have coordinates that are in a different country than listed in the 'country' field of the gbif record
+
+<<sdm6d>>=
 i <- which(is.na(cntr))
 i
-# there are none (because we already removed the points that mapped in the ocean)
-
-# which points have coordinates that are in a different country than
-#  listed in the ‘country’ field of the gbif record
 j <- which(cntr != acg$country)
 # for the mismatches, bind the country names of the polygons and points
 cbind(cntr, acg$country)[j,]
+@
 
-# In this case the mismatch is probably because wrld_simpl is not
-# very precise as the records map to locations very close to the 
-# border between Bolivia and its neighbors.
+In this case the mismatch is probably because wrld\_simpl is not very precise as the records map to locations very close to the border between Bolivia and its neighbors.
+
+<<sdm6d, fig=TRUE>>=
 plot(acg)
 plot(wrld_simpl, add=T, border='blue', lwd=2)
 points(acg[j, ], col='red', pch=20, cex=2)
 @
 
-See the sp package for more information on the \texttt{overlay} function and the related function \texttt{over}. At first it may be confusing that it returns indices (row numbers).  These indices, stored in variables \texttt{i} and \texttt{j} were used to get the relevant records. The wrld\_simpl polygons that we used in the example above are not very precise, and they probably should not be used in a real analysis. See \url{http://www.gadm.org/} for more detailed administrative division files, or use the '\verb@getData@' function from the raster package (e.g. \texttt{getData('gadm', country='BOL', level=0)} to get the national borders of Bolivia; and \texttt{getData('countries')} to get all country boundaries).
+See the sp package for more information on the \texttt{over} function. The wrld\_simpl polygons that we used in the example above are not very precise, and they probably should not be used in a real analysis. See \url{http://www.gadm.org/} for more detailed administrative division files, or use the '\verb@getData@' function from the raster package (e.g. \texttt{getData('gadm', country='BOL', level=0)} to get the national borders of Bolivia; and \texttt{getData('countries')} to get all country boundaries).
 
 
 \section{Georeferencing}
@@ -256,7 +257,7 @@ georef[1:3,1:13]
 @
 
 
-We recommend using a tool like BioGeomancer: \url{http://bg.berkeley.edu/latest} (Guralnick \textit{et al}., 2006) to georeference textual locality descriptions. An important feature of BioGeomancer is that it attempts to capture the uncertainty associated with each georeference (Wieczorek \textit{et al}., 2004). The dismo package has a function \texttt{biogeomancer} that you can use for this, and that we demonstrate below, but its use is generally not recommended because you really need a detailed map interface for accurate georeferencing. 
+For georeferencing, you can try to use the dismo package function \texttt{geocode} that sends requests to the Google API. We demonstrate below, but its use is generally not recommended because for accurate georeferencing you need a detailed map interface, and ideally one that allows you to capture the uncertainty associated with each georeference (Wieczorek \textit{et al}., 2004). 
 
 Here is an example for one of the records with longitude = 0, using Google's geocoding service. We put the function into a 'try' function, to assure elegant error handling if the computer is not connected to the Internet. Note that we use the "cloc" (concatenated locality) field.
 
@@ -266,7 +267,7 @@ b <- try(  geocode(georef$cloc[4]) )
 b
 @
 
-Before using the geocode function it is best to write the records to a table and "clean" them in a spreadsheet. Cleaning involves traslation, expanding abbreviations, correcting misspellings, and making duplicates exactely the same so that they can be georeferenced only once. Then read the the table back into R, and create unique localities, georeference these and merge them with the origninal data. For the geocoding it would be better to use the biogeomancer browser interface as it allows for much more (and necessary) interaction and editing.
+Before using the geocode function it is best to write the records to a table and "clean" them in a spreadsheet. Cleaning involves traslation, expanding abbreviations, correcting misspellings, and making duplicates exactly the same so that they can be georeferenced only once. Then read the the table back into \R, and create unique localities, georeference these and merge them with the original data.
 
 
 \section{Sampling bias}
@@ -308,21 +309,21 @@ In a real research project you would want to spend much more time on this first 
 \section{Exercises}
 
 \begin{hangparas}{3em}{1}
-\noindent 1) use the gbif function to download records for the African elephant (or another species of your preference, try to get one with between 10 and 100 records). Use option "geo=FALSE" to also get records with no (numerical) georeference.
+\noindent 1) Use the gbif function to download records for the African elephant (or another species of your preference, try to get one with between 10 and 100 records). Use option "geo=FALSE" to also get records with no (numerical) georeference.
 
-\noindent 2) summarize the data: how many records are there, how many have coordinates, how many records without coordinates have a textual georeference (locality description)?
+\noindent 2) Summarize the data: how many records are there, how many have coordinates, how many records without coordinates have a textual georeference (locality description)?
 
-\noindent 3) use the 'geocode' function to georeference up to 10 records without coordinates
+\noindent 3) Use the 'geocode' function to georeference up to 10 records without coordinates
 
-\noindent 4) make a simple map of all the records, using a color and symbol to distinguish between the coordinates from gbif and the ones returned by Google (via the geocode function). Use 'gmap' to create a basemap.
+\noindent 4) Make a simple map of all the records, using a color and symbol to distinguish between the coordinates from gbif and the ones returned by Google (via the geocode function). Use 'gmap' to create a basemap.
 
-\noindent 5) do you think the observations are a reasonable representation of the distribution (and ecological niche) of the species?
+\noindent 5) Do you think the observations are a reasonable representation of the distribution (and ecological niche) of the species?
 
 More advanced:
 
-\noindent 6) use the 'rasterize' function to create a raster of the number of observations and make a map. Use "wrld\_simpl" from the maptools package for country boundaries.
+\noindent 6) Use the 'rasterize' function to create a raster of the number of observations and make a map. Use "wrld\_simpl" from the maptools package for country boundaries.
 
-\noindent 7) map the uncertainty associated with the georeferences. Some records in data returned by gbif have that. You can also extract it from the data returned by the geocode function.
+\noindent 7) Map the uncertainty associated with the georeferences. Some records in data returned by gbif have that. You can also extract it from the data returned by the geocode function.
 
 \end{hangparas}
 
@@ -384,7 +385,7 @@ ac <- read.csv(file)
 
 <<sdm16b>>=
 coordinates(ac) <- ~lon+lat
-projection(ac) <- CRS('+proj=lonlat')
+projection(ac) <- CRS('+proj=longlat')
 @
 
 We first create a 'cricles' model (see the chapter about geographic models), using an arbitrary radius of 50 km
@@ -424,7 +425,8 @@ points(xy, cex=0.75, pch=20, col='blue')
 Note that the blue points are not all within the polygons (circles), as they now represent the centers of the selected cells from mask. We could choose to select only those cells that have their centers within the circles, using the overlay function.
 
 <<sdm21a>>=
-o <- overlay(x@polygons, SpatialPoints(xy))
+spxy <- SpatialPoints(xy, proj4string=CRS('+proj=longlat'))
+o <- over(spxy, x@polygons)
 xyInside <- xy[!is.na(o), ]
 @
 
@@ -522,7 +524,7 @@ summary(sdmdata)
 
 There are alternative approaches possible here. For example, one could extract multiple points in a radius as a potential means for dealing with mismatch between location accuracy and grid cell size. If one would make 10 datasets that represent 10 equally valid "samples" of the environment in that radius, that could be then used to fit 10 models and explore the effect of uncertainty in location. 
 
-To visually investigate colinearity in the environmental data (at the presence and background points) you can use a pairs plot. See Dormann \textit{et al}. (2011) for a discussion of methods to remove colinearity. 
+To visually investigate colinearity in the environmental data (at the presence and background points) you can use a pairs plot. See Dormann \textit{et al}. (2013) for a discussion of methods to remove colinearity. 
 <<sdm24b, fig=TRUE>>=
 # pairs plot of the values of the climate data 
 # at the bradypus occurrence sites.
@@ -598,13 +600,13 @@ plot(p)
 
 It is much easier to create a model and make a prediction than to assess how good the model is, and whether it is can be used for a specific purpose. Most model types have different measures that can help to assess how good the model fits the data. It is worth becoming familiar with these and understanding their role, because they help you to assess whether there is anything substantially wrong with your model. Most statistics or machine learning texts will provide some details. For instance, for a GLM one can look at how much deviance is explained, whether there are patterns in the residuals, whether there are points with high leverage and so on. However, since many models are to be used for prediction, much evaluation is focused on how well the model predicts to points not used in model training (see following section on data partitioning).  Before we start to give some examples of statistics used for this evaluation, it is worth considering what else can be done to evaluate a model. Useful questions include:
 
-• does the model seem sensible, ecologically?
+- Does the model seem sensible, ecologically?
 
-• do the fitted functions (the shapes of the modeled relationships) make sense?
+- Do the fitted functions (the shapes of the modeled relationships) make sense?
 
-• do the predictions seem reasonable? (map them, and think about them)
+- Do the predictions seem reasonable? (map them, and think about them)?
 
-• are there any spatial patterns in model residuals? (see Leathwick and Whitehead 2001 for an interesting example)
+- Are there any spatial patterns in model residuals? (see Leathwick and Whitehead 2001 for an interesting example)
 
 
 Most modelers rely on cross-validation. This consists of creating a model with one 'training' data set, and testing it with another data set of known occurrences. Typically, training and testing data are created through random sampling (without replacement) from a single data set. Only in a few cases, e.g. Elith \textit{et al}., 2006, training and test data are from different sources and pre-defined.
@@ -819,10 +821,9 @@ points(pres_test, pch='+', col='blue')
 
 The three methods described here, Bioclim, Domain, and Mahal. These methods are implemented in the dismo package, and the procedures to use these models are the same for all three.  
 
-
 \section{Bioclim}
 
-The BIOCLIM algorithm has been extensively used for species distribution modeling. BIOCLIM is a classic 'climate-envelope-model'. Although it generally does not perform as good as some other modeling methods (Elith \textit{et al}. 2006), particularly in the context of climate change (Hijmans and Graham, 2006), it is still used, among other reasons because the algorithm is easy to understand and thus useful in teaching species distribution modeling. The BIOCLIM algorithm computes the similarity of a location by comparing the values of environmental variables at any location to a percentile distribution of the values at known locations of occurrence ('training sites'). The closer to the 50th percentile (the median), the more suitable the location is. The tails of the distribution are not distinguished, that is, 10 percentile is treated as equivalent to 90 percentile. In the 'dismo' implementation, the values of the upper tail values are transformed to the lower tail, and the minimum percentile score across all the environmental variables is used (i.e., BIOCLIM uses an approach like Liebig's law of the minimum). This value is subtracted from 1 and then multiplied with two so that the results are between 0 and 1. The reason for scaling this way is that the results become more like that of other distribution modeling methods and are thus easier to interpret. The value 1 will rarely be observed as it would require a location that has the median value of the training data for all the variables considered. The value 0 is very common as it is assigned to all cells with a value of an environmental variable that is outside the percentile distribution (the range of the training data) for at least one of the variables.
+The BIOCLIM algorithm has been extensively used for species distribution modeling. BIOCLIM is a classic 'climate-envelope-model' (Booth \textit{et al}., 2014). Although it generally does not perform as good as some other modeling methods (Elith \textit{et al}. 2006), particularly in the context of climate change (Hijmans and Graham, 2006), it is still used, among other reasons because the algorithm is easy to understand and thus useful in teaching species distribution modeling. The BIOCLIM algorithm computes the similarity of a location by comparing the values of environmental variables at any location to a percentile distribution of the values at known locations of occurrence ('training sites'). The closer to the 50th percentile (the median), the more suitable the location is. The tails of the distribution are not distinguished, that is, 10 percentile is treated as equivalent to 90 percentile. In the 'dismo' implementation, the values of the upper tail values are transformed to the lower tail, and the minimum percentile score across all the environmental variables is used (i.e., BIOCLIM uses an approach like Liebig's law of the minimum). This value is subtracted from 1 and then multiplied with two so that the results are between 0 and 1. The reason for scaling this way is that the results become more like that of other distribution modeling methods and are thus easier to interpret. The value 1 will rarely be observed as it would require a location that has the median value of the training data for all the variables considered. The value 0 is very common as it is assigned to all cells with a value of an environmental variable that is outside the percentile distribution (the range of the training data) for at least one of the variables.
 
 
 Earlier on, we fitted a Bioclim model using data.frame with each row representing the environmental data at known sites of presence of a species. Here we fit a bioclim model simply using the predictors and the occurrence points (the function will do the extracting for us).
@@ -1093,7 +1094,7 @@ points(backg_train, pch='-', cex=0.25)
 
 Rather than relying on a single "best" model, some auhtors (e.g. Thuillier, 2003) have argued for using many models and applying some sort of model averaging. See the biomod2 package for an implementation. You can of course implement these approaches yourself. Below is a very brief example. We first make a RasterStack of our individual model predictions:
 
-<<sdm82>>=
+<<sdm82, fig=TRUE>>=
 models <- stack(pb, pd, pm, pg, pr, ps)
 names(models) <- c("bioclim", "domain", "mahal", "glm", "rf", "svm")
 plot(models)
@@ -1246,34 +1247,33 @@ You can ignore this chapter, it is the authors' to-do list.
 
 There are many sophistications that are required by the realities that (a) there are multiple end uses of models, and (b) there are numerous issues with ecological data that mean that the assumptions of the standard methods don't hold.  Could include:
 
-• spatial autocorrelation
+- spatial autocorrelation
 
-• imperfect detection
+- imperfect detection
 
-• mixed models (for nested data, hierarchical stuff)
+- mixed models (for nested data, hierarchical stuff)
 
-• Bayesian methods
+- Bayesian methods
 
-• resource selection functions
+- resource selection functions
 
-• measures of niche overlap, linked to thoughts about niche conservatism
+- measures of niche overlap, linked to thoughts about niche conservatism
 
-• link to phylogeography
+- link to phylogeography
 
-• additional predictors including remote sensing variables, thinking about extremes
+- additional predictors including remote sensing variables, thinking about extremes
 
-• species that don't "mix" with grids – freshwater systems etc.
+- species that don't "mix" with grids – freshwater systems etc.
 
-• quantile regression
+- quantile regression
 
-• model selection literature (AIC etc etc)
+- model selection literature (AIC etc etc)
 
-• multispecies modeling: Mars, gdm
+- multispecies modeling: Mars, gdm
 
-• SDMTools
+- SDMTools
 
-• Dealing with uncertainty 
-using uncertainty field in georeferences. How to target the "important" uncertainties (will vary with the application), an example of partial plots with standard errors, and predicting the upper and lower bounds; the idea of testing sensitivity to decisions made in the modeling process (including dropping out points etc etc). 
+- Dealing with uncertainty; using uncertainty field in georeferences. How to target the "important" uncertainties (will vary with the application), an example of partial plots with standard errors, and predicting the upper and lower bounds; the idea of testing sensitivity to decisions made in the modeling process (including dropping out points etc.). 
 
 
 \part{References}
@@ -1284,7 +1284,9 @@ using uncertainty field in georeferences. How to target the "important" uncertai
 
 \noindent Austin, M.P., and T.M. Smith, 1989. A new model for the continuum concept. Vegetatio 83: 35-47.
 
-\noindent Bahn, V., and B.J. McGill, 2007. Can niche-based distribution models outperform spatial interpolation? Global Ecology and Biogeography 16: 733–742.
+\noindent Bahn, V., and B.J. McGill, 2007. Can niche-based distribution models outperform spatial interpolation? Global Ecology and Biogeography 16: 733-742.
+
+\noindent Booth, T.H., H.A. Nix, J.R. Busby and M.F. Hutchinson, 2014. BIOCLIM: the first species distribution modelling package, its early applications and relevance to most current MAXENT studies. Diversity and Distributions 20: 1-9.
 
 \noindent Breiman, L., 2001a. Statistical Modeling: The Two Cultures. Statistical Science 16: 199-215.
 
@@ -1296,7 +1298,7 @@ using uncertainty field in georeferences. How to target the "important" uncertai
 
 \noindent Colwell R.K. and T.F. Rangel, 2009. Hutchinson's duality: The once and future niche. Proceedings of the National Academy of Sciences 106: 19651-19658.
 
-\noindent Dormann C.F., Elith J., Bacher S., Buchmann C., Carl G., Carré G., Diekötter T., García Marquéz J., Gruber B., Lafourcade B., Leitão P.J., Münkemüller T., McClean C., Osborne P., Reineking B., Schröder B., Skidmore A.K., Zurell D., Lautenbach S. (2011 in review) Collinearity: a review of methods to deal with it and a simulation study evaluating their performance.
+\noindent Dormann C.F., Elith J., Bacher S., Buchmann C., Carl G., Carré G., Diekötter T., García Marquéz J., Gruber B., Lafourcade B., Leitão P.J., Münkemüller T., McClean C., Osborne P., Reineking B., Schröder B., Skidmore A.K., Zurell D., Lautenbach S., 2013. Collinearity: a review of methods to deal with it and a simulation study evaluating their performance. Ecography 36: 27-46.
 
 \noindent Elith, J. and J.R. Leathwick, 2009. Species Distribution Models: Ecological Explanation and Prediction Across Space and Time. Annual Review of Ecology, Evolution, and Systematics 40: 677-697. \url{http://dx.doi.org/10.1146/annurev.ecolsys.110308.120159}
 
@@ -1358,7 +1360,7 @@ using uncertainty field in georeferences. How to target the "important" uncertai
 
 \noindent Mahalanobis, P.C., 1936. On the generalised distance in statistics. Proceedings of the National Institute of Sciences of India 2: 49-55.
 
-\noindent Mellert K.H., V. Fensterer, H. Küchenhoff, B. Reger, C. Kölling, H.J. Klemmt, and J. Ewald, 2011. Hypothesis-driven species distribution models for tree species in the Bavarian Alps. Journal of Vegetation Science 22: 635–646.
+\noindent Mellert K.H., V. Fensterer, H. Küchenhoff, B. Reger, C. Kölling, H.J. Klemmt, and J. Ewald, 2011. Hypothesis-driven species distribution models for tree species in the Bavarian Alps. Journal of Vegetation Science 22: 635-646.
 
 \noindent Nix, H.A., 1986. A biogeographic analysis of Australian elapid snakes. In: Atlas of Elapid Snakes of Australia. (Ed.) R. Longmore, pp. 4-15. Australian Flora and Fauna Series Number 7. Australian Government Publishing Service: Canberra.
 

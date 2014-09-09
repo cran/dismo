@@ -8,13 +8,11 @@
 \description{
 Retrieve a 'Google Map' that can be used as a background for plotting points and other spatial data.
 
-You should check the terms of service before you use these maps: \url{http://code.google.com/apis/maps/terms.html}
+The purpose of using this function should be to display the map in a browser. You should check the Google terms of use \url{http://code.google.com/apis/maps/terms.html} to see if your usage of this function (the Google API that creates the maps) is permitted.
 
 The projection of the returned Raster object is "Mercator" (unless you use \code{lonlat=TRUE}), and other spatial data may need to be transformed before it can be plotted on top of the Google map. You can use the \code{Mercator} function to transform points from longitude/latitude to Mercator. For SpatialLines and SpatialPolygons objects, use \code{spTransform} in the \code{rgdal} package.
 
 This function uses the Google static maps web-service, and is based on functions by Markus Loecher for the \code{RgoogleMaps} package. 
-
-The purpose of using this function should be to display the map in a browser. You should check the Google terms of use \url{http://code.google.com/apis/maps/terms.html} to see if your usage of this function (and the underlying Google API) is permitted.
 }
 
 \usage{
@@ -25,7 +23,7 @@ Mercator(p, inverse = FALSE)
 }
 
 \arguments{
-  \item{x}{a textual locality description, or an Extent object or an object that can be coerced to one (e.g. a Raster* or Spatial* object)}
+  \item{x}{a textual locality description, or an Extent object (with longitude/latitude coordinates), or an object that can be coerced to one (such as a Raster* or Spatial* object), in any (known) coordinate system}
   \item{exp}{numeric. An expansion factor to enlarge (by multiplication) the extent specified by \code{x} }
   \item{type}{character. Choose from 'roadmap', 'satellite', 'hybrid', 'terrain' }
   \item{filename}{character. Filename (optional). You can open the resulting file in a GIS program }

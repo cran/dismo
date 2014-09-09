@@ -77,3 +77,13 @@
 	return(reyni)
 }
 	
+.chao <- function(x) {	
+	tab <- table(na.omit(x))
+	singletons <- sum(tab==1)
+	doubletons <- sum(tab==2)
+	length(tab) + singletons*(singletons-1) / (2*(doubletons+1))
+}
+
+	
+
+	

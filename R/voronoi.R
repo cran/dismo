@@ -28,8 +28,8 @@ voronoi <- function(xy){
 		xy <- unique(xy)
 	}
 	
-	z <- deldir(xy[,1], xy[,2])
-	w <- tile.list(z)
+	z <- deldir::deldir(xy[,1], xy[,2])
+	w <- deldir::tile.list(z)
 	polys <- vector(mode='list', length=length(w))
 	for (i in seq(along=polys)) {
 		pcrds <- cbind(w[[i]]$x, w[[i]]$y)

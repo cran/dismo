@@ -68,8 +68,8 @@ setMethod('voronoiHull', signature(p='SpatialPoints', a='SpatialPoints'),
 		paxy <- unique(paxy)
 	}
 	
-	z <- deldir(xy[,1], xy[,2])
-	w <- tile.list(z)
+	z <- deldir::deldir(xy[,1], xy[,2])
+	w <- deldir::tile.list(z)
 	polys <- vector(mode='list', length=length(w))
 
 	for (i in seq(along=polys)) {
@@ -84,8 +84,8 @@ setMethod('voronoiHull', signature(p='SpatialPoints', a='SpatialPoints'),
 		if (require(rgeos)) { 
 			p <- polys[pa==1]
 			a <- polys[pa==0]
-			p <- gUnionCascaded(p)
-			a <- gUnionCascaded(a)
+			p <- rgeos::gUnionCascaded(p)
+			a <- rgeos::gUnionCascaded(a)
 			a@polygons[[1]]@ID = "2"
 			polys <- SpatialPolygons(list(p@polygons[[1]], a@polygons[[1]]))
 			pa <- data.frame(pa=c(1,0))

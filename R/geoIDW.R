@@ -52,7 +52,7 @@ setMethod('geoIDW', signature(p='SpatialPoints', a='SpatialPoints'),
 # http://www.carsonfarmer.com/?p=455
 .idw <- function(p, a){
 	if (!require(gstat)) { 
-		stop('you need to first install the "gstat" package') 
+		stop('you need to first install the "gstat::gstat" package') 
 	}
 
 	rownames(p) <- NULL
@@ -64,8 +64,8 @@ setMethod('geoIDW', signature(p='SpatialPoints', a='SpatialPoints'),
 	paxy = data.frame(unique(paxy))
 	colnames(paxy) = c('pa', 'x', 'y')
 	
-## inverse distance weighted interpolation with gstat
-	gs <- gstat(id = "pa", formula = pa~1, locations = ~x+y, data=paxy, nmax=7)
+## inverse distance weighted interpolation with gstat::gstat
+	gs <- gstat::gstat(id = "pa", formula = pa~1, locations = ~x+y, data=paxy, nmax=7)
 	return(gs)
 }
 

@@ -29,6 +29,11 @@ kfold <- function(x, k=5, by=NULL) {
 	}
 
 	if (is.vector(x)) {
+		if (length(x) == 1) {
+			if (x > 1) {
+				x <- 1:x
+			}
+		}
 		obs <- length(x)
 	} else if (inherits(x, 'Spatial')) {
 		if (inherits(x, 'SpatialPoints')) {

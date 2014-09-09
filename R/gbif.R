@@ -10,7 +10,6 @@
 # 2013-01-15
 # translate ISO2 codes to full country names
 # add "cloc"
-
 # 2013-06-19
 # added 'species concept' option
 # suggested by Aaron Dodd
@@ -19,27 +18,30 @@
 #	if (! require(XML)) { stop('You need to install the XML package to use this function') }
 	url <- "http://data.gbif.org/ws/rest/taxon/list?dataproviderkey=1&rank=species&scientificname="
 	url <- paste0(url, species)
-   	doc <- xmlInternalTreeParse(url)
+   	doc <- XML::xmlInternalTreeParse(url)
 	
-	node <- getNodeSet(doc, "//gbif:summary")
-	m <- xmlGetAttr(node[[1]], 'totalReturned')
+	node <- XML::getNodeSet(doc, "//gbif:summary")
+	m <- XML::xmlGetAttr(node[[1]], 'totalReturned')
 	if (!(as.integer(m) > 0)) {
 		return(NA)
 	} else {
-		node <- getNodeSet(doc, "//tc:TaxonConcept")
-		xmlGetAttr(node[[1]], 'gbifKey')
+		node <- XML::getNodeSet(doc, "//tc:TaxonConcept")
+		XML::xmlGetAttr(node[[1]], 'gbifKey')
 	}
 }
 
 
 gbif <- function(genus, species='', concept=FALSE, ext=NULL, args=NULL, geo=TRUE, sp=FALSE, removeZeros=FALSE, download=TRUE, getAlt=TRUE, returnConcept=FALSE,ntries=5, nrecs=1000, start=1, end=NULL, feedback=3) {
 	
+	
 	if (! require(XML)) { stop('You need to install the XML package to use this function') }
 
 	gbifxmlToDataFrame <- function(s) {
 		# this sub-funciton was hacked from xmlToDataFrame in the XML package by Duncan Temple Lang
-		doc = xmlInternalTreeParse(s)
-		nodes <- getNodeSet(doc, "//to:TaxonOccurrence")
+		
+		doc <- try(XML::xmlInternalTreeParse(s))
+
+		nodes <- XML::getNodeSet(doc, "//to:TaxonOccurrence")
 		if(length(nodes) == 0)   return(data.frame())
 		varNames <- c("continent", "country", "stateProvince", "county", "locality",  "decimalLatitude", "decimalLongitude", "coordinateUncertaintyInMeters", "maximumElevationInMeters", "minimumElevationInMeters", "maximumDepthInMeters", "minimumDepthInMeters", "institutionCode", "collectionCode", "catalogNumber",  "basisOfRecordString", "collector", "earliestDateCollected", "latestDateCollected",  "gbifNotes")
 		dims <- c(length(nodes), length(varNames)) 
@@ -48,20 +50,22 @@ gbif <- function(genus, species='', concept=FALSE, ext=NULL, args=NULL, geo=TRUE
 		names(ans) <- varNames
     # Fill in the rows based on the names.
 		for(i in seq(length = dims[1])) {
-			ans[i,] <- xmlSApply(nodes[[i]], xmlValue)[varNames]
+			ans[i,] <- XML::xmlSApply(nodes[[i]], XML::xmlValue)[varNames]
 		}
 
-		nodes <- getNodeSet(doc, "//to:Identification")
+		nodes <- XML::getNodeSet(doc, "//to:Identification")
 		varNames <- c("taxonName")
 		dims <- c(length(nodes), length(varNames)) 
 		tax <- as.data.frame(replicate(dims[2], rep(as.character(NA), dims[1]), simplify = FALSE), stringsAsFactors = FALSE)
 		names(tax) <- varNames
     # Fill in the rows based on the names.
 		for(i in seq(length = dims[1])) {
-			tax[i,] <- xmlSApply(nodes[[i]], xmlValue)[varNames]
+			tax[i,] <- XML::xmlSApply(nodes[[i]], XML::xmlValue)[varNames]
 		}
 		cbind(tax, ans)
 	}
+
+	tmpfile <- paste(tempfile(), '.XML')
 
 	
 	if (!is.null(ext)) { 
@@ -216,12 +220,23 @@ gbif <- function(genus, species='', concept=FALSE, ext=NULL, args=NULL, geo=TRUE
         while (TRUE) {
 			tries <- tries + 1
 			if (tries > ntries) {
-				warning('GBIF did not return the data in ', ntries, '  tries.')
+				warning('GBIF did not return the data in ', ntries, '  tries for:')
+				print(aurl)
 				breakout <- TRUE
 				break
 			}
-	    	zz <- try( gbifxmlToDataFrame(aurl))
-			if (class(zz) != 'try-error') break
+			test <- try (download.file(aurl, tmpfile, quiet=TRUE))
+			if (class(test) == 'try-error') {
+				print('download failure, trying again...')
+			} else {
+				xml <- scan(tmpfile, what='character', quiet=TRUE, sep='\n')
+				xml <- chartr('\a\v', '  ', xml)
+				zz <- try( gbifxmlToDataFrame(xml))
+				if (class(zz) == 'try-error') {
+					print('parsing failure, trying again...')
+				}
+				break
+			}
 	    }
 		
 		if (breakout) {
@@ -239,20 +254,16 @@ gbif <- function(genus, species='', concept=FALSE, ext=NULL, args=NULL, geo=TRUE
 	z[,'lon'] <- as.numeric(z[,'lon'])
 	z[,'lat'] <- as.numeric(z[,'lat'])
 
-	i <- sapply(z[,'lon']== 0, isTRUE)
-	j <- sapply(z[,'lat']== 0, isTRUE)
+	k <- apply(z[ ,c('lon', 'lat')], 1, function(x) isTRUE(any(x==0)))
+
 	if (removeZeros) {
-		k <- i | j
 		if (geo) {
-			z <- z[!k,]
+			z <- z[!k, ]
 		} else {
-			z[k,'lat'] <- NA 
-			z[k,'lon'] <- NA 
+			z[k, c('lat', 'lon')] <- NA 
 		}
 	} else {
-		k <- i & j
-		z[k,'lat'] <- NA 
-		z[k,'lon'] <- NA 
+		z[k, c('lat', 'lon')] <- NA 
 	}
 		
 	if (getAlt) {
@@ -282,7 +293,7 @@ gbif <- function(genus, species='', concept=FALSE, ext=NULL, args=NULL, geo=TRUE
 
 	if (dim(z)[1] > 0) {
 	
-		iso <- raster:::.ISO()
+		iso <- ccodes()
 		z$ISO2 <- z$country
 		i <- match(z$ISO2, iso[, 'ISO2'])
 		z$country <- iso[i, 1]
@@ -299,6 +310,8 @@ gbif <- function(genus, species='', concept=FALSE, ext=NULL, args=NULL, geo=TRUE
 		}
 	}	
 #	if (inherits(ext, 'SpatialPolygons')) { overlay	}
+	try(file.remove(tmpfile), silent=TRUE)
+	
 	return(z)
 }
 

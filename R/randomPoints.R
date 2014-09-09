@@ -46,14 +46,13 @@
 
 
 
-randomPoints <- function(mask, n, p, ext=NULL, extf=1.1, excludep=TRUE, prob=FALSE, cellnumbers=FALSE, tryf=5, warn=2) {
+randomPoints <- function(mask, n, p, ext=NULL, extf=1.1, excludep=TRUE, prob=FALSE, cellnumbers=FALSE, tryf=3, warn=2, lonlatCorrection=TRUE) {
 	
 	if (nlayers(mask) > 1) { 
 		mask <- raster(mask, 1)	
 	}
 	
-
-	tryf <- max(tryf, 1)
+	tryf <- max(round(tryf[1]), 1)
 	
 	if (missing(p)) { 
 		excludep <- FALSE
@@ -88,8 +87,8 @@ randomPoints <- function(mask, n, p, ext=NULL, extf=1.1, excludep=TRUE, prob=FAL
 		if (warn>0) { warning('changed n to ncell of the mask (extent)') }
 	}
 	
-	nn = n * tryf
-	nn = max(nn, 10)
+	nn <- n * tryf
+	nn <- max(nn, 10)
 
 	if (prob) {
 		stopifnot(hasValues(mask))
@@ -100,7 +99,7 @@ randomPoints <- function(mask, n, p, ext=NULL, extf=1.1, excludep=TRUE, prob=FAL
 		}
 		prob <- cells[,2]
 		cells <- cells[,1]
-		if (raster:::.couldBeLonLat(mask)) {
+		if (couldBeLonLat(mask)) {
 			rows <- rowFromCell(mask2, cells)
 			y <- yFromRow(mask2, rows)
 			dx <- pointDistance(cbind(0, y), cbind(xres(mask2), y), longlat=TRUE)  
@@ -116,10 +115,12 @@ randomPoints <- function(mask, n, p, ext=NULL, extf=1.1, excludep=TRUE, prob=FAL
 		cells <- crop(mask, mask2)
 		if (hasValues(cells)) {
 			cells <- which(! is.na(getValues(cells)) )
+		} else {
+			cells <- 1:ncell(cells)
 		}
 		nn <- min(length(cells), nn)
 
-		if (raster:::.couldBeLonLat(mask)) {
+		if (lonlatCorrection & couldBeLonLat(mask)) {
 			# which rows are that?
 			rows <- rowFromCell(mask2, cells)
 			# what is the latitude?
@@ -137,7 +138,7 @@ randomPoints <- function(mask, n, p, ext=NULL, extf=1.1, excludep=TRUE, prob=FAL
 	} else {
 	
 		nn <- min(ncell(mask2), nn)
-		if (raster:::.couldBeLonLat(mask2)) {
+		if (couldBeLonLat(mask2)) {
 	
 			cells <- .randomCellsLonLat(mask2, nn)
 			

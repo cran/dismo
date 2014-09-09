@@ -108,7 +108,7 @@ setMethod('circles', signature(p='data.frame'),
 		
 		ci@polygons <- .generateCircles(p, d=d, lonlat=lonlat, ...)
 		if (require(rgeos)) {
-			ci@polygons <- gUnionCascaded(ci@polygons)
+			ci@polygons <- rgeos::gUnionCascaded(ci@polygons)
 		}
 		return(ci)
 	}

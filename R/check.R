@@ -18,7 +18,7 @@ alt <- function(lonlat) {
 
 
 country <- function(lonlat, radius=0) {
-	cnts <- raster:::.ISO()
+	cnts <- ccodes()
 	lonlat <- .pointsToMatrix(lonlat)
 
 	res <- matrix(ncol=3,nrow=length(lonlat[,1]))

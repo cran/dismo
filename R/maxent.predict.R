@@ -52,10 +52,9 @@ setMethod('predict', signature(object='MaxEnt'),
 		variables <- colnames(object@presence)
 		
 		#MEversion <- .getMeVersion()
-
-		mxe <- .jnew("mebridge") 		
+		mxe <- rJava::.jnew("mebridge") 		
 		args <- c("-z", args)
-		tst <- .jcall(mxe, "S", "testPredictArgs", lambdas, args) 
+		tst <- rJava::.jcall(mxe, "S", "testPredictArgs", lambdas, args) 
 		if (!is.null(tst)) {
 			stop("args not understood:\n", tst)
 		}
@@ -104,7 +103,7 @@ setMethod('predict', signature(object='MaxEnt'),
 					rowvals <- na.omit(rowvals)
 					if (length(rowvals) > 0) {
 						rowvals[] <- as.numeric(rowvals)
-						p <- .jcall(mxe, "[D", "predict", lambdas, .jarray(colnames(rowvals)), .jarray(rowvals, dispatch=TRUE), args) 
+						p <- rJava::.jcall(mxe, "[D", "predict", lambdas, rJava::.jarray(colnames(rowvals)), rJava::.jarray(rowvals, dispatch=TRUE), args) 
 
 						naind <- as.vector(attr(rowvals, "na.action"))
 						if (!is.null(naind)) {
@@ -162,7 +161,7 @@ setMethod('predict', signature(object='MaxEnt'),
 			if (nrow(x) > 0) {
 				x <- as.matrix(x)
 				x[] <- as.numeric(x)
-				p <- .jcall(mxe, "[D", "predict", lambdas, .jarray(colnames(x)), .jarray(x, dispatch=TRUE), args) 
+				p <- rJava::.jcall(mxe, "[D", "predict", lambdas, rJava::.jarray(colnames(x)), rJava::.jarray(x, dispatch=TRUE), args) 
 				p[p == -9999] <- NA
 				naind <- as.vector(attr(x, "na.action"))
 				if (!is.null(naind)) {

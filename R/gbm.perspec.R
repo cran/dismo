@@ -56,7 +56,7 @@ gbm.perspec <- function(gbm.object,
 	if (is.null(y.label)) {
 		y.label <- gbm.call$predictor.names[y]
 	}
-	data <- eval(parse(text=gbm.call$dataframe))[,gbm.x]  
+	data <- gbm.call$dataframe[ , gbm.x, drop=FALSE]  
 	n.trees <- gbm.call$best.trees
 
 # if marginal variable is a vector then create intervals along the range
@@ -124,7 +124,7 @@ gbm.perspec <- function(gbm.object,
 # form the prediction
 #
 #assign("pred.frame", pred.frame, pos=1)
-	prediction <- predict.gbm(gbm.object,pred.frame,n.trees = n.trees, type="response")
+	prediction <- gbm::predict.gbm(gbm.object,pred.frame,n.trees = n.trees, type="response")
 #assign("prediction", prediction, pos=1, immediate =T)
 
 # model smooth if required
@@ -176,7 +176,7 @@ gbm.perspec <- function(gbm.object,
 
 		if (mask) {
 			mask.trees <- gbm.object$gbm.call$best.trees
-			point.prob <- predict.gbm(gbm.object[[1]],pred.frame, n.trees = mask.trees, type="response")
+			point.prob <- gbm::predict.gbm(gbm.object[[1]],pred.frame, n.trees = mask.trees, type="response")
 			point.prob <- matrix(point.prob,ncol=50,nrow=50)
 			pred.matrix[point.prob < 0.5] <- 0.0
 		}

@@ -8,7 +8,7 @@ set.seed(0)
 
 
 ###################################################
-### code chunk number 2: dismo-1
+### code chunk number 2: brt-0
 ###################################################
 library(dismo)
 data(Anguilla_train)
@@ -16,7 +16,7 @@ head(Anguilla_train)
 
 
 ###################################################
-### code chunk number 3: brt.Rnw:76-79
+### code chunk number 3: brt-1
 ###################################################
 angaus.tc5.lr01 <- gbm.step(data=Anguilla_train, gbm.x = 3:13, gbm.y = 2,
                         family = "bernoulli", tree.complexity = 5,
@@ -24,14 +24,14 @@ angaus.tc5.lr01 <- gbm.step(data=Anguilla_train, gbm.x = 3:13, gbm.y = 2,
 
 
 ###################################################
-### code chunk number 4: brt.Rnw:144-146
+### code chunk number 4: brt-2
 ###################################################
 names(angaus.tc5.lr01)
 summary(angaus.tc5.lr01)
 
 
 ###################################################
-### code chunk number 5: brt.Rnw:153-156
+### code chunk number 5: brt-3
 ###################################################
 angaus.tc5.lr005 <- gbm.step(data=Anguilla_train, gbm.x = 3:13, gbm.y = 2, 
                       family = "bernoulli", tree.complexity = 5,
@@ -39,13 +39,13 @@ angaus.tc5.lr005 <- gbm.step(data=Anguilla_train, gbm.x = 3:13, gbm.y = 2,
 
 
 ###################################################
-### code chunk number 6: brt.Rnw:171-172
+### code chunk number 6: brt-4
 ###################################################
 angaus.simp <- gbm.simplify(angaus.tc5.lr005, n.drops = 5)
 
 
 ###################################################
-### code chunk number 7: brt.Rnw:180-183
+### code chunk number 7: brt-5
 ###################################################
 angaus.tc5.lr005.simp <- gbm.step(Anguilla_train, 
                    gbm.x=angaus.simp$pred.list[[1]], gbm.y=2,
@@ -53,13 +53,13 @@ angaus.tc5.lr005.simp <- gbm.step(Anguilla_train,
 
 
 ###################################################
-### code chunk number 8: brt.Rnw:193-194
+### code chunk number 8: brt-6
 ###################################################
 gbm.plot(angaus.tc5.lr005, n.plots=11, write.title = FALSE)
 
 
 ###################################################
-### code chunk number 9: brt.Rnw:201-202
+### code chunk number 9: brt-7
 ###################################################
 gbm.plot.fits(angaus.tc5.lr005)
 
@@ -73,7 +73,7 @@ find.int$rank.list
 
 
 ###################################################
-### code chunk number 11: brt.Rnw:223-224
+### code chunk number 11: brt-9
 ###################################################
 gbm.perspec(angaus.tc5.lr005, 7, 1, y.range=c(15,20), z.range=c(0,0.6))
 
@@ -113,7 +113,7 @@ for (i in 1:50) {
 
 
 ###################################################
-### code chunk number 15: brt.Rnw:275-278
+### code chunk number 15: brt-12
 ###################################################
 plot(tree.list, angaus.pred.deviance, ylim=c(0.7,1), xlim=c(-100,5000),
      type='l', xlab="number of trees", ylab="predictive deviance",
@@ -121,20 +121,20 @@ plot(tree.list, angaus.pred.deviance, ylim=c(0.7,1), xlim=c(-100,5000),
 
 
 ###################################################
-### code chunk number 16: brt.Rnw:287-289
+### code chunk number 16: brt-13
 ###################################################
 data(Anguilla_grids)
 plot(Anguilla_grids)
 
 
 ###################################################
-### code chunk number 17: brt.Rnw:294-300
+### code chunk number 17: brt14
 ###################################################
-Method=factor('electric', levels = levels(Anguilla_train$Method))
-add=data.frame(Method)
-p = predict(Anguilla_grids, angaus.tc5.lr005, const=add, 
+Method <- factor('electric', levels = levels(Anguilla_train$Method))
+add <- data.frame(Method)
+p <- predict(Anguilla_grids, angaus.tc5.lr005, const=add, 
        n.trees=angaus.tc5.lr005$gbm.call$best.trees, type="response")
-p = mask(p, raster(Anguilla_grids, 1))
+p <- mask(p, raster(Anguilla_grids, 1))
 plot(p, main='Angaus - BRT prediction')
 
 

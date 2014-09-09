@@ -5,6 +5,6 @@
 	if (lonlat) {
 	
 	} else {
-		gArea(x@polygons) / 1000000
+		rgeos::gArea(x@polygons) / 1000000
 	}
 }

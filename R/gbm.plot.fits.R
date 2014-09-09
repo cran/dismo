@@ -17,15 +17,13 @@ gbm.plot.fits <- function(gbm.object,
 	use.factor = FALSE )
 {
 
-    dat <- gbm.object$gbm.call$dataframe    #get the dataframe name
-    dat <- as.data.frame(eval(parse(text=dat)))   #and now the data
-
-    n.cases <- nrow(dat)
 
     gbm.call <- gbm.object$gbm.call	#and the call details
     gbm.x <- gbm.call$gbm.x    
     gbm.y <- gbm.call$gbm.y
     family <- gbm.call$family
+    dat <- gbm.call$dataframe
+    n.cases <- nrow(dat)
 
     xdat <- as.data.frame(dat[,gbm.x])
     ydat <- as.data.frame(dat[,gbm.y])

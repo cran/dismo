@@ -29,14 +29,14 @@ setMethod('threshold', signature(x='ModelEvaluation'),
 		# equal sensitivity and specificity
 		r$equal_sens_spec <- x@t[which.min(abs(x@TPR - x@TNR))]
 		# fixed sensitivity
-		r$sensitivty <- x@t[which.min(x@TPR > sensitivity)]
+		r$sensitivity <- x@t[which.min(x@TPR > sensitivity)]
 		
     # etc		
 		
 		r <- data.frame(r)
 		rownames(r) <- 'thresholds'
 		if (stat != '') {
-			stopifnot (stat %in% c('', 'kappa', 'spec_sens', 'no_omission')) 
+			stopifnot (stat %in% c('', 'kappa', 'spec_sens', 'no_omission',  'prevalence', 'equal_sens_spec', 'sensitivity')) 
 			r[, stat]
 		} else {
 			r

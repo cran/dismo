@@ -15,7 +15,7 @@
 \newcommand{\R}{{\normalfont\textsf{R }}{}}
 
 \SweaveOpts{keep.source=TRUE}
-\SweaveOpts{png=TRUE}
+\SweaveOpts{pdf=FALSE, png=TRUE}
 \SweaveOpts{resolution=100}
 
 <<foo,include=FALSE,echo=FALSE>>=
@@ -58,7 +58,7 @@ The gbm functions in 'dismo' are as follows:
 Two sets of presence/absence data for Anguilla australis (Angaus) are available. One for model training (building) and one for model testing (evaluation). In the example below we load the training data. Presence (1) and absence (0) is recorded in column 2. The environmental variables are in columns 3 to 14. This is the same data as used in Elith, Leathwick and Hastie (2008). 
 
 
-<<dismo-1>>=
+<<brt-0>>=
 library(dismo)
 data(Anguilla_train)
 head(Anguilla_train)
@@ -73,7 +73,7 @@ To fit a gbm model, you need to decide what settings to use the article associat
 
 To below example shows how to use our function that steps forward and identifies the optimal number of trees (nt).
 
-<<fig=TRUE , echo=TRUE>>=
+<<brt-1, fig=TRUE , echo=TRUE>>=
 angaus.tc5.lr01 <- gbm.step(data=Anguilla_train, gbm.x = 3:13, gbm.y = 2,
                         family = "bernoulli", tree.complexity = 5,
                         learning.rate = 0.01, bag.fraction = 0.5)
@@ -141,7 +141,7 @@ cv.loss.matrix - the matrix of values from which cv.values were calculated - as 
 cv.roc.matrix - as above, but the values in it are area under the curve estimated on the excluded data, instead of deviance in the cv.loss.matrix.
 
 You can look at variable importance with the summary function
-<<fig=TRUE, echo=TRUE>>=
+<<brt-2, fig=TRUE, echo=TRUE>>=
 names(angaus.tc5.lr01)
 summary(angaus.tc5.lr01)
 @
@@ -150,7 +150,7 @@ summary(angaus.tc5.lr01)
 
 The above was a first guess at settings, using rules of thumb discussed in Elith et al. (2008). It made a model with only 650 trees, so our next step would be to reduce the lr. For example, try lr = 0.005, to aim for over 1000 trees:
  
-<<fig=TRUE, echo=TRUE>>=
+<<brt-3, fig=TRUE, echo=TRUE>>=
 angaus.tc5.lr005 <- gbm.step(data=Anguilla_train, gbm.x = 3:13, gbm.y = 2, 
                       family = "bernoulli", tree.complexity = 5,
                       learning.rate = 0.005, bag.fraction = 0.5)
@@ -168,7 +168,7 @@ The step function above is slower than just fitting one model and finding a mini
 
 For a discussion of simplification see Appendix 2 of the online supplement to Elith et al (2008). Simplification builds many models, so it can be slow. For example, the code below took a few minutes to run on a modern laptop. In it we assess the value in simplifying the model built with a lr of 0.005, but only test dropping up to 5 variables (the "n.drop" argument; the default is an automatic rule so it continues until the average change in predictive deviance exceeds its original standard error as calculated in gbm.step).
 
-<<fig=TRUE, echo=TRUE>>=
+<<brt-4, fig=TRUE, echo=TRUE>>=
 angaus.simp <- gbm.simplify(angaus.tc5.lr005, n.drops = 5)
 @
 
@@ -177,7 +177,7 @@ For our run, this estimated that the optimal number of variables to drop was 1; 
 You can use the number indicated by the red vertical line, or look at the results in the angaus.simp object
 Now make a model with 1 predictor dropped, by indicating to the gbm.step call the relevant number of predictor(s) from the predictor list in the angaus.simp object - see highlights, below, in which we indicate we want to drop 1 variable by calling the second vector of predictor columns in the pred list, using a [[1]]:
 
-<<fig=TRUE, echo=TRUE>>=
+<<brt-5, fig=TRUE, echo=TRUE>>=
 angaus.tc5.lr005.simp <- gbm.step(Anguilla_train, 
                    gbm.x=angaus.simp$pred.list[[1]], gbm.y=2,
                    tree.complexity=5, learning.rate=0.005)
@@ -190,7 +190,7 @@ This has now made a new model (angaus.tc5.lr005.simp) with the same list compone
 
 The fitted functions from a BRT model created from any of our functions can be plotted using gbm.plot. If you want to plot all variables on one sheet first set up a graphics device with the right set-up - here we will make one with 3 rows and 4 columns: 
 
-<<fig=TRUE, echo=TRUE>>=
+<<brt-6, fig=TRUE, echo=TRUE>>=
 gbm.plot(angaus.tc5.lr005, n.plots=11, write.title = FALSE)
 @
 
@@ -198,7 +198,7 @@ Additional arguments to this function allow for making a smoothed representation
 
 Depending on the distribution of observations within the environmental space, fitted functions can give a misleading indication about the distribution of the fitted values in relation to each predictor. The function gbm.plot.fits has been provided to plot the fitted values in relation to each of the predictors used in the model. 
 
-<<fig=TRUE, echo=TRUE>>=
+<<brt-7, fig=TRUE, echo=TRUE>>=
 gbm.plot.fits(angaus.tc5.lr005)
 @
 
@@ -220,7 +220,7 @@ find.int$rank.list
 You can plot pairwise interactions like this: 
 
 \begin{center}
-<<fig =TRUE , echo=TRUE>>=
+<<brt-9, fig =TRUE , echo=TRUE>>=
 gbm.perspec(angaus.tc5.lr005, 7, 1, y.range=c(15,20), z.range=c(0,0.6))
 @
 \end{center}
@@ -272,7 +272,7 @@ for (i in 1:50) {
 @
 
 \begin{center}
-<<fig =TRUE , echo=TRUE>>=
+<<brt-12, fig =TRUE , echo=TRUE>>=
 plot(tree.list, angaus.pred.deviance, ylim=c(0.7,1), xlim=c(-100,5000),
      type='l', xlab="number of trees", ylab="predictive deviance",
      cex.lab=1.5) 
@@ -284,19 +284,19 @@ plot(tree.list, angaus.pred.deviance, ylim=c(0.7,1), xlim=c(-100,5000),
 
 Here we show how to predict to a whole map (technically to a RasterLayer object) using the predict version in the package 'raster'. The predictor variables are available as a RasterBrick (multi-layered raster) in Anguilla\_grids. 
 
-<<fig =TRUE , echo=TRUE>>=
+<<brt-13, fig =TRUE , echo=TRUE>>=
 data(Anguilla_grids)
 plot(Anguilla_grids)
 @
 
 There is (obviously) no grid for fishing method. We create a data.frame with a constant value (of class 'factor') and pass that on to the predict function.
 
-<<fig =TRUE , echo=TRUE>>=
-Method=factor('electric', levels = levels(Anguilla_train$Method))
-add=data.frame(Method)
-p = predict(Anguilla_grids, angaus.tc5.lr005, const=add, 
+<<brt14, fig =TRUE , echo=TRUE>>=
+Method <- factor('electric', levels = levels(Anguilla_train$Method))
+add <- data.frame(Method)
+p <- predict(Anguilla_grids, angaus.tc5.lr005, const=add, 
        n.trees=angaus.tc5.lr005$gbm.call$best.trees, type="response")
-p = mask(p, raster(Anguilla_grids, 1))
+p <- mask(p, raster(Anguilla_grids, 1))
 plot(p, main='Angaus - BRT prediction')
 @
 

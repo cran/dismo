@@ -13,7 +13,7 @@ If the coordinate reference system (of \code{mask}) is longitude/latitude, sampl
 
 \usage{
 randomPoints(mask, n, p, ext=NULL, extf=1.1, excludep=TRUE, prob=FALSE, 
-             cellnumbers=FALSE, tryf=5, warn=2)
+             cellnumbers=FALSE, tryf=3, warn=2, lonlatCorrection=TRUE)
 }
  
 \arguments{
@@ -27,6 +27,7 @@ randomPoints(mask, n, p, ext=NULL, extf=1.1, excludep=TRUE, prob=FALSE,
   \item{cellnumbers}{logical. If \code{TRUE}, cell numbers for ]code{mask} are returned rather than coordinates }
   \item{tryf}{numeric > 1. Multiplyer used for initial sample size from which the requested sample size is extracted after removing NA points (outside of mask) }
   \item{warn}{integer. 2 or higher gives most warnings. 0 or lower gives no warnings if sample size \code{n} is not reached }
+  \item{lonlatCorrection}{logical. If \code{TRUE} then correct for the fact that longitude/latitude is not a planar coordinate system}
 }
 
 \value{

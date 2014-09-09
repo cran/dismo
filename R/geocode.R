@@ -71,12 +71,12 @@ geocode <- function(x, oneRecord=FALSE, extent=NULL, progress='', ...) {
 				extent <- paste(e@ymin,',',e@xmin,'|',e@ymax,',',e@xmax,sep='')
 				gurl <- paste(burl, r, "&bounds=", extent, "&sensor=false", sep="")			
 			}
-			try( doc <- xmlInternalTreeParse(gurl, isURL=TRUE) )
+			try( doc <- XML::xmlInternalTreeParse(gurl, isURL=TRUE) )
 			if (class(doc)[1] == 'try-error') {
 				warning('cannot parse XML document\n')
 				status <- ''
 			} else { 
-				status <- xmlValue(getNodeSet(doc, "//GeocodeResponse//status")[[1]])
+				status <- XML::xmlValue(XML::getNodeSet(doc, "//GeocodeResponse//status")[[1]])
 			}
 			
 			if (status != "OK") {
@@ -87,14 +87,15 @@ geocode <- function(x, oneRecord=FALSE, extent=NULL, progress='', ...) {
 				next
 			}
 		
-			p <- xmlToList(doc)
+			p <- XML::xmlToList(doc)
 			n <- length(p)-1
 			place <- rep(NA, n)
 			location <- matrix(ncol=2, nrow=n)
 			viewport <- matrix(ncol=4, nrow=n)
 			bounds <- matrix(ncol=4, nrow=n)
 			for (i in 1:n) {
-				place[i] <- p[i+1]$result$formatted_address
+				plc <- p[i+1]$result$formatted_address
+				place[i] <- ifelse(is.null(plc), "", plc)
 				location[i,] <- as.numeric(c(p[i+1]$result$geometry$location$lng, p[i+1]$result$geometry$location$lat))
 				viewport[i,] <- as.numeric(c(p[i+1]$result$geometry$viewport$southwest$lng, p[i+1]$result$geometry$viewport$northeast$lng, p[i+1]$result$geometry$viewport$southwest$lat, p[i+1]$result$geometry$viewport$northeast$lat) )
 				bnds <- as.numeric(c(p[i+1]$result$geometry$bounds$southwest$lng, p[i+1]$result$geometry$bounds$northeast$lng, p[i+1]$result$geometry$bounds$southwest$lat, p[i+1]$result$geometry$bounds$northeast$lat) )

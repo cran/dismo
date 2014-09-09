@@ -16,12 +16,12 @@
 	for (r in 1:dim(d)[1]) {
 		theurl <- paste("http://bg.berkeley.edu:8080/ws/single?cy=", d$country[r], "&sp=", d$adm1[r], "&co=", d$adm2[r], "&locality=", d$locality[r], sep='')
 		
-		try( doc <- xmlInternalTreeParse(theurl) )
+		try( doc <- XML::xmlInternalTreeParse(theurl) )
 		if (class(doc)[1] == 'try-error') {
 			ans <- data.frame(lon=NA, lat=NA, coordUncertaintyM=NA)
 		} else {
 # to do: improved parsing:	
-			nodes <- getNodeSet(doc, "//georeference")
+			nodes <- XML::getNodeSet(doc, "//georeference")
 			if(length(nodes) == 0) {
 				ans <- data.frame(lon=NA, lat=NA, coordUncertaintyM=NA)
 			} else {
@@ -32,7 +32,7 @@
 				names(ans) <- varNames
     # Fill in the rows based on the names.
 				for(i in seq(length = dims[1])) { 
-					ans[i, varNames] = xmlSApply(nodes[[i]], xmlValue)[varNames]
+					ans[i, varNames] = XML::xmlSApply(nodes[[i]], XML::xmlValue)[varNames]
 				}
 				ans <- ans[,-3]
 				names(ans) <- c("lon", "lat", "coordUncertaintyM")

@@ -25,7 +25,7 @@ gbif(genus, species="", concept=FALSE, ext=NULL, args=NULL, geo=TRUE, sp=FALSE,
   \item{args}{character. Additional arguments to refine the query. See examples for the format, and the  (\href{http://data.gbif.org/ws/rest/occurrence/}{web service documentation}) (under 3. SEARCH FOR RECORDS) for more details. This is intended for use with arguments like 'originisocountrycode' or 'startdate' that narrow down the search. Other arguments such as 'format' may cause the function to fail}
   \item{geo}{logical. If \code{TRUE}, only records that have a georeference (longitude and latitude values) will be downloaded}
   \item{sp}{logical. If \code{TRUE}, \code{geo} will be set to \code{TRUE} and a \link[sp]{SpatialPointsDataFrame} will be returned}
-  \item{removeZeros}{logical. If \code{TRUE}, all records that have a latiude OR longitude of zero will be removed if \code{geo==TRUE}, or set to \code{NA} if \code{geo==FALSE}. If \code{FALSE}, only records that have a latiude AND longitude that are zero will be removed or set to \code{NA}}.
+  \item{removeZeros}{logical. If \code{TRUE}, all records that have a latiude OR longitude of zero will be removed if \code{geo==TRUE}, or set to \code{NA} if \code{geo==FALSE}. If \code{FALSE}, only records that have a latiude AND longitude that are zero will be removed or set to \code{NA}}
   \item{download}{logical. If \code{TRUE}, records will be downloaded, else only the number of records will be shown}
   \item{getAlt}{logical. If \code{TRUE}, elevation data (4 character variables) will be processed into a single new numerical variable}
   \item{returnConcept}{logical. If \code{TRUE}, only the GBIF taxonomic concept number is returned}  

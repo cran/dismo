@@ -6,7 +6,7 @@
 # calculates a gradient boosting (gbm)object in which model complexity is 
 # determined using a training set with predictions made to a withheld set
 # an initial set of trees is fitted, and then trees are progressively added
-# testing performance # along the way, using gbm.perf until the optimal
+# testing performance # along the way, using gbm::gbm.perf until the optimal
 # number of trees is identified
 #
 # as any structured ordering of the data should be avoided, a copy of the data set 
@@ -41,7 +41,6 @@ function (data,                        # the input data frame
 
 # setup input data and assign to position one
 
-  dataframe.name <- deparse(substitute(data))  # get the dataframe name
   cv.folds <- 0 
 
   if (permute) { 
@@ -71,15 +70,13 @@ function (data,                        # the input data frame
     else {
       sort.vector <- sample(seq(1,n.rows),n.rows,replace=FALSE)
     }
-            
-    sort.data <- data[sort.vector,]
 
-    x.data <- eval(sort.data[, gbm.x])                 #form the temporary datasets
-    y.data <- eval(sort.data[, gbm.y])
-  }
-  else {
-    x.data <- eval(data[, gbm.x])                 #form the temporary datasets
-    y.data <- eval(data[, gbm.y])
+    sort.data <- data[sort.vector,]
+    x.data <- sort.data[, gbm.x, drop=FALSE]                 #form the temporary datasets
+    y.data <- sort.data[, gbm.y]
+  } else {
+    x.data <- data[, gbm.x, drop=FALSE]                 #form the temporary datasets
+    y.data <- data[, gbm.y]
   }
 
   names(x.data) <- names(data)[gbm.x]
@@ -101,7 +98,7 @@ function (data,                        # the input data frame
 
 # identify the best number of trees using method appropriate to model
 
-  best.trees <- gbm.perf(gbm.object, method = 'test', plot.it = FALSE) 
+  best.trees <- gbm::gbm.perf(gbm.object, method = 'test', plot.it = FALSE) 
 
   n.fitted <- n.trees
 
@@ -109,8 +106,8 @@ function (data,                        # the input data frame
 
   while(gbm.object$n.trees - best.trees < n.trees & n.fitted < max.trees){
 
-    gbm.object <- gbm.more(gbm.object, add.trees)
-    best.trees <- gbm.perf(gbm.object, method = 'test', plot.it = FALSE)
+    gbm.object <- gbm::gbm.more(gbm.object, add.trees)
+    best.trees <- gbm::gbm.perf(gbm.object, method = 'test', plot.it = FALSE)
     n.fitted <- n.fitted + add.trees
 
     if (n.fitted %% 100 == 0){ #report times along the way
@@ -123,8 +120,8 @@ function (data,                        # the input data frame
   if (refit) {  # we are refitting the model with fixed tree size
     print(paste("refitting the model to the full dataset using ",best.trees," trees",sep=""),quote=FALSE)
 
-    x.data <- eval(data[, gbm.x])                 #form the temporary datasets
-    y.data <- eval(data[, gbm.y])
+    x.data <- data[, gbm.x, drop=FALSE]                 #form the temporary datasets
+    y.data <- data[, gbm.y]
      
     gbm.call <- eval(paste("gbm(y.data ~ .,n.trees = best.trees, data=x.data, verbose = F, interaction.depth = tree.complexity, 
       weights = site.weights, shrinkage = learning.rate, cv.folds = 0, distribution = as.character(family),
@@ -136,7 +133,7 @@ function (data,                        # the input data frame
 
 #extract fitted values and summary table
   
-  fitted.values <- predict.gbm(gbm.object,x.data,n.trees = best.trees,type="response")
+  fitted.values <- gbm::predict.gbm(gbm.object,x.data,n.trees = best.trees,type="response")
   gbm.summary <- summary(gbm.object,n.trees = best.trees, plotit = FALSE)
 
   y_i <- y.data
@@ -167,7 +164,7 @@ function (data,                        # the input data frame
 
 # now assemble data to be returned
 
-  gbm.detail <- list(dataframe = dataframe.name, gbm.x = gbm.x, predictor.names = names(x.data), 
+  gbm.detail <- list(dataframe = data, gbm.x = gbm.x, predictor.names = names(x.data), 
     gbm.y = gbm.y, response.name = sp.name, tree.complexity = tree.complexity, n.trees = best.trees, 
     learning.rate = learning.rate, best.trees = best.trees, cv.folds = cv.folds, 
     family = family, train.fraction = train.fraction, var.monotone = var.monotone )

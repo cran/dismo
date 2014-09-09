@@ -5,16 +5,23 @@
 # Licence GPL v3
 
 setMethod('predict', signature(object='Mahalanobis'), 
-function(object, x, ext=NULL, filename='', ...) {
+function(object, x, toCenter=FALSE, ext=NULL, filename='', ...) {
+
+	if (toCenter) {
+		m <- colMeans(object@presence, na.rm=TRUE)
+	}
 
 	if (! (extends(class(x), 'Raster')) ) {
 		if (! all(colnames(object@presence) %in% colnames(x)) ) {
 			stop('missing variables in matrix ')
 		}
 		x <- x[ , colnames(object@presence),drop=FALSE]
-		mah <- 1 - apply(data.frame(x), 1, FUN=function(z) min( mahalanobis(object@presence, z, object@cov, inverted=TRUE)))
+		if (toCenter) {
+			mah <- 1 - apply(data.frame(x), 1, FUN=function(z) mahalanobis(z, m, object@cov, inverted=TRUE))
 		return(mah)
-		
+		} else {
+			mah <- 1 - apply(data.frame(x), 1, FUN=function(z) min( mahalanobis(object@presence, z, object@cov, inverted=TRUE)))
+		}
 	} else {
 	
 		if (! all(colnames(object@presence) %in% names(x)) ) {
@@ -46,7 +53,7 @@ function(object, x, ext=NULL, filename='', ...) {
 		}
 
 		cn <- colnames(object@presence)
-
+		
 		tr <- blockSize(out, n=nlayers(x)+2)
 		pb <- pbCreate(tr$n, ...)	
 		for (i in 1:tr$n) {
@@ -54,8 +61,11 @@ function(object, x, ext=NULL, filename='', ...) {
 			vals <- getValuesBlock(x, row=rr, nrows=tr$nrows[i], firstcol, ncols)
 
 			vals <- vals[,cn,drop=FALSE]
-			res <- 1 - apply(data.frame(vals), 1, FUN=function(z) min( mahalanobis(object@presence, z, object@cov, inverted=TRUE)))
-
+			if (toCenter) {
+				res <- 1 - apply(data.frame(vals), 1, FUN=function(z) mahalanobis(z, m, object@cov, inverted=TRUE))
+			} else {
+				res <- 1 - apply(data.frame(vals), 1, FUN=function(z) min( mahalanobis(object@presence, z, object@cov, inverted=TRUE)))
+			}
 			if (inmem) {
 				res <- matrix(res, nrow=ncol(out))
 				cols = tr$row[i]:(tr$row[i]+dim(res)[2]-1)

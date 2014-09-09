@@ -9,18 +9,9 @@ gbm step
 }
 
 \description{
-Function to assess the optimal number of boosting trees using k-fold cross validation. 
-Implements the cross-validation procedure described on page 215 of  
-Hastie T., R. Tibshirani, and J.H. Friedman (2001) The Elements of Statistical Learning: 
-Data Mining, Inference, and Prediction Springer-Verlag, New York.
+Function to assess the optimal number of boosting trees using k-fold cross validation. This is an implementation of the cross-validation procedure described on page 215 of Hastie et al (2001).
 
-The data is divided into 10 subsets, with stratification by prevalence if required for presence/absence data.
-The function then fits a gbm model of increasing complexity along the sequence from n.trees to n.trees + (n.steps * step.size),
-calculating the residual deviance at each step along the way.
-After each fold processed, the function calculates the average holdout residual deviance and its standard error
-and then identifies the optimal number of trees as that at which the holdout deviance is minimised. 
-It fits a model with this number of trees, returning it as a gbm model along with additional information 
-from the cross-validation selection process
+The data is divided into 10 subsets, with stratification by prevalence if required for presence/absence data. The function then fits a gbm model of increasing complexity along the sequence from \code{n.trees} to \code{n.trees + (n.steps * step.size)}, calculating the residual deviance at each step along the way. After each fold processed, the function calculates the average holdout residual deviance and its standard error and then identifies the optimal number of trees as that at which the holdout deviance is minimised. It fits a model with this number of trees, returning it as a gbm model along with additional information from the cross-validation selection process.
 }
 
 \usage{
@@ -28,15 +19,15 @@ gbm.step(data, gbm.x, gbm.y, offset = NULL, fold.vector = NULL, tree.complexity 
  learning.rate = 0.01, bag.fraction = 0.75, site.weights = rep(1, nrow(data)), 
  var.monotone = rep(0, length(gbm.x)), n.folds = 10, prev.stratify = TRUE, 
  family = "bernoulli", n.trees = 50, step.size = n.trees, max.trees = 10000,
- tolerance.method = "auto", tolerance = 0.001, keep.data = FALSE, plot.main = TRUE,
- plot.folds = FALSE, verbose = TRUE, silent = FALSE, keep.fold.models = FALSE, 
- keep.fold.vector = FALSE, keep.fold.fit = FALSE, ...)
+ tolerance.method = "auto", tolerance = 0.001, plot.main = TRUE, plot.folds = FALSE,
+ verbose = TRUE, silent = FALSE, keep.fold.models = FALSE, keep.fold.vector = FALSE, 
+ keep.fold.fit = FALSE, ...)
 }
 
 \arguments{
   \item{data}{input data.frame}
-  \item{gbm.x}{predictor variables}
-  \item{gbm.y}{response variable}
+  \item{gbm.x}{indices or names of predictor variables in \code{data}}
+  \item{gbm.y}{index or name of response variable in \code{data}}
   \item{offset}{offset}
   \item{fold.vector}{a fold vector to be read in for cross validation with offsets}
   \item{tree.complexity}{sets the complexity of individual trees}
@@ -52,7 +43,6 @@ gbm.step(data, gbm.x, gbm.y, offset = NULL, fold.vector = NULL, tree.complexity 
   \item{max.trees}{max number of trees to fit before stopping}
   \item{tolerance.method}{method to use in deciding to stop - "fixed" or "auto"}
   \item{tolerance}{tolerance value to use - if method == fixed is absolute, if auto is multiplier * total mean deviance}
-  \item{keep.data}{Logical. keep raw data in final model}
   \item{plot.main}{Logical. plot hold-out deviance curve}
   \item{plot.folds}{Logical. plot the individual folds as well}
   \item{verbose}{Logical. control amount of screen reporting}
@@ -72,6 +62,7 @@ object of S3 class gbm
 }
 
 \references{
+Hastie, T., R. Tibshirani, and J.H. Friedman, 2001. The Elements of Statistical Learning: Data Mining, Inference, and Prediction. Springer-Verlag, New York
 Elith, J., J.R. Leathwick and T. Hastie, 2009. A working guide to boosted regression trees. Journal of Animal Ecology 77: 802-81
 }
 
