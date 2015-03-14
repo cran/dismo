@@ -1,6 +1,6 @@
 
 .circularArea <- function(p, radius, lonlat=FALSE) {
-	require(rgeos)
+	requireNamespace('rgeos')
 	x <- circles(p, d=radius, lonlat=lonlat)
 	if (lonlat) {
 	

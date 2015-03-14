@@ -82,6 +82,7 @@ gbm.perspec(angaus.tc5.lr005, 7, 1, y.range=c(15,20), z.range=c(0,0.6))
 ### code chunk number 12: dismo-10
 ###################################################
 data(Anguilla_test)
+library(gbm)
 preds <- predict.gbm(angaus.tc5.lr005, Anguilla_test,
          n.trees=angaus.tc5.lr005$gbm.call$best.trees, type="response")
 

@@ -21,7 +21,7 @@
 }
 
 
-.generateCircles <- function(xy, d, n=360, lonlat, r=6378137 ) {
+.generateCircles <- function(xy, d, n=360, lonlat, r=6378137, crs=NA ) {
 	if (length(d)==1) {
 		d <- rep(d, nrow(xy))
 	} else if (length(d) != nrow(xy)) {
@@ -63,9 +63,7 @@
 	}
 
 	pols <- SpatialPolygons(pols)
-	if (lonlat) {
-		projection(pols) <- CRS('+proj=longlat')
-	}
+	projection(pols) <- crs
 	return( pols )
 }
 
@@ -106,9 +104,17 @@ setMethod('circles', signature(p='data.frame'),
 			d <- .avgDist(p, lonlat=lonlat, ...) / 2
 		}
 		
-		ci@polygons <- .generateCircles(p, d=d, lonlat=lonlat, ...)
-		if (require(rgeos)) {
-			ci@polygons <- rgeos::gUnionCascaded(ci@polygons)
+		if (inherits(p, 'SpatialPoints')) {
+			crs <- projection(p)
+		} else if (lonlat) {
+			crs <- '+proj=longlat'		
+		} else {
+			crs <- NA
+		}
+		
+		ci@polygons <- .generateCircles(p, d=d, lonlat=lonlat, crs=crs, ...)
+		if (requireNamespace('rgeos')) {
+			ci@polygons <- rgeos::gUnaryUnion(ci@polygons)
 		}
 		return(ci)
 	}

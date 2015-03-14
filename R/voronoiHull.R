@@ -49,7 +49,7 @@ setMethod('voronoiHull', signature(p='SpatialPoints', a='SpatialPoints'),
 # http://www.carsonfarmer.com/?p=455
 .voronoi <- function(p, a=NULL, dissolve=FALSE){
 
-	if (!require(deldir)) { 
+	if (!requireNamespace('deldir')) { 
 		stop('you need to first install the "deldir" package') 
 	}
 
@@ -81,7 +81,7 @@ setMethod('voronoiHull', signature(p='SpatialPoints', a='SpatialPoints'),
 	polys <- SpatialPolygons(polys)
 	
 	if (dissolve) {
-		if (require(rgeos)) { 
+		if (requireNamespace('rgeos')) { 
 			p <- polys[pa==1]
 			a <- polys[pa==0]
 			p <- rgeos::gUnionCascaded(p)

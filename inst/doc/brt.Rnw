@@ -240,6 +240,7 @@ Note that the calc.deviance function has different formulae for different distri
 
 <<dismo-10>>=
 data(Anguilla_test)
+library(gbm)
 preds <- predict.gbm(angaus.tc5.lr005, Anguilla_test,
          n.trees=angaus.tc5.lr005$gbm.call$best.trees, type="response")
 

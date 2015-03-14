@@ -20,7 +20,7 @@
 # BIO5 = Max Temperature of Warmest Month
 # BIO6 = Min Temperature of Coldest Month
 # BIO7 = Temperature Annual Range (P5-P6)
-# BIO8 = Mean Temperature of Wettest Quarter 
+# BIO8 = Mean Temperature of Wettest Quarter
 # BIO9 = Mean Temperature of Driest Quarter
 # BIO10 = Mean Temperature of Warmest Quarter
 # BIO11 = Mean Temperature of Coldest Quarter

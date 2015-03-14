@@ -1,5 +1,4 @@
 # Author: Robert J. Hijmans
-# contact: r.hijmans@gmail.com
 # Date : December 2009
 # Version 0.1
 # Licence GPL v3
@@ -11,8 +10,10 @@ function(object, x, ext=NULL, filename='', ...) {
 	domdist <- function(xx, ii, y) {
 		r <- xx@range[ii]
 		xx <- xx@presence[,ii]
-		d <- apply(data.frame(y), 1, FUN=function(z)(abs(xx-z)/r))
-		d <- apply(d, 2, mean)
+		# improvement by David Woolford
+		d <- apply(data.frame(y), 1, FUN=function(z)(mean(abs(xx-z)/r)))
+		#d <- apply(data.frame(y), 1, FUN=function(z)(abs(xx-z)/r))
+		#d <- apply(d, 2, mean)
 		d[which(d > 1)] <- 1
 		1-d
 	}

@@ -37,8 +37,8 @@ function (data,                        # the input data frame
    keep.data = TRUE)                   # keep copy of the data
 {
 #
-    if (! require(gbm) ) { stop ('you need to install the gbm package to run this function') }
-
+    if (! requireNamespace('gbm') ) { stop ('you need to install the gbm package to run this function') }
+	requireNamespace('splines')
 # setup input data and assign to position one
 
   cv.folds <- 0 
@@ -90,7 +90,7 @@ function (data,                        # the input data frame
   print(paste("fitting initial gbm model of ",n.trees," trees for ",sp.name,sep=""),quote=FALSE)
   print(" and expanding using withheld data for evaluation",quote=FALSE) 
 
-  gbm.call <- paste("gbm(y.data ~ .,n.trees = n.trees, data=x.data, verbose = F, interaction.depth = tree.complexity, 
+  gbm.call <- paste("gbm::gbm(y.data ~ .,n.trees = n.trees, data=x.data, verbose = F, interaction.depth = tree.complexity, 
     weights = site.weights, shrinkage = learning.rate, cv.folds = 0, distribution = as.character(family),
     train.fraction = train.fraction, var.monotone = var.monotone, keep.data = keep.data)", sep="")
 
@@ -123,7 +123,7 @@ function (data,                        # the input data frame
     x.data <- data[, gbm.x, drop=FALSE]                 #form the temporary datasets
     y.data <- data[, gbm.y]
      
-    gbm.call <- eval(paste("gbm(y.data ~ .,n.trees = best.trees, data=x.data, verbose = F, interaction.depth = tree.complexity, 
+    gbm.call <- eval(paste("gbm::gbm(y.data ~ .,n.trees = best.trees, data=x.data, verbose = F, interaction.depth = tree.complexity, 
       weights = site.weights, shrinkage = learning.rate, cv.folds = 0, distribution = as.character(family),
       var.monotone = var.monotone, keep.data = keep.data)", sep=""))
 

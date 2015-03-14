@@ -1,3 +1,6 @@
+--- 14-March-2015, version 1.0-13
+Updated gbif function to work with new GBIF web service
+
 --- 8-July-2013, version 0.8-15
 Added argument "concept" to function gbif to allow querying for synonyms. Suggested by Aaron Dodd
 Added additional threshold statistics suggested by Diego Nieto-Lugilde

@@ -99,7 +99,7 @@
 
 	} else {
 		E <- sapply(1:ncol(E), function(i) .messi2(E[,i], v[,i]))
-		rmess <- .rowMin(E)
+		rmess <- apply(x, 1, min, na.rm=TRUE)
 		if (full) {
 			out <- brick(out, nl=nl+1)
 			names(out) <- c(names(x), "mess")
@@ -110,6 +110,8 @@
 		}
 	}	
 }
+
+
 
 
 mess <- function(x, v, full=FALSE, filename='', ...) {
@@ -128,7 +130,7 @@ mess <- function(x, v, full=FALSE, filename='', ...) {
 			out <- setValues(out, rmess)
 		} else {
 			x <- sapply(1:ncol(x), function(i) .messi3(x[,i], v[,i]))
-			rmess <- .rowMin(x)
+			rmess <- apply(x, 1, min, na.rm=TRUE)
 			if (full) {
 				out <- brick(out, nl=nl+1)
 				names(out) <- c(nms, "mess")
@@ -169,7 +171,7 @@ mess <- function(x, v, full=FALSE, filename='', ...) {
 				for (i in 1:tr$n) {
 					vv <- getValues(x, row=tr$row[i], nrows=tr$nrows[i])
 					vv <- sapply(1:ncol(v), function(i) .messi3(vv[,i], v[,i]))
-					m <- .rowMin(vv)
+					m <- apply(vv, 1, min, na.rm=TRUE)
 					out <- writeValues(out, cbind(vv, m), tr$row[i])
 					pbStep(pb) 
 				}
@@ -183,7 +185,7 @@ mess <- function(x, v, full=FALSE, filename='', ...) {
 				for (i in 1:tr$n) {
 					vv <- getValues(x, row=tr$row[i], nrows=tr$nrows[i])
 					vv <- sapply(1:ncol(v), function(i) .messi3(vv[,i], v[,i]))
-					m <- .rowMin(vv)
+					m <- apply(vv, 1, min, na.rm=TRUE)
 					out <- writeValues(out, m, tr$row[i])
 					pbStep(pb) 
 				}

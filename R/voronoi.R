@@ -7,7 +7,7 @@
 # http://www.carsonfarmer.com/?p=455
 voronoi <- function(xy){
 
-	if (!require(deldir)) { stop('you need to first install the deldir libary') }
+	if (!requireNamespace('deldir')) { stop('you need to first install the deldir libary') }
 
 	dat <- NULL
 	sp <- FALSE

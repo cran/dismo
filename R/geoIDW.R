@@ -51,7 +51,7 @@ setMethod('geoIDW', signature(p='SpatialPoints', a='SpatialPoints'),
 # adapted from code by Carson Farmer
 # http://www.carsonfarmer.com/?p=455
 .idw <- function(p, a){
-	if (!require(gstat)) { 
+	if (!requireNamespace('gstat')) { 
 		stop('you need to first install the "gstat::gstat" package') 
 	}
 

@@ -98,7 +98,7 @@ if (!isGeneric("maxent")) {
 	if (is.null(getOption('dismo_rJavaLoaded'))) {
 		# to avoid trouble on macs
 		Sys.setenv(NOAWT=TRUE)
-		if ( require(rJava) ) {
+		if ( requireNamespace('rJava') ) {
 			rJava::.jpackage('dismo')
 			options(dismo_rJavaLoaded=TRUE)
 		} else {

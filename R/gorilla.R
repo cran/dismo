@@ -36,7 +36,7 @@
 # TmsSD = monthly variation in temperature
 # Pmo = average monthly rainfall (mm)
 # Pann = mean annual rainfall (mm)
-# P2T = plant productivity index (the number of months in the year in which rainfall [in mm] was more than twice the average monthly temperature (Le Houérou 1984))
+# P2T = plant productivity index (the number of months in the year in which rainfall [in mm] was more than twice the average monthly temperature (Le Houerou 1984))
 
 
 .apes <- function(alt=1000, Tann=22.5, TmoSD=0.77, Pann=1680, P2T=10, forestcover=80, moimomx=0.5, species='gorilla') {

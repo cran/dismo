@@ -50,7 +50,8 @@ geocode <- function(x, oneRecord=FALSE, extent=NULL, progress='', ...) {
 
 
 .geocode <- function(x, oneRecord=FALSE, extent=NULL, progress='', ...) {
-	if (! require(XML)) stop('You need to install the XML package to be able use this function')
+	
+	if (! requireNamespace('XML')) stop('You need to install the XML package to be able use this function')
 
 	burl <- "http://maps.google.com/maps/api/geocode/xml?address="
 	res1 <- data.frame(matrix(NA, ncol=8, nrow=1))

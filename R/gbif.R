@@ -10,64 +10,12 @@
 # 2013-01-15
 # translate ISO2 codes to full country names
 # add "cloc"
-# 2013-06-19
-# added 'species concept' option
-# suggested by Aaron Dodd
 
-.GBIFKey <- function(species) {
-#	if (! require(XML)) { stop('You need to install the XML package to use this function') }
-	url <- "http://data.gbif.org/ws/rest/taxon/list?dataproviderkey=1&rank=species&scientificname="
-	url <- paste0(url, species)
-   	doc <- XML::xmlInternalTreeParse(url)
-	
-	node <- XML::getNodeSet(doc, "//gbif:summary")
-	m <- XML::xmlGetAttr(node[[1]], 'totalReturned')
-	if (!(as.integer(m) > 0)) {
-		return(NA)
-	} else {
-		node <- XML::getNodeSet(doc, "//tc:TaxonConcept")
-		XML::xmlGetAttr(node[[1]], 'gbifKey')
-	}
-}
+#2014-03-08
+# new version, using the json API
 
 
-gbif <- function(genus, species='', concept=FALSE, ext=NULL, args=NULL, geo=TRUE, sp=FALSE, removeZeros=FALSE, download=TRUE, getAlt=TRUE, returnConcept=FALSE,ntries=5, nrecs=1000, start=1, end=NULL, feedback=3) {
-	
-	
-	if (! require(XML)) { stop('You need to install the XML package to use this function') }
-
-	gbifxmlToDataFrame <- function(s) {
-		# this sub-funciton was hacked from xmlToDataFrame in the XML package by Duncan Temple Lang
-		
-		doc <- try(XML::xmlInternalTreeParse(s))
-
-		nodes <- XML::getNodeSet(doc, "//to:TaxonOccurrence")
-		if(length(nodes) == 0)   return(data.frame())
-		varNames <- c("continent", "country", "stateProvince", "county", "locality",  "decimalLatitude", "decimalLongitude", "coordinateUncertaintyInMeters", "maximumElevationInMeters", "minimumElevationInMeters", "maximumDepthInMeters", "minimumDepthInMeters", "institutionCode", "collectionCode", "catalogNumber",  "basisOfRecordString", "collector", "earliestDateCollected", "latestDateCollected",  "gbifNotes")
-		dims <- c(length(nodes), length(varNames)) 
-   # create an empty data frame with as many rows and columns as needed.
-		ans <- as.data.frame(replicate(dims[2], rep(as.character(NA), dims[1]), simplify = FALSE), stringsAsFactors = FALSE)
-		names(ans) <- varNames
-    # Fill in the rows based on the names.
-		for(i in seq(length = dims[1])) {
-			ans[i,] <- XML::xmlSApply(nodes[[i]], XML::xmlValue)[varNames]
-		}
-
-		nodes <- XML::getNodeSet(doc, "//to:Identification")
-		varNames <- c("taxonName")
-		dims <- c(length(nodes), length(varNames)) 
-		tax <- as.data.frame(replicate(dims[2], rep(as.character(NA), dims[1]), simplify = FALSE), stringsAsFactors = FALSE)
-		names(tax) <- varNames
-    # Fill in the rows based on the names.
-		for(i in seq(length = dims[1])) {
-			tax[i,] <- XML::xmlSApply(nodes[[i]], XML::xmlValue)[varNames]
-		}
-		cbind(tax, ans)
-	}
-
-	tmpfile <- paste(tempfile(), '.XML')
-
-	
+.getExtGBIF <- function(ext) {
 	if (!is.null(ext)) { 
 		ext <- round(extent(ext), 5)
 		global <- extent(-180,180,-90,90)
@@ -81,140 +29,78 @@ gbif <- function(genus, species='', concept=FALSE, ext=NULL, args=NULL, geo=TRUE
 	} else {
 		ex <- NULL
 	}
+	return(ex)
+} 
+
+.fixNameGBIF <- function(genus, species) {
+	genus <- trim(genus)
+	species <- trim(species)
+	gensp <- paste(genus, species)
+	spec <- gsub("   ", " ", species) 
+	spec <- gsub("  ", " ", spec) 	
+	spec <- gsub(" ", "%20", spec)  # for genus species var. xxx
+	spec <- paste(genus, '+', spec, sep='')
+	return(spec)
+}
+
+
+gbif <- function(genus, species='', ext=NULL, args=NULL, geo=TRUE, sp=FALSE, removeZeros=FALSE, download=TRUE, ntries=5, nrecs=300, start=1, end=Inf) {
 	
-	getkey <- TRUE
-	if (is.logical(concept)) {
-		genus <- trim(genus)
-		species <- trim(species)
-		gensp <- paste(genus, species)
-		spec <- gsub("   ", " ", species) 
-		spec <- gsub("  ", " ", spec) 	
-		spec <- gsub(" ", "%20", spec)  # for genus species var. xxx
-		spec <- paste(genus, '+', spec, sep='')
-	} else {
-		key <- round(as.numeric(concept))
-		if (key < 1) stop('concept should be a positive integer')
-		gensp <- concept
-		concept <- TRUE
-		getkey <- FALSE
-	}
 	
+	if (! requireNamespace('jsonlite')) { stop('You need to install the jsonlite package to use this function') }
+
+	tmpfile <- paste(tempfile(), '.json', sep='')
+	ex <- .getExtGBIF(ext)
+	spec <- .fixNameGBIF(genus, species)
 	if (sp) geo <- TRUE
-	if (geo) { cds <- '&coordinatestatus=true' 
-	} else { cds <- '' }
-    base <- 'http://data.gbif.org/ws/rest/occurrence/'
+	if (geo) { cds <- '&coordinatestatus=true' } else { cds <- '' }
+
+	base <- "http://api.gbif.org/v1/occurrence/search?"
+	
 	if (!is.null(args)) {
 		args <- trim(as.character(args))
 		args <- paste('&', paste(args, collapse='&'), sep='')
 	}
 	
-	if (returnConcept) concept <- TRUE
-	if (concept) {
-		if (getkey) {
-			key <- .GBIFKey(spec)
-		}
-		if (returnConcept) return(key)
-		if (is.na(key)) {
-			concept <- FALSE
-			url <- paste(base, 'count?scientificname=', spec, cds, ex, args, sep='')
-		} else {
-			url <- paste(base, 'count?taxonconceptkey=', key, cds, ex, args, sep='')
-		}
-	} else {
-		url <- paste(base, 'count?scientificname=', spec, cds, ex, args, sep='')
-	}	
-	
-	tries <- 0
-    while (TRUE)  {
-	
-		tries <- tries + 1
-		if (tries > 5) { # if you cannot do this in 5 tries, you might as well stop
-			stop('GBIF server does not return a valid answer after 5 tries')
-		}
-    	x <- try(readLines(url, warn = FALSE))
-		if (class(x) != 'try-error') break
-    }
-    xn <- x[grep('totalMatched', x)]
-	if (length(xn) == 0) {
-		xe <- x[grep('gbif:exception', x)]
-		if (length(xe)== 1) {
-			xe <- unlist(strsplit(unlist(strsplit(xe, '>'))[2], '<'))[1]		
-			cat(url, "\n")
-			stop(xe)
-		} else if (length(xe) > 1) {
-			cat(url, "\n")
-			stop(xe)
-		} else {
-			cat(url, "\n")
-			stop("invalid request")
-		}	
-	}
-    n <- as.integer(unlist(strsplit(xn, '\"'))[2])
-    if (!download) {
-        return(n)
-    }
-	
-    if (n==0) {
-		cat(gensp, ': no occurrences found\n')
-        return(invisible(NULL))
-    } else {
-		if (feedback > 0) {
-			cat(gensp, ':', n, 'occurrences found\n')
-			flush.console()
-		}
-	}
-
 	ntries <- min(max(ntries, 1), 100)
-	if (! download) { return(n) }
-	nrecs <- min(max(nrecs, 1), 1000)
 	
-	start <- max(1, start)
-	if (start > n) {
-		stop('"start" is larger than the number of records')
-	}
-	if (is.null(end)) {
-		end <- n
-	} else {
-		stopifnot(end >= start)
-	}
-	
-    iter <- n %/% nrecs
-	breakout <- FALSE
-	if (start > 1) {
-		ss <- floor(start/nrecs)
-	} else {
-		ss <- 0
-	}
-	z <- NULL
-	start <- start-1
-    for (group in ss:iter) {
-		if (group > 0) {
-			start <- group * nrecs
-			if (end < start) break
-		}	
-		if (group == iter) { 
-			thisend <- min(end, n) - 1
-			nrecs <- thisend-start+1
-		} else { 
-			thisend <- start+nrecs-1 
-			thisend <- min(end, thisend)
-		}
-		
-		if (feedback > 1) {
-			if (group == ss) { 
-				cat((start+1), '-', thisend+1, sep='')  
-			} else { 
-				cat('-', thisend+1, sep='')  
-			}
-			if ((group > ss & group %% 20 == 0)  |  group == iter ) { cat('\n') }
-			flush.console()
-		}
-
-		if (concept) {
-			aurl <- paste(base, 'list?taxonconceptkey=', key, '&mode=processed&format=darwin&startindex=', format(start, scientific=FALSE), '&maxresults=', format(nrecs, scientific=FALSE), cds, ex, args, sep='')
+	if (!download) {
+		url1 <- paste(base, "scientificname=", spec, '&limit=1', cds, ex, args, sep='')
+		test <- try (download.file(url1, tmpfile, quiet=TRUE))
+		json <- scan(tmpfile, what='character', quiet=TRUE, sep='\n',  encoding = "UTF-8")
+		x <- jsonlite::fromJSON(json)
+		if (is.null(x$count)) {
+			return(0)
 		} else {
-			aurl <- paste(base, 'list?scientificname=', spec, '&mode=processed&format=darwin&startindex=', format(start, scientific=FALSE), '&maxresults=', format(nrecs, scientific=FALSE), cds, ex, args, sep='')
+			return(x$count)
 		}
+	}
+
+	start <- max(1, start)
+	stopifnot(start <= end)
+
+	nrecs <- min(max(nrecs, 1), 300)
+	url1 <- paste(base, "scientificname=", spec, '&limit=', format(nrecs, scientific=FALSE), cds, ex, args, sep='')
+
+	
+	g <- list()
+	breakout <- FALSE
+	np <- i <- 1
+	while (TRUE) {
+		if (start+nrecs >= end) {
+			nrecs <- end - start + 1
+			url1 <- paste(base, "scientificname=", spec, '&limit=', format(nrecs, scientific=FALSE), cds, ex, args, sep='')
+			breakout <- TRUE
+		}	
+		
+		aurl <- paste(url1, '&offset=', format(start-1, scientific=FALSE), sep='')
+		
+		if (np > 20) {
+			np <- 1
+			cat('\n')
+		}
+		cat(paste(start-1, '-', sep='')) 
+		flush.console()
 		tries <- 0
         #======= if download fails due to server problems, keep trying  =======#
         while (TRUE) {
@@ -229,26 +115,49 @@ gbif <- function(genus, species='', concept=FALSE, ext=NULL, args=NULL, geo=TRUE
 			if (class(test) == 'try-error') {
 				print('download failure, trying again...')
 			} else {
-				xml <- scan(tmpfile, what='character', quiet=TRUE, sep='\n')
-				xml <- chartr('\a\v', '  ', xml)
-				zz <- try( gbifxmlToDataFrame(xml))
-				if (class(zz) == 'try-error') {
-					print('parsing failure, trying again...')
+				json <- scan(tmpfile, what='character', quiet=TRUE, sep='\n',  encoding = "UTF-8")
+				json <- chartr('\a\v', '  ', json)
+				x <- jsonlite::fromJSON(json)
+				if (is.null(x$count)) {
+					x$count <- 0
+					if (i == 1) {
+						warning('no records found')
+						break
+					} else {
+						break
+					}
 				}
+				r <- x$results
+				r <- r[, ! sapply(r, class) %in% c('data.frame', 'list')]
+				rownames(r) <- NULL
+				g[[i]] <- r
 				break
 			}
 	    }
-		
-		if (breakout) {
-			break
-		} else {
-			z <- rbind(z, zz)
-		}
+		start <- start + nrecs
+		i <- i + 1
+		if (breakout) break
+		if (x$endOfRecords) break
 	}
+	
+	cat(min(end, x$count), 'records\n') 
 
-	d <- as.Date(Sys.time())
-	z <- cbind(z, d)
-	names(z) <- c("species", "continent", "country", "adm1", "adm2", "locality", "lat", "lon", "coordUncertaintyM", "maxElevationM", "minElevationM", "maxDepthM", "minDepthM", "institution", "collection", "catalogNumber",  "basisOfRecord", "collector", "earliestDateCollected", "latestDateCollected",  "gbifNotes", "downloadDate")
+	if (length(g) == 0) {
+		return(NULL)
+	} else if (length(g) == 1) {
+		z <- g[[1]]
+	} else {
+		z <- do.call(bind, g)
+	}
+	cn <- colnames(z)
+	cn <- gsub('decimalLatitude', 'lat', cn)
+	cn <- gsub('decimalLongitude', 'lon', cn)
+	cn <- gsub('stateProvince', 'adm1', cn)
+	cn <- gsub('county', 'adm2', cn)
+	cn <- gsub('countryCode', 'ISO2', cn)
+	cn <- gsub('country', 'fullCountry', cn)
+	colnames(z) <- cn
+
 	z[,'lon'] <- gsub(',', '.', z[,'lon'])
 	z[,'lat'] <- gsub(',', '.', z[,'lat'])
 	z[,'lon'] <- as.numeric(z[,'lon'])
@@ -266,50 +175,34 @@ gbif <- function(genus, species='', concept=FALSE, ext=NULL, args=NULL, geo=TRUE
 		z[k, c('lat', 'lon')] <- NA 
 	}
 		
-	if (getAlt) {
-		altfun <- function(x) {
-					a <- mean(as.numeric(unlist(strsplit( gsub('-', ' ', gsub('m', '', ( gsub(",", "", gsub('\"', "", x))))),' ')), silent=TRUE), na.rm=TRUE)
-					a[a==0] <- NA
-					mean(a, na.rm=TRUE)
-				}
-
-		#elev <- apply(z[,c("maxElevationM", "minElevationM")], 1, FUN=altfun)
-		#depth <- -1 * apply(z[,c("maxDepthM", "minDepthM")], 1, FUN=altfun)
-		#alt <- apply(cbind(elev, depth), 1, FUN=function(x)mean(x, na.rm=TRUE))
-		
-		if (feedback<3) {
-			w <- options('warn')
-			options(warn=-1)
-		}
-		
-		alt <- apply(z[,c("maxElevationM", "minElevationM", "maxDepthM", "minDepthM")], 1, FUN=altfun)
-		
-		if (feedback<3) options(warn=w)
-	
-		z <- cbind(z[,c("species", "continent", "country", "adm1", "adm2", "locality", "lat", "lon", "coordUncertaintyM")], 
-		alt, 
-		z[ ,c("institution", "collection", "catalogNumber",  "basisOfRecord", "collector", "earliestDateCollected", "latestDateCollected",  "gbifNotes", "downloadDate", "maxElevationM", "minElevationM", "maxDepthM", "minDepthM")])
-	}
-
 	if (dim(z)[1] > 0) {
 	
 		iso <- ccodes()
-		z$ISO2 <- z$country
 		i <- match(z$ISO2, iso[, 'ISO2'])
 		z$country <- iso[i, 1]
 		
-		fullloc <- trim(as.matrix(z[, c('locality', 'adm1', 'adm2', 'country', 'continent')]))
-		fullloc <- apply(fullloc, 1, function(x) paste(x, collapse=', '))
-		fullloc <- gsub("NA, ", "", fullloc)
-		fullloc <- gsub(", NA", "", fullloc)
-		fullloc <- gsub('\"', "", fullloc)
-		z$cloc <- fullloc
-
+		vrs <- c('locality', 'adm1', 'adm2', 'country', 'continent') 
+		vrs <- vrs[vrs %in% colnames(z)]
+		if (length(vrs) > 0) {
+			fullloc <- trim(as.matrix(z[, vrs]))
+			fullloc <- apply(fullloc, 1, function(x) paste(x, collapse=', '))
+			fullloc <- gsub("NA, ", "", fullloc)
+			fullloc <- gsub(", NA", "", fullloc)
+			fullloc <- gsub('\"', "", fullloc)
+			z$cloc <- fullloc
+		} else {
+			z$cloc <- NA
+		}
 		if (sp) {
 			coordinates(z) <- ~lon+lat
 		}
 	}	
-#	if (inherits(ext, 'SpatialPolygons')) { overlay	}
+
+	z <- z[, sort(colnames(z))]
+	d <- as.Date(Sys.time())
+	z <- cbind(z, downloadDate=d)
+	
+	#	if (inherits(ext, 'SpatialPolygons')) { overlay	}
 	try(file.remove(tmpfile), silent=TRUE)
 	
 	return(z)

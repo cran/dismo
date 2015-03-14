@@ -17,7 +17,7 @@ randomPoints(mask, n, p, ext=NULL, extf=1.1, excludep=TRUE, prob=FALSE,
 }
  
 \arguments{
-  \item{mask}{Raster* object. If the object has cell values, cells with \code{NA} are excluded (or the first layer of the object if there are multiple layers), unless \code{weights=TRUE}}
+  \item{mask}{Raster* object. If the object has cell values, cells with \code{NA} are excluded (of the first layer of the object if there are multiple layers)}
   \item{n}{integer. Number of points}
   \item{p}{Presence points (if provided, random points won't be in the same cells (as defined by mask)}
   \item{ext}{\link{Extent} object. Can be used to restrict sampling to a spatial extent}

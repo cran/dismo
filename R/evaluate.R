@@ -5,7 +5,7 @@
 
 
 evaluateROCR <- function(model, p, a, x) {
-	if (! require(ROCR)) {
+	if (! requireNamespace('ROCR')) {
 		stop('ROCR package not found')
 	}
 	

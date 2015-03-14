@@ -76,9 +76,8 @@ gbm.step <- function (
   ...)                                      # allows for any additional plotting parameters
 {
 
-	if (! require(gbm) ) { 
-		stop ('you need to install the gbm package to run this function') 
-	}
+	if (! requireNamespace('gbm') ) { stop ('you need to install the gbm package to run this function') }
+	requireNamespace('splines')
 
 	if (silent) verbose <- FALSE
 
@@ -159,9 +158,9 @@ gbm.step <- function (
 # set up the initial call to gbm
 
 	if (is.null(offset)) {
-		gbm.call <- paste("gbm(y.subset ~ .,data=x.subset, n.trees = n.trees, interaction.depth = tree.complexity, shrinkage = learning.rate, bag.fraction = bag.fraction, weights = weight.subset, distribution = as.character(family), var.monotone = var.monotone, verbose = FALSE)", sep="")
+		gbm.call <- paste("gbm::gbm(y.subset ~ .,data=x.subset, n.trees = n.trees, interaction.depth = tree.complexity, shrinkage = learning.rate, bag.fraction = bag.fraction, weights = weight.subset, distribution = as.character(family), var.monotone = var.monotone, verbose = FALSE)", sep="")
     } else {
-		gbm.call <- paste("gbm(y.subset ~ . + offset(offset.subset), data=x.subset, n.trees = n.trees, interaction.depth = tree.complexity, shrinkage = learning.rate, bag.fraction = bag.fraction, weights = weight.subset, distribution = as.character(family), var.monotone = var.monotone, verbose = FALSE)", sep="")
+		gbm.call <- paste("gbm::gbm(y.subset ~ . + offset(offset.subset), data=x.subset, n.trees = n.trees, interaction.depth = tree.complexity, shrinkage = learning.rate, bag.fraction = bag.fraction, weights = weight.subset, distribution = as.character(family), var.monotone = var.monotone, verbose = FALSE)", sep="")
     } 
 
 	n.fitted <- n.trees
@@ -488,9 +487,9 @@ gbm.step <- function (
 # fit the final model
 
 	if (is.null(offset)) {
-		gbm.call <- paste("gbm(y.data ~ .,data=x.data, n.trees = target.trees, interaction.depth = tree.complexity, shrinkage = learning.rate, bag.fraction = bag.fraction, weights = site.weights, distribution = as.character(family), var.monotone = var.monotone, verbose = FALSE)", sep="")
+		gbm.call <- paste("gbm::gbm(y.data ~ .,data=x.data, n.trees = target.trees, interaction.depth = tree.complexity, shrinkage = learning.rate, bag.fraction = bag.fraction, weights = site.weights, distribution = as.character(family), var.monotone = var.monotone, verbose = FALSE)", sep="")
 	} else {
-		gbm.call <- paste("gbm(y.data ~ . + offset(offset),data=x.data, n.trees = target.trees, interaction.depth = tree.complexity, shrinkage = learning.rate, bag.fraction = bag.fraction, weights = site.weights, distribution = as.character(family), var.monotone = var.monotone,  verbose = FALSE)", sep="")
+		gbm.call <- paste("gbm::gbm(y.data ~ . + offset(offset),data=x.data, n.trees = target.trees, interaction.depth = tree.complexity, shrinkage = learning.rate, bag.fraction = bag.fraction, weights = site.weights, distribution = as.character(family), var.monotone = var.monotone,  verbose = FALSE)", sep="")
     } 
 
 	if (!silent) {

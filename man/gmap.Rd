@@ -103,8 +103,9 @@ ptm2 <- spTransform(pt, CRS("+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0
 points(ptm, col='red', pch='x', cex=3)
 
 # styles:
-gmap("Brooklyn", style="feature:road.local|element:geometry|hue:0x00ff00|saturation:100
+g <- gmap("Brooklyn", style="feature:road.local|element:geometry|hue:0x00ff00|saturation:100
   &style=feature:landscape|element:geometry|lightness:-100", type='roadmap')
+plot(g)
 }
 }
 

@@ -8,22 +8,22 @@
 
 
 
-alt <- function(lonlat) {
+.alt <- function(lonlat) {
 	lonlat <- .pointsToMatrix(lonlat)
-	theurl <- paste("http://ws.geonames.org/srtm3?lat=", lonlat[,2], "&lng=", lonlat[,2], sep='')
+	theurl <- paste("http://api.geonames.org/srtm3?lat=", lonlat[,2], "&lng=", lonlat[,2], "&username=demo", sep='')
 	elevation <- scan(theurl, what='character', quiet=TRUE)
 	if (elevation < -32000) { elevation <- NA }
 	return(elevation)
 }
 
 
-country <- function(lonlat, radius=0) {
+.country <- function(lonlat, radius=0) {
 	cnts <- ccodes()
 	lonlat <- .pointsToMatrix(lonlat)
 
 	res <- matrix(ncol=3,nrow=length(lonlat[,1]))
 	for (i in 1:length(lonlat[,1])) {
-		theurl <- paste("http://ws.geonames.org/countryCode?lat=", lonlat[i,2], "&lng=", lonlat[i,1], "&radius=", radius, sep='')
+		theurl <- paste("http://api.geonames.org/countryCode?lat=", lonlat[i,2], "&lng=", lonlat[i,1], "&radius=", radius, sep='')
 		country <- scan(theurl, what='character', quiet=TRUE)
 		if (length(country) > 1) { res[i,] <- c(NA,NA,NA)
 		} else {
@@ -37,7 +37,7 @@ country <- function(lonlat, radius=0) {
 }
 
 
-adm <- function(lonlat, radius=0, maxrows=1) {
+.adm <- function(lonlat, radius=0, maxrows=1) {
 	lonlat <- .pointsToMatrix(lonlat)
 	theurl <- paste("http://ws.geonames.org/countrySubdivision?lat=", lonlat[,1], "&lng=", lonlat[,2], "&radius=", radius, "&maxrows=", maxrows, sep='')
 	subdivs <- scan(theurl, what='character', quiet=TRUE)

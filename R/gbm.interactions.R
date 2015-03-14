@@ -23,8 +23,9 @@ gbm.interactions <- function(gbm.object,
    mask.object)       		# a gbm object describing sample intensity 
 {
 
-    if (! require(gbm) ) { stop ('you need to install the gbm package to run this function') }
-
+    if (! requireNamespace('gbm') ) { stop ('you need to install the gbm package to run this function') }
+	requireNamespace('splines')
+	
   gbm.call <- gbm.object$gbm.call
   n.trees <- gbm.call$best.trees
   depth <- gbm.call$interaction.depth

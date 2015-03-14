@@ -32,10 +32,8 @@ gbm.simplify <- function(
 # four lowest contributing predictors
 #
 
-	if (! require(gbm) ) { 
-		stop ('you need to install the gbm package to run this function') 
-	}
-
+	if (! requireNamespace('gbm') ) { stop ('you need to install the gbm package to run this function') }
+	requireNamespace('splines')
 # first get the original analysis details..
 
 	gbm.call <- gbm.object$gbm.call
