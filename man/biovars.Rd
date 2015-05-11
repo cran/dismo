@@ -66,6 +66,8 @@ bio16 = Precipitation of wettest quarter
 bio17 = Precipitation of driest quarter
 
 bio18 = Precipitation of warmest quarter
+
+bio19 = Precipitation of coldest quarter
 }
 
 \author{
