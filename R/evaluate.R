@@ -51,8 +51,8 @@ evaluate <- function(p, a, model, x, tr, ...) {
 	}
 	p <- na.omit(p)
 	a <- na.omit(a)
-	np <- length(p)
-	na <- length(a)
+	np <- as.numeric(length(p))
+	na <- as.numeric(length(a))
 	if (na == 0 | np == 0) {
 		stop('cannot evaluate a model without absence and presence data that are not NA')
 	}
@@ -93,10 +93,10 @@ evaluate <- function(p, a, model, x, tr, ...) {
 	colnames(res) <- c('tp', 'fp', 'fn', 'tn')
 	xc@t <- tr
 	for (i in 1:length(tr)) {
-		res[i,1] <- length(p[p>=tr[i]])  # a  true positives
-		res[i,2] <- length(a[a>=tr[i]])  # b  false positives
-		res[i,3] <- length(p[p<tr[i]])    # c  false negatives
-		res[i,4] <- length(a[a<tr[i]])    # d  true negatives
+		res[i,1] <- as.numeric(length(p[p>=tr[i]]))  # a  true positives
+		res[i,2] <- as.numeric(length(a[a>=tr[i]]))  # b  false positives
+		res[i,3] <- as.numeric(length(p[p<tr[i]]))    # c  false negatives
+		res[i,4] <- as.numeric(length(a[a<tr[i]]))    # d  true negatives
 	}
 	xc@confusion = res
 	a = res[,1]
