@@ -36,7 +36,7 @@ setMethod('ecolim', signature(x='matrix', y='matrix'),
 		extrapolate <- as.logical(extrapolate)+1
 		extrapolate <- rep(extrapolate, length.out=ncol(x))
 		for (i in 1:ncol(x)) {
-			xy <- na.omit(cbind(x[,i], y[,i]))
+			xy <- stats::na.omit(cbind(x[,i], y[,i]))
 			f[[i]] <- approxfun(xy[,1], xy[,2], rule=extrapolate[i],...)
 		}
 		m@funs <- f
@@ -59,7 +59,7 @@ function(x, ...) {
 	n <- ncol(x@x)
 	nc <- floor(sqrt(n))
 	nr <- ceiling(sqrt(n))
-	par(mfrow=c(nr,nc))
+	graphics::par(mfrow=c(nr,nc))
 	nm <- colnames(x@x)
 	for (i in 1:n) {
 		plot(x@x[,i], x@funs[[i]](x@x[,i]), type='l', xlab=nm[i], ylab='response', ...)

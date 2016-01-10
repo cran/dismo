@@ -9,8 +9,9 @@ setMethod('pairs', signature(x='DistModel'),
 	function(x, v=NULL, pa='pa', hist=TRUE, cor=TRUE) {
 	
 		panelhist <- function(x,...)	{
-			usr <- par("usr"); on.exit(par(usr))
-			par(usr = c(usr[1:2], 0, 1.5) )
+			usr <- par("usr")
+			on.exit(graphics::par(usr))
+			graphics::par(usr = c(usr[1:2], 0, 1.5) )
 			h <- hist(x, plot = FALSE)
 			breaks <- h$breaks
 			nB <- length(breaks)
@@ -21,8 +22,8 @@ setMethod('pairs', signature(x='DistModel'),
 		
 		panelcor <- function(x, y,...) {
 			usr <- par("usr")
-			on.exit(par(usr))
-			par(usr = c(0, 1, 0, 1))
+			on.exit(graphics::par(usr))
+			graphics::par(usr = c(0, 1, 0, 1))
 			r <- abs(cor(x, y))
 			txt <- format(c(r, 0.123456789), digits=2)[1]
 			text(0.5, 0.5, txt, cex = max(0.5, r * 2))

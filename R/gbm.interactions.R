@@ -37,8 +37,7 @@ gbm.interactions <- function(gbm.object,
 
   if (use.weights) mask.trees <- mask.object$gbm.call$best.trees
 
-  cat("gbm.interactions - version 2.9 \n")
-  cat("Cross tabulating interactions for gbm model with ",n.preds," predictors","\n",sep="")
+  message("gbm.interactions - version 2.9\nCross tabulating interactions for gbm model with ", n.preds, " predictors")
 
   data <- gbm.call$dataframe[,gbm.x]  
 
@@ -52,7 +51,7 @@ gbm.interactions <- function(gbm.object,
        }
     x.length <- length(x.var)
 
-    cat(i," ")
+    message(i, " ", appendLF=FALSE)
 
     for (j in (i+1):n.preds) { #create vector or factor data for second variable
       
@@ -139,7 +138,7 @@ gbm.interactions <- function(gbm.object,
 
   rank.list <- data.frame(var1.index,var1.names,var2.index,var2.names,int.size)
 
-  cat("\n")
+  message("")
   return(list(rank.list = rank.list, interactions = cross.tab, gbm.call = gbm.object$gbm.call))
 }
 

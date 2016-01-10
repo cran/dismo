@@ -100,7 +100,7 @@ setMethod('predict', signature(object='MaxEnt'),
 					rowvals <- getValuesBlock(x, row=rr, nrows=tr$nrows[i], firstcol, ncols)
 					rowvals <- rowvals[,variables,drop=FALSE]
 					res <- rep(NA, times=nrow(rowvals))
-					rowvals <- na.omit(rowvals)
+					rowvals <- stats::na.omit(rowvals)
 					if (length(rowvals) > 0) {
 						rowvals[] <- as.numeric(rowvals)
 						p <- rJava::.jcall(mxe, "[D", "predict", lambdas, rJava::.jarray(colnames(rowvals)), rJava::.jarray(rowvals, dispatch=TRUE), args) 
@@ -157,7 +157,7 @@ setMethod('predict', signature(object='MaxEnt'),
 			
 			out <- rep(NA, times=nrow(x))
 			
-			x <- na.omit(x)
+			x <- stats::na.omit(x)
 			if (nrow(x) > 0) {
 				x <- as.matrix(x)
 				x[] <- as.numeric(x)

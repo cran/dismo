@@ -1,7 +1,6 @@
 # Author: Robert J. Hijmans
-# contact: r.hijmans@gmail.com
-# Date : Febrary 2010
-# Version 0.1
+# Date : February 2010
+# Version 0.2
 # Licence GPL v3
 
 
@@ -10,10 +9,10 @@ setMethod('predict', signature(object='CirclesRange'),
 	
 		if ( extends(class(x), 'Raster'))  {
 			if (! mask) {
-				x = raster(x)
+				x <- raster(x)
 			}
 			if (! is.null(ext)) { 
-				x = crop(x, ext) 
+				x <- crop(x, ext) 
 			}
 			if (mask) {
 				xx <- rasterize(object@polygons, raster(x), field=1, fun='sum', mask=FALSE, update=FALSE, updateValue="NA", getCover=FALSE, silent=TRUE, ...)
@@ -30,7 +29,7 @@ setMethod('predict', signature(object='CirclesRange'),
 			if (! inherits(x, 'SpatialPoints') )  {
 				x <- data.frame(x[,1:2])
 				colnames(x) <- c('x', 'y')
-				coordinates(x) <-~ x + y
+				coordinates(x) <- ~ x + y
 			}
 			return( .pointsInPolygons(x, object@polygons, sum) )
 		}

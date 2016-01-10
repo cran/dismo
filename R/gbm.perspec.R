@@ -16,7 +16,7 @@ gbm.perspec <- function(gbm.object,
     pred.means = NULL,    # allows specification of values for other variables
     x.label = NULL,       # allows manual specification of the x label
     x.range = NULL,       # manual range specification for the x variable
-    y.label = NULL,       # and y label
+    y.label = NULL,       # and y la seminar committeebel
     z.label = "fitted value", #default z label
     y.range = NULL,       # and the y
     z.range = NULL,       # allows control of the vertical axis
@@ -136,7 +136,7 @@ gbm.perspec <- function(gbm.object,
 # report the maximum value and set up realistic ranges for z
 
 	max.pred <- max(prediction)
-	cat("maximum value = ",round(max.pred,2),"\n")
+	message("maximum value = ",round(max.pred,2),"\n")
 
 	if (is.null(z.range)) {
 		if (family == "bernoulli") {

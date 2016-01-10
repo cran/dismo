@@ -56,7 +56,7 @@ setMethod ('show' , 'ECOCROPcrop',
 
 setMethod ('plot', signature(x='ECOCROPcrop', y='missing'),
 	function(x, ...) {
-		par(mfrow=c(2, 1))
+		graphics::par(mfrow=c(2, 1))
 		plot(c(0,1,1,0) ~ c(x@TMIN, x@TOPMN, x@TOPMX, x@TMAX), xlab='temperature', ylab='response')
 		lines(c(0,1,1,0) ~ c(x@TMIN, x@TOPMN, x@TOPMX, x@TMAX), col='red')
 		plot(c(0,1,1,0) ~ c(x@RMIN, x@ROPMN, x@ROPMX, x@RMAX), xlab='precipitation', ylab='response')

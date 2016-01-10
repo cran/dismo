@@ -71,22 +71,19 @@ gbm.simplify <- function(
 	original.deviance <- round(gbm.object$cv.statistics$deviance.mean,4)
 	original.deviance.se <- round(gbm.object$cv.statistics$deviance.se,4)
 
-	cat("gbm.simplify - version 2.9","\n\n")
-	cat("simplifying gbm.step model for ",response.name," with ",start.preds," predictors",sep="")
-	cat(" and ",n.cases," observations \n",sep="")
-	cat("original deviance = ",original.deviance,"(",original.deviance.se,")\n\n",sep="")
+	message("gbm.simplify - version 2.9 \nsimplifying gbm.step model for ", response.name, " with ", start.preds, " predictors and ", n.cases, " observations \noriginal deviance = ", original.deviance, "(",original.deviance.se,")")
 
 # check that n.drops is less than n.preds - 2 and update if required
 
 	if (auto.stop) {
-		cat("variable removal will proceed until average change exceeds the original se\n\n")
+		message("variable removal will proceed until average change exceeds the original se")
 		n.drops <- 1 
 	} else {
 		if (n.drops > start.preds - 2) {
-			cat("value of n.drops (",n.drops,") is greater than permitted","\n", "resetting value to ",start.preds - 2,"\n\n",sep="")
+			message("value of n.drops (",n.drops,") is greater than permitted\nresetting value to ",start.preds - 2)
 			n.drops <- start.preds - 2
 		} else {
-			cat("a fixed number of",n.drops,"drops will be tested\n\n")
+			message("a fixed number of ", n.drops, " drops will be tested")
 		}
 	}
 
@@ -134,7 +131,7 @@ gbm.simplify <- function(
 
 # now start by creating the intial models for each fold
 
-	cat("creating initial models...\n\n")
+	message("creating initial models...")
 
 	gbm.new.x <- orig.gbm.x
 
@@ -159,11 +156,11 @@ gbm.simplify <- function(
 
 	n.steps <- 1
  
-	cat("dropping predictor:")
+	message("dropping predictor:", appendLF = FALSE)
 	
 	while (n.steps <= n.drops & n.steps <= max.drops) {
 	
-		cat(" ",n.steps)
+		message(" ", n.steps, appendLF = FALSE)
 
 		for (i in 1:n.folds) {
 
@@ -213,7 +210,7 @@ gbm.simplify <- function(
 		}   
 		n.steps <- n.steps + 1
 	}
-	cat("\n")
+	message("")
 
 # now label the deviance matrix
 
@@ -242,7 +239,7 @@ gbm.simplify <- function(
 
 # and do a final backwards drop sequence from the original model
 
-	cat("\nnow processing final dropping of variables with full data \n\n")
+	message("processing final dropping of variables with full data")
 
 	gbm.call.string <- paste("try(gbm.fixed(data=orig.data,gbm.x=gbm.new.x,gbm.y=gbm.y,",sep="")
 	gbm.call.string <- paste(gbm.call.string,"family=family,learning.rate=lr,tree.complexity=tc,",sep="")
@@ -267,7 +264,7 @@ gbm.simplify <- function(
 		these.pred.names <- final.model$gbm.call$predictor.names
 		contributions <- final.model$contributions
 
-		cat(i,"-",as.character(contributions[n.preds,1]),"\n")
+		message(i, "-", as.character(contributions[n.preds,1]))
 
 # get the index number in pred.names of the last variable in the contribution table
 

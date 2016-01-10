@@ -239,7 +239,7 @@ ac <- read.csv(file)
 ### code chunk number 22: sdm16b
 ###################################################
 coordinates(ac) <- ~lon+lat
-projection(ac) <- CRS('+proj=longlat')
+projection(ac) <- CRS('+proj=longlat +datum=WGS84')
 
 
 ###################################################
@@ -279,8 +279,8 @@ points(xy, cex=0.75, pch=20, col='blue')
 ###################################################
 ### code chunk number 27: sdm21a
 ###################################################
-spxy <- SpatialPoints(xy, proj4string=CRS('+proj=longlat'))
-o <- over(spxy, x@polygons)
+spxy <- SpatialPoints(xy, proj4string=CRS('+proj=longlat +datum=WGS84'))
+o <- over(spxy, geometry(x))
 xyInside <- xy[!is.na(o), ]
 
 

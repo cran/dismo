@@ -59,7 +59,7 @@ function (data,                        # the input dataframe
     var.monotone = var.monotone, bag.fraction = bag.fraction, keep.data = keep.data)", sep="")
 
   if (verbose) {
-    print(paste("fitting gbm model with a fixed number of ",n.trees," trees for ",sp.name,sep=""),quote=FALSE) }
+    print(paste("fitting gbm model with a fixed number of ", n.trees, " trees for ", sp.name,sep=""),quote=FALSE) }
 
   gbm.object <- eval(parse(text = gbm.call))
 

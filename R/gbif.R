@@ -63,25 +63,29 @@ gbif <- function(genus, species='', ext=NULL, args=NULL, geo=TRUE, sp=FALSE, rem
 	}
 	
 	ntries <- min(max(ntries, 1), 100)
-	
+
+	url1 <- paste(base, "scientificname=", spec, '&limit=1', cds, ex, args, sep='')
+	test <- try (download.file(url1, tmpfile, quiet=TRUE))
+	json <- scan(tmpfile, what='character', quiet=TRUE, sep='\n',  encoding = "UTF-8")
+	x <- jsonlite::fromJSON(json)
 	if (!download) {
-		url1 <- paste(base, "scientificname=", spec, '&limit=1', cds, ex, args, sep='')
-		test <- try (download.file(url1, tmpfile, quiet=TRUE))
-		json <- scan(tmpfile, what='character', quiet=TRUE, sep='\n',  encoding = "UTF-8")
-		x <- jsonlite::fromJSON(json)
 		if (is.null(x$count)) {
 			return(0)
 		} else {
 			return(x$count)
 		}
+	} else {
+		cnt <- ifelse(is.null(x$count), 0, x$count)
+		message(cnt, ' records found')
+		if (cnt == 0) {
+			return(NULL)
+		}
 	}
-
+	
 	start <- max(1, start)
 	stopifnot(start <= end)
-
 	nrecs <- min(max(nrecs, 1), 300)
 	url1 <- paste(base, "scientificname=", spec, '&limit=', format(nrecs, scientific=FALSE), cds, ex, args, sep='')
-
 	
 	g <- list()
 	breakout <- FALSE
@@ -92,14 +96,14 @@ gbif <- function(genus, species='', ext=NULL, args=NULL, geo=TRUE, sp=FALSE, rem
 			url1 <- paste(base, "scientificname=", spec, '&limit=', format(nrecs, scientific=FALSE), cds, ex, args, sep='')
 			breakout <- TRUE
 		}	
-		
+	
 		aurl <- paste(url1, '&offset=', format(start-1, scientific=FALSE), sep='')
 		
 		if (np > 20) {
 			np <- 1
-			cat('\n')
+			message('')
 		}
-		cat(paste(start-1, '-', sep='')) 
+		message(paste(start-1, '-', sep=''), appendLF = FALSE) 
 		flush.console()
 		tries <- 0
         #======= if download fails due to server problems, keep trying  =======#
@@ -140,7 +144,7 @@ gbif <- function(genus, species='', ext=NULL, args=NULL, geo=TRUE, sp=FALSE, rem
 		if (x$endOfRecords) break
 	}
 	
-	cat(min(end, x$count), 'records\n') 
+	message(min(end, x$count), ' records downloaded')
 
 	if (length(g) == 0) {
 		return(NULL)
@@ -158,28 +162,33 @@ gbif <- function(genus, species='', ext=NULL, args=NULL, geo=TRUE, sp=FALSE, rem
 	cn <- gsub('country', 'fullCountry', cn)
 	colnames(z) <- cn
 
-	z[,'lon'] <- gsub(',', '.', z[,'lon'])
-	z[,'lat'] <- gsub(',', '.', z[,'lat'])
-	z[,'lon'] <- as.numeric(z[,'lon'])
-	z[,'lat'] <- as.numeric(z[,'lat'])
-
-	k <- apply(z[ ,c('lon', 'lat')], 1, function(x) isTRUE(any(x==0)))
-
-	if (removeZeros) {
-		if (geo) {
-			z <- z[!k, ]
+	if (('lat' %in% cn) & ('lon' %in% cn)) {
+		z[,'lon'] <- gsub(',', '.', z[,'lon'])
+		z[,'lat'] <- gsub(',', '.', z[,'lat'])
+		z[,'lon'] <- as.numeric(z[,'lon'])
+		z[,'lat'] <- as.numeric(z[,'lat'])
+		k <- apply(z[ ,c('lon', 'lat')], 1, function(x) isTRUE(any(x==0)))
+		
+		if (removeZeros) {
+			if (geo) {
+				z <- z[!k, ]
+			} else {
+				z[k, c('lat', 'lon')] <- NA 
+			}
 		} else {
 			z[k, c('lat', 'lon')] <- NA 
 		}
 	} else {
-		z[k, c('lat', 'lon')] <- NA 
+		sp <- FALSE
 	}
-		
-	if (dim(z)[1] > 0) {
 	
-		iso <- ccodes()
-		i <- match(z$ISO2, iso[, 'ISO2'])
-		z$country <- iso[i, 1]
+	if (nrow(z) > 0) {
+	
+		if ('ISO2' %in% cn) {
+			iso <- ccodes()
+			i <- match(z$ISO2, iso[, 'ISO2'])
+			z$country <- iso[i, 1]
+		}
 		
 		vrs <- c('locality', 'adm1', 'adm2', 'country', 'continent') 
 		vrs <- vrs[vrs %in% colnames(z)]
@@ -194,7 +203,10 @@ gbif <- function(genus, species='', ext=NULL, args=NULL, geo=TRUE, sp=FALSE, rem
 			z$cloc <- NA
 		}
 		if (sp) {
-			coordinates(z) <- ~lon+lat
+			z <- z[!(is.na(z$lon) | is.na(z$lat)), ]
+			if (nrow(z) > 0 ) {
+				coordinates(z) <- ~lon+lat
+			}
 		}
 	}	
 

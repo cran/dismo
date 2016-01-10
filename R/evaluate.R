@@ -18,8 +18,8 @@ evaluateROCR <- function(model, p, a, x) {
 		p <- predict(model, data.frame(p))
 		a <- predict(model, data.frame(a))
 	}
-	p <- na.omit(p)
-	a <- na.omit(a)
+	p <- stats::na.omit(p)
+	a <- stats::na.omit(a)
 	if (length(p) < 1) { stop('no valid presence (p) values') }
 	if (length(a) < 1) { stop('no valid absence (a) values') }
 	predictions = c(p, a)
@@ -49,8 +49,8 @@ evaluate <- function(p, a, model, x, tr, ...) {
 		p <- predict(model, data.frame(p), ...)
 		a <- predict(model, data.frame(a), ...)
 	}
-	p <- na.omit(p)
-	a <- na.omit(a)
+	p <- stats::na.omit(p)
+	a <- stats::na.omit(a)
 	np <- length(p)
 	na <- length(a)
 	if (na == 0 | np == 0) {
@@ -81,7 +81,7 @@ evaluate <- function(p, a, model, x, tr, ...) {
 	xc@absence = a
 		
 	R <- sum(rank(c(p, a))[1:np]) - (np*(np+1)/2)
-	xc@auc <- R / (na * np)
+	xc@auc <- R / (as.numeric(na) * as.numeric(np))
 	
 	cr <- try( cor.test(c(p,a), c(rep(1, length(p)), rep(0, length(a))) ), silent=TRUE )
 	if (class(cr) != 'try-error') {

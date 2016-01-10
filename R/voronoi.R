@@ -24,7 +24,7 @@ voronoi <- function(xy){
 			dat <- dat[!dups, ,drop=FALSE]
 		}
 	} else {
-		xy <- na.omit(xy[, 1:2])
+		xy <- stats::na.omit(xy[, 1:2])
 		xy <- unique(xy)
 	}
 	

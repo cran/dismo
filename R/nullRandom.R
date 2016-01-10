@@ -13,18 +13,18 @@ nullRandom <- function(x, model, n=25, rep=25, pa=FALSE) {
 		pres <- x[i, ]
 		absc <- x[-i, ]
 		if (pa) {
-			d <- rbind(pres, absc)
+			d <- data.frame(rbind(pres, absc))
 			v <- c(rep(1, nrow(pres)), rep(0, nrow(absc)))
 			m <- model(d, v)
 		} else {
 			m <- model(pres)
 		}
 		e[[r]] <- evaluate(pres, absc, m)
-		cat('-')
-		if (r%%50 == 0) cat(" ",r,"\n")
+		message('-', appendLF = FALSE)
+		if (r%%50 == 0) message(" ", r)
 		flush.console()
 	}
-	if (r%%50 != 0) { cat(" ",r,"\n") } else { cat("\n") }
+	if (r%%50 != 0) { message(" ", r) } else { message("") }
 	e
 }
 
@@ -49,11 +49,11 @@ nullRandom <- function(x, model, n=25, rep=25, pa=FALSE) {
 			m <- model(trainpres)
 		}
 		e[[r]] <- evaluate(testpres, testabs, m)
-		cat('-')
-		if (r%%50 == 0) cat(" ",r,"\n")
+		message('-', appendLF=FALSE)
+		if (r%%50 == 0) cat(" ", r)
 		flush.console()
 	}
-	if (r%%50 != 0) { cat(" ",r,"\n") } else { cat("\n") }
+	if (r%%50 != 0) { message(" ", r) } else { message("") }
 	e
 }
 

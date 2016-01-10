@@ -184,7 +184,7 @@ setMethod('maxent', signature(x='Raster', p='ANY'),
 		}
 
 		lpv <- nrow(pv)
-		pv <- na.omit(pv)
+		pv <- stats::na.omit(pv)
 		nas <- lpv - nrow(pv)
 		if (nas > 0) {
 			if (nas >= 0.5 * lpv) {
@@ -198,7 +198,7 @@ setMethod('maxent', signature(x='Raster', p='ANY'),
 			a <- .getMatrix(a)
 			av <- data.frame(extract(x, a))
 			avr <- nrow(av)
-			av <- na.omit(av)
+			av <- stats::na.omit(av)
 			nas <- length(as.vector(attr(av, "na.action")))
 			if (nas > 0) {
 				if (nas >= 0.5 * avr) {
@@ -225,7 +225,7 @@ setMethod('maxent', signature(x='Raster', p='ANY'),
 				xy <- randomPoints(x, nbg, p, warn=0 )			
 			}
 			av <- data.frame(extract(x, xy))
-			av <- na.omit(av)
+			av <- stats::na.omit(av)
 			if (nrow(av) == 0) {
 				stop('could not get valid background point values; is there a layer with only NA values?')
 			}
@@ -274,7 +274,7 @@ setMethod('maxent', signature(x='data.frame', p='vector'),
 		MEversion <- .getMeVersion()
 
 		x <- cbind(p, x)
-		x <- na.omit(x)
+		x <- stats::na.omit(x)
 		x[is.na(x)] <- -9999  # maxent flag for NA, unless changed with args(nodata= ), so we should check for that rather than use this fixed value.
 
 		p <- x[,1]

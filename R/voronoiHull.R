@@ -54,13 +54,13 @@ setMethod('voronoiHull', signature(p='SpatialPoints', a='SpatialPoints'),
 	}
 
 	if (is.null(a)) {
-		xy <- na.omit(unique(p))
+		xy <- stats::na.omit(unique(p))
 		paxy <- cbind(pa=1, xy) 
 		pa <- paxy[,1,drop=FALSE]
 	
 	} else {
-		p <- na.omit(unique(p))
-		a <- na.omit(unique(a))
+		p <- stats::na.omit(unique(p))
+		a <- stats::na.omit(unique(a))
 		xy <- rbind(p,a)
 		pa <- c(rep(1, nrow(p)), rep(0, nrow(a)))
 		paxy <- cbind(pa, xy) 

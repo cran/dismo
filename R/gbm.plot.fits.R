@@ -40,9 +40,9 @@ gbm.plot.fits <- function(gbm.object,
 	nl <- length(v)
 	nc <- ceiling(sqrt(nl))
 	nr <- ceiling(nl / nc)
-	old.par <- par(no.readonly = TRUE) 
-	on.exit(par(old.par))
-	par(mfrow=c(nr, nc))
+	old.par <- graphics::par(no.readonly = TRUE) 
+	on.exit(graphics::par(old.par))
+	graphics::par(mfrow=c(nr, nc))
 
     fitted.values <- gbm.object$fitted
 

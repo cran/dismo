@@ -20,11 +20,11 @@
 	
 	le <- length(xy[,1])
 	xy <- cbind(1:length(xy[,1]),xy)
-	xy <- na.omit(xy)
+	xy <- stats::na.omit(xy)
 	index <- rep(1,times=length(xy[,1]))
 	index[which(pmin(cbind(ndigits(xy[,2]),ndigits(xy[,3]))) > 0)] <- 2
 	index[index == 2] <- index[index == 2] + as.numeric(seconds(xy[which(index == 2),2] * seconds(xy[which(index ==2),3])))
-	xy <- na.omit(xy)
+	xy <- stats::na.omit(xy)
 	xy.dec <- xy - trunc(xy,digits=0)
 	precision <- seconds(as.vector(xy.dec))
 	precision <- pmax(cbind(precision[1:length(xy[,1])],precision[(length(xy[,1])+1):length(precision)]))

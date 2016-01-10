@@ -57,7 +57,7 @@ setMethod('convHull', signature(p='SpatialPoints'),
 
 
 .generateHulls <- function(xy, n=1) {
-	xy <- unique(  na.omit(xy[, 1:2]) )
+	xy <- unique(  stats::na.omit(xy[, 1:2]) )
     if (nrow(xy) < 3) { stop ('Insuficient number of points to make a hull; you need at least 3 unique points' ) }
     n <- pmax(1, round(n))
     n <- pmin(n, floor(nrow(xy) / 3))

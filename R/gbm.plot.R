@@ -87,8 +87,8 @@ function(gbm.object,                # a gbm object - could be one from gbm.step
 
 # now do the actual plots
 
-	op <- par(no.readonly = TRUE) 
-	par(mfrow = plot.layout)
+	op <- graphics::par(no.readonly = TRUE) 
+	graphics::par(mfrow = plot.layout)
 
 	for (j in c(1:n.plots)) {
 
@@ -139,7 +139,7 @@ function(gbm.object,                # a gbm object - could be one from gbm.step
 			}
 		}
 	}
-	par(op)
+	graphics::par(op)
 
 }
 

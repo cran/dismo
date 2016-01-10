@@ -93,7 +93,7 @@ randomPoints <- function(mask, n, p, ext=NULL, extf=1.1, excludep=TRUE, prob=FAL
 	if (prob) {
 		stopifnot(hasValues(mask))
 		cells <- crop(mask, mask2)
-		cells <- try( na.omit(cbind(1:ncell(cells), getValues(cells))))
+		cells <- try( stats::na.omit(cbind(1:ncell(cells), getValues(cells))))
 		if (class(cells) == 'try-error') {
 			stop("the raster is too large to be used with 'prob=TRUE'")
 		}
@@ -156,7 +156,7 @@ randomPoints <- function(mask, n, p, ext=NULL, extf=1.1, excludep=TRUE, prob=FAL
 		if (hasValues(mask)) {
 			
 			vals <- cbind(cells, extract(mask, cells))
-			cells <- na.omit(vals)[,1]
+			cells <- stats::na.omit(vals)[,1]
 		}
 	}
 		
@@ -195,7 +195,7 @@ randomPoints <- function(mask, n, p, ext=NULL, extf=1.1, excludep=TRUE, prob=FAL
 #		if (dataContent(mask) != 'all') { mask <- readAll(mask) }
 #		if (e < extent(mask)) { mask <- crop(mask, e) }
 #		if (dataContent(mask) == 'all') {
-#			cells <- na.omit(cbind(1:ncell(r), values(mask)))[,1]
+#			cells <- stats::na.omit(cbind(1:ncell(r), values(mask)))[,1]
 #		} else {
 #			cells <- 1:ncell(mask)
 #		}

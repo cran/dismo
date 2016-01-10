@@ -19,7 +19,7 @@
 
 .messi2b <- function(p,v) {
 # seems slightly faster than messi2
-	v <- na.omit(v)
+	v <- stats::na.omit(v)
 	f <- 100*findInterval(p, sort(v)) / length(v)
 	minv <- min(v)
 	maxv <- max(v)
@@ -33,7 +33,7 @@
 
 .messi3 <- function(p,v) {
 # seems 2-3 times faster than messi2
-	v <- na.omit(v)
+	v <- stats::na.omit(v)
 	f <- 100*findInterval(p, sort(v)) / length(v)
 	minv <- min(v)
 	maxv <- max(v)
@@ -51,7 +51,7 @@
 
 
 .messi4 <- function(p,v) {
-	v <- na.omit(v)
+	v <- stats::na.omit(v)
 	f <- findInterval(p, sort(v)) / length(v)
 	r <- range(v)
 	res <- 2*f 

@@ -12,7 +12,7 @@ gridSample <- function(xy, r, n=1, chess='') {
 	
 	r <- raster(r)
 	cell <- cellFromXY(r, xy)
-    uc <- unique(na.omit(cell))
+    uc <- unique(stats::na.omit(cell))
 	
 	chess <- trim(chess)
 	if (chess != '') {
@@ -50,7 +50,7 @@ gridSample <- function(xy, r, n=1, chess='') {
 	
     cell <- cellFromXY(r, xy)
     xy <- cbind(xy, cell, runif( nrow(xy)))
-	xy <- na.omit(xy)
+	xy <- stats::na.omit(xy)
     xy <- unique(xy)
 
 

@@ -109,11 +109,11 @@ function(x, var=NULL, at=median, range='pa', expand=10, rug=TRUE, fun=predict, d
 .doResponse <- function(x, var, at, d, cn, expand, rug, ylim, col, lwd, add, fun, ...) {
 	
 	if (length(var) > 1 & !add) {
-		old.par <- par(no.readonly = TRUE) 
-		on.exit(par(old.par))
+		old.par <- graphics::par(no.readonly = TRUE) 
+		on.exit(graphics::par(old.par))
 		xs <- floor(sqrt(length(var)))
 		ys <- ceiling(length(var) / xs)
-		par(mfrow=c(xs, ys))
+		graphics::par(mfrow=c(xs, ys))
 	}
 
 	f <- sapply(d, is.factor)

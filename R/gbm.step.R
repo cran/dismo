@@ -493,7 +493,7 @@ gbm.step <- function (
     } 
 
 	if (!silent) {
-		cat("fitting final gbm model with a fixed number of ",target.trees," trees for ",sp.name,"\n") 
+		message("fitting final gbm model with a fixed number of ", target.trees, " trees for ", sp.name) 
 	}
 	gbm.object <- eval(parse(text = gbm.call))
 

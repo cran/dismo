@@ -4,8 +4,8 @@
 dcEvaluate <- function(p, a, reference, lonlat=TRUE, binsize=15, predp, preda, model, predictors, fun=predict) {
 	
 	if (missing(predp)) {
-		p <- na.omit(p)
-		a <- na.omit(a)
+		p <- stats::na.omit(p)
+		a <- stats::na.omit(a)
 	} else {
 		i <- is.na(p)
 		if (any(i)) {
@@ -18,7 +18,7 @@ dcEvaluate <- function(p, a, reference, lonlat=TRUE, binsize=15, predp, preda, m
 			preda <- preda[!i,]
 		}			
 	}
-	reference <- na.omit(reference)
+	reference <- stats::na.omit(reference)
 	
 	dp <- apply(pointDistance(p, reference, longlat=lonlat), 1, min) / 1000
 	da <- apply(pointDistance(a, reference, longlat=lonlat), 1, min) / 1000
@@ -48,7 +48,7 @@ dcEvaluate <- function(p, a, reference, lonlat=TRUE, binsize=15, predp, preda, m
 			i <- which(dp > dist[d])
 			ab <- pwdSample(p[i, ], a, reference, lonlat=lonlat, warn=TRUE) 
 			i <- i[!is.na(ab)]
-			j <- na.omit(ab)
+			j <- stats::na.omit(ab)
 			abss <- preda[j]
 			pres <- predp[i]
 		} else {

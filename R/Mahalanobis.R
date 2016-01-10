@@ -36,7 +36,7 @@ setMethod('mahal', signature(x='data.frame', p='missing'),
 
 		m <- new('Mahalanobis')
 		
-		x <- na.omit(x)
+		x <- stats::na.omit(x)
 		if (ncol(x) == 0) {	
 			stop('no usable variables')
 		}

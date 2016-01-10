@@ -27,7 +27,7 @@ setMethod('density', signature(x='DistModel'),
 		if (n > 1) {
 			nc <- ceiling(sqrt(n))
 			nr <- ceiling(n / nc)
-			par(mfrow=c(nr, nc))
+			graphics::par(mfrow=c(nr, nc))
 		}
 		if (x@hasabsence) {
 			for (i in 1:length(v)) {

@@ -16,24 +16,21 @@ The circles model predicts that a species is present at sites within a certain d
 
 
 \usage{
-circles(p, ...)
+\S4method{circles}{matrix}(p, d, lonlat, n=360, r=6378137, dissolve=TRUE, ...)
+
+\S4method{circles}{SpatialPoints}(p, d, lonlat, n=360, r=6378137, dissolve=TRUE, ...)
 }
  
 \arguments{
   \item{p}{point locations (presence). Two column matrix, data.frame or SpatialPoints* object}
-  \item{...}{ Additional arguments. See Details}
-}
-
-\details{
-The following additional arguments can be supplied to the circles function:
-\tabular{rll}{
- \tab \code{d}  \tab The radius of each circle in meters. A single number of a vector with elements corresponding to rows in 'p'. If missing the diameter is computed from the inter-point distance \cr
- \tab \code{n}  \tab How many vertices in the circle? Default is 360 \cr
- \tab \code{lonlat} \tab  Are these longitude/latidue data? Default value is FALSE \cr
-  \tab \code{r}  \tab  Radius of the earth. Only relevant for longitude/latitude data. Default is 6378137 m\cr
+ \item{d}{numeric. The radius of each circle in meters. A single number of a vector with elements corresponding to rows in \code{p}. If missing the diameter is computed from the mean inter-point distance}
+ \item{lonlat}{logical. Are these longitude/latitude data? If missing this is taken from the \code{p} if it is a SpatialPoints* object}
+ \item{n}{integer. How many vertices in the circle? Default is 360}
+  \item{r}{numeric. Radius of the earth. Only relevant for longitude/latitude data. Default is 6378137 m}
+  \item{dissolve}{logical. Dissolve overlapping circles. Setting this to \code{FALSE} may be useful for plotting overlapping circles} 
+  \item{...}{additional arguments, none implemented}
 } 
 
-}
 
 \value{
 An object of class 'CirclesRange' (inherits from \code{\link{DistModel-class}})
@@ -61,7 +58,7 @@ cc <- circles(train, lonlat=FALSE)
 predict(cc, test)
 
 plot(r)
-plot(cc@polygons, border='red', lwd=2, add=TRUE)
+plot(geometry(cc), border='red', lwd=2, add=TRUE)
 points(train, col='red', pch=20, cex=2)
 points(test, col='black', pch=20, cex=2)
 

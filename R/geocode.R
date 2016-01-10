@@ -70,7 +70,8 @@ geocode <- function(x, oneRecord=FALSE, extent=NULL, progress='', ...) {
 			} else {
 				e <- extent(extent)
 				extent <- paste(e@ymin,',',e@xmin,'|',e@ymax,',',e@xmax,sep='')
-				gurl <- paste(burl, r, "&bounds=", extent, "&sensor=false", sep="")			
+				gurl <- paste(burl, r, "&bounds=", extent, "&sensor=false", sep="")	
+				gurl <- iconv(gurl, to='UTF-8')
 			}
 			try( doc <- XML::xmlInternalTreeParse(gurl, isURL=TRUE) )
 			if (class(doc)[1] == 'try-error') {
@@ -81,7 +82,7 @@ geocode <- function(x, oneRecord=FALSE, extent=NULL, progress='', ...) {
 			}
 			
 			if (status != "OK") {
-				cat(status, ':', r, '\n')
+				message(status, ':', r)
 				w <- res1 
 				w[1] <- z
 				res <- rbind(res, w)

@@ -5,11 +5,11 @@
 
 
 .nobs <- function(x) {
-	length((na.omit(x)))
+	length((stats::na.omit(x)))
 }	
 
 .richness <- function(x) {
-	length(unique(na.omit(x)))
+	length(unique(stats::na.omit(x)))
 }
 
 .shannon <- function(x) {
@@ -78,7 +78,7 @@
 }
 	
 .chao <- function(x) {	
-	tab <- table(na.omit(x))
+	tab <- table(stats::na.omit(x))
 	singletons <- sum(tab==1)
 	doubletons <- sum(tab==2)
 	length(tab) + singletons*(singletons-1) / (2*(doubletons+1))

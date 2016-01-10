@@ -13,7 +13,7 @@
 		return(result)
 	}
 
-	xy <- na.omit(xy)
+	xy <- stats::na.omit(xy)
 	number_digits <- cbind(ndigits(xy[,1]), ndigits(xy[,2]))
 	index <- which((pmin(number_digits[,1], number_digits[,2]) + (as.numeric(abs(number_digits[,1]-number_digits[,2]))==1))>=min_ndigits)
 	xy <- xy[index,]

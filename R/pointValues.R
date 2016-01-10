@@ -14,7 +14,7 @@ pointValues <- function(x, p, a, uniquecells=TRUE, na.rm=TRUE) {
 	pa <- rbind(cbind(1,p), cbind(0,a))
 	np <- nrow(pa)
 	cell <- cellFromXY(x, pa[,2:3])
-	cell <- na.omit(cell)
+	cell <- stats::na.omit(cell)
 	if (length(cell) < np) {
 		frac <- length(cell) / np
 		warning("points on raster=", frac," times total" )
@@ -34,7 +34,7 @@ pointValues <- function(x, p, a, uniquecells=TRUE, na.rm=TRUE) {
 		colnames(vals)[1] <- 'presabs'
 	}
 	if (na.rm) {
-		vals <- na.omit(vals)
+		vals <- stats::na.omit(vals)
 		if (length(vals[,1]) < length(cell)) {
 			frac <- length(vals[,1]) / length(cell)
 			warning("cells with values=", frac," times total unique cells" )

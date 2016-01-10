@@ -81,6 +81,12 @@ setClass('CirclesRange',
 )
 
 
+setMethod("geometry", "CirclesRange",
+	function(obj) {
+		obj@polygons
+	}
+)
+
 setMethod("polygons", "CirclesRange",
 	function(obj) {
 		obj@polygons
@@ -94,7 +100,7 @@ if (!isGeneric("circles")) {
 }	
 
 setMethod('circles', signature(p='data.frame'), 
-	function(p, d, lonlat, ...) {
+	function(p, d, lonlat, n=360, r=6378137, dissolve=TRUE, ...) {
 		ci <- new('CirclesRange')
 		ci@presence <- p
 		if (missing(lonlat)) {
@@ -107,13 +113,13 @@ setMethod('circles', signature(p='data.frame'),
 		if (inherits(p, 'SpatialPoints')) {
 			crs <- projection(p)
 		} else if (lonlat) {
-			crs <- '+proj=longlat'		
+			crs <- '+proj=longlat +datum=WGS84'		
 		} else {
 			crs <- NA
 		}
 		
-		ci@polygons <- .generateCircles(p, d=d, lonlat=lonlat, crs=crs, ...)
-		if (requireNamespace('rgeos')) {
+		ci@polygons <- .generateCircles(p, d=d, lonlat=lonlat, crs=crs, n=n, r=r, ...)
+		if (dissolve & requireNamespace('rgeos')) {
 			ci@polygons <- rgeos::gUnaryUnion(ci@polygons)
 		}
 		return(ci)
@@ -122,17 +128,24 @@ setMethod('circles', signature(p='data.frame'),
 
 
 setMethod('circles', signature(p='matrix'), 
-	function(p, ...) {
-		circles(data.frame(p), ...)
+	function(p, d, lonlat, n=360, r=6378137, dissolve=TRUE, ...) {
+		if (missing(d)) { 
+			d <- .avgDist(p, lonlat=lonlat, r=r) / 2 
+		}
+		circles(data.frame(p), d=d, lonlat=lonlat, n=n, r=r, ...)
 	}
 )
 
 setMethod('circles', signature(p='SpatialPoints'), 
-	function(p, d, lonlat, ...) {
-		if (missing(lonlat)) lonlat <- isLonLat(p)
+	function(p, d, lonlat, n=360, r=6378137, dissolve=TRUE, ...) {
+		if (missing(lonlat)) {
+			lonlat <- isLonLat(p)
+		}
 		p <- coordinates(p)
-		if (missing(d)) { d <- .avgDist(p, lonlat=lonlat, r=r) / 2	}
-		circles(p, d=d, lonlat=lonlat, ...)
+		if (missing(d)) { 
+			d <- .avgDist(p, lonlat=lonlat, r=r) / 2	
+		}
+		circles(p, d=d, lonlat=lonlat, n=n, r=r, ...)
 	}
 )
 

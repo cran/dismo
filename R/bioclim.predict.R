@@ -55,7 +55,7 @@ function(object, x, tails=NULL, ext=NULL, filename='', useC=TRUE, ...) {
 		x <- x[, ln ,drop=FALSE]
 		
 		if (useC) {
-			pres <- as.matrix(na.omit(object@presence))
+			pres <- as.matrix(stats::na.omit(object@presence))
 			for (i in 1:ncol(pres)) {
 				pres[,i] <- sort(pres[,i])
 			}
@@ -117,7 +117,7 @@ function(object, x, tails=NULL, ext=NULL, filename='', useC=TRUE, ...) {
 		maxcomp <- object@max
 		maxcomp[tails=='low'] <- Inf
 		
-		pres <- as.matrix(na.omit(object@presence))
+		pres <- as.matrix(stats::na.omit(object@presence))
 		for (i in 1:ncol(pres)) {
 			pres[,i] <- sort(pres[,i])
 		}
@@ -137,7 +137,7 @@ function(object, x, tails=NULL, ext=NULL, filename='', useC=TRUE, ...) {
 			
 			} else {
 				bc <- matrix(0, ncol=ncol(vals), nrow=nrow(vals))
-				na <- as.vector( attr(na.omit(vals), 'na.action') )
+				na <- as.vector( attr(stats::na.omit(vals), 'na.action') )
 				bc[na] <- NA
 				k <- (apply(t(vals) >= mincomp, 2, all) & apply(t(vals) <= maxcomp, 2, all))
 				k[is.na(k)] <- FALSE

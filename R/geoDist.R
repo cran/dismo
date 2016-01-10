@@ -27,7 +27,7 @@ if (!isGeneric("geoDist")) {
 setMethod('geoDist', signature(p='data.frame'), 
 	function(p, lonlat, ...) {
 		gd <- new('GeographicDistance')
-		gd@presence <- na.omit(p)
+		gd@presence <- stats::na.omit(p)
 		gd@lonlat <- lonlat
 		return(gd)
 	}

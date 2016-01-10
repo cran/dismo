@@ -36,7 +36,7 @@ nicheEquivalency <- function (sp1, sp2, predictors, n=99, model=maxent, verbose=
 
 	pred_sp1 <- runModel(sp1)
 	pred_sp2 <- runModel(sp2)
-	if (verbose) { cat('2 baseline models done\n'); flush.console() }
+	if (verbose) { message('2 baseline models done'); flush.console() }
 	
 	preds <- stack(pred_sp1, pred_sp2)
 	di <- di.enm(preds)
@@ -45,14 +45,14 @@ nicheEquivalency <- function (sp1, sp2, predictors, n=99, model=maxent, verbose=
 			s <- sample(p[,1])
 			a <- runModel(p[s == 1, 2:3])
 			b <- runModel(p[s == 2, 2:3])
-			if (verbose) { cat(paste(i, '-',sep='')); flush.console() }
+			if (verbose) { message(paste(i, '-'), appendLF = FALSE); flush.console() }
 			di.enm(stack(a, b))	
 		} 
 	)
 	
 	di.random <- t(di.random)
 
-	if (verbose) cat('done\n')	
+	if (verbose) message('done')	
 
     m <- colMeans(di.random)
     s <- apply(di.random, 2, sd)

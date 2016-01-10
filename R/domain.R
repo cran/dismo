@@ -53,7 +53,7 @@ setMethod('domain', signature(x='data.frame', p='missing'),
 			factors <- colnames(x)[ sapply(x, function(x) is.factor(x)) ]
 		}
 
-		x = na.omit(x)
+		x = stats::na.omit(x)
 		
 		if (ncol(x) == 0) {	stop('no usable variables') 	}
 		if (nrow(x) < 2) {	stop('insufficient records') 	}

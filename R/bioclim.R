@@ -42,7 +42,7 @@ setMethod('bioclim', signature(x='data.frame', p='missing'),
 		
 		bc <- new('Bioclim')
 
-		x = na.omit(x)
+		x = stats::na.omit(x)
 		if (ncol(x) == 0) {	stop('no usable variables') 	}
 		if (nrow(x) < 2) {	stop('insufficient records') 	}
 		

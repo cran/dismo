@@ -11,7 +11,7 @@ setMethod("plot", signature(x='Bioclim', y='missing'),
 	
 		myquantile <- function(x, p) {
 			p <- min(1, max(0, p))
-			x <- sort(as.vector(na.omit(x)))
+			x <- sort(as.vector(stats::na.omit(x)))
 			if (p == 0) return(x[1])
 			if (p == 1) return(x[length(x)])
 			i = (length(x)-1) * p + 1

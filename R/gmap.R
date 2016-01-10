@@ -146,7 +146,7 @@ gmap <- function(x, exp=1, type='terrain', filename='', style=NULL, scale=1, zoo
 			style <- gsub(" ", "", style)
 			gurl <- paste(gurl, '&style=', style, sep='')
 		}
-#		cat(gurl, "\n")
+#		message(gurl, "\n")
 	
 	filename <- trim(filename)
 	if (filename == '') {
@@ -161,11 +161,11 @@ gmap <- function(x, exp=1, type='terrain', filename='', style=NULL, scale=1, zoo
 	r <- raster(filename, warn=FALSE)
 	ext <- extent(bb$ll[2], bb$ur[2], bb$ll[1], bb$ur[1])
 	p <- t(bbox(raster(ext))) *  pi/180
-	rad = 6378137	
+	rad <- 6378137	
     p[,2] <- log(tan(p[, 2]) + (1/cos(p[, 2]))) 
     p <- p * rad
 	extent(r) <- extent(as.vector(p))
-	projection(r) = "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs"
+	projection(r) <- "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs"
 	try( hdr(r, format='worldfile', extension='.gfw') )
 	extension(filename) <- 'prj'
 	rgdal::showWKT(projection(r), file=filename, morphToESRI=TRUE)

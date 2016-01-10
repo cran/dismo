@@ -48,7 +48,7 @@
 			#s <- pwdSample(npt[,1:2], nat[,1:2], ref, lonlat=lonlat, warn=FALSE)
 			s <- pwdSample(npt[,1:2], nat[,1:2], ref, lonlat=lonlat)
 			npt <- npt[!is.na(s), ]
-			nat <- nat[na.omit(s), ]
+			nat <- nat[stats::na.omit(s), ]
 	
 			pt <- pv[up[,2]==i, ]
 			at <- av[ua[,2]==i, ]
