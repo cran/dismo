@@ -21,8 +21,7 @@
 		global <- extent(-180,180,-90,90)
 		ex <- intersect(ext, global)
 		if (!is.null(ex)) {
-			ex <- paste('&minlatitude=', ex@ymin,'&maxlatitude=', 
-			ex@ymax, '&minlongitude=', ex@xmin, '&maxlongitude=', ex@xmax, sep='')
+			ex <- paste0('&decimalLatitude=', ex@ymin,',', ex@ymax, '&decimalLongitude=', ex@xmin, ',', ex@xmax)
 		} else {
 			warning('invalid extent')
 		}

@@ -23,28 +23,40 @@ setMethod("polygons", "ConvexHull",
 	}
 )
 
+setMethod("geometry", "ConvexHull",
+	function(obj) {
+		geometry(obj@polygons)
+	}
+)
+
+setMethod("plot", signature(x='ConvexHull', y='missing'), 
+	function(x, ...) {
+		sp::plot(x@polygons, ...)
+	}
+)
+
+
+
 if (!isGeneric("convHull")) {
 	setGeneric("convHull", function(p, ...)
 		standardGeneric("convHull"))
 }	
 
 
-setMethod('convHull', signature(p='data.frame'), 
-	function(p, n=1, crs=NULL, ...) {
+setMethod('convHull', signature(p='matrix'), 
+	function(p, n=1, crs=NA, ...) {
 		ch <- new('ConvexHull')
-		ch@presence <- p
-		ch@polygons <- .generateHulls(p, n)
-		if (!is.null(crs)) {
-			projection(ch@polygons) <- crs
-		}
+		ch@presence <- data.frame(p)
+		ch@polygons <- .generateConvexHulls(p, n, dissolve=FALSE)
+		crs(ch@polygons) <- crs
 		return(ch)
 	}
 )
 
 
-setMethod('convHull', signature(p='matrix'), 
+setMethod('convHull', signature(p='data.frame'), 
 	function(p, ...) {
-		convHull(as.data.frame(p), ...)
+		convHull(as.matrix(p), ...)
 	}
 )
 
@@ -55,36 +67,44 @@ setMethod('convHull', signature(p='SpatialPoints'),
 )
 
 
+.generate_k_ConvexHulls <- function(xy, k, dissolve=FALSE) {
+	cl <- kmeans(xy, k, 100)$cluster
+	clusters <- unique(cl)
+	subp <- list()
+	for (i in clusters) {
+		pts <- xy[cl==i, ]
+		h <- pts[chull(pts), ]
+		r <- spPolygons(h)
+		subp <- c(subp, r)
+	}
+	aggregate(do.call(bind, subp), dissolve=dissolve)
+}
 
-.generateHulls <- function(xy, n=1) {
+
+
+.generateConvexHulls <- function(xy, n=1, dissolve=FALSE) {
 	xy <- unique(  stats::na.omit(xy[, 1:2]) )
-    if (nrow(xy) < 3) { stop ('Insuficient number of points to make a hull; you need at least 3 unique points' ) }
+    if (nrow(xy) < 3) { stop ('Insuficient number of points to make a Convex Hull; you need at least 3 unique points' ) }
     n <- pmax(1, round(n))
     n <- pmin(n, floor(nrow(xy) / 3))
-    n = unique(n)
-    pols = list()
+    n <- unique(n)
 
-    count <- 1
-    for (k in n) {
-		if (k == 1) {
+	
+	if (length(n) == 1) {
+		if (n == 1) {
 			h <- xy[chull(xy), ]
-			pols <- c(pols, Polygons(list(Polygon( rbind(h, h[1,]) )), count))
+			r <- spPolygons(h)
 		} else {
-			ch = integer()
-			cl = kmeans(xy, k, 100)$cluster
-			clusters = unique(cl)
-			subp = list()
-			for (i in clusters) {
-				pts <- xy[cl==i, ]
-				h <- pts[chull(pts), ]
-				subp <- c(subp, Polygon( rbind(h, h[1,]) ))
-			}
-			pols <- c(pols, Polygons( subp, count) )
+			r <- .generate_k_ConvexHulls(xy, n, dissolve=dissolve)
 		}
-		count <- count + 1
+	} else { # multiple number of clusters	
+		pols <- list()
+		for (k in n) {
+			pols <- c(pols, .generate_k_ConvexHulls(xy, k, dissolve=dissolve))
+		}
+		r <- do.call(bind, pols)
 	}
-	pols <- SpatialPolygonsDataFrame(SpatialPolygons( pols ), data.frame(id=n, w=1/length(n)) )
-    return( pols )
+	SpatialPolygonsDataFrame(r, data.frame(id=1:length(r)))
 }
 
 

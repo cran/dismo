@@ -392,14 +392,10 @@ We first create a 'circles' model (see the chapter about geographic models), usi
 <<sdm17>>=
 # circles with a radius of 50 km
 x <- circles(ac, d=50000, lonlat=TRUE)
+pol <- polygons(x)
 @
 
-Now we use the \texttt{rgeos} library to 'dissolve' the circles (remove boundaries were circles overlap). 
-
-<<sdm18>>=
-library(rgeos)
-pol <-  gUnaryUnion(x@polygons)
-@ 
+Note that you need to have the \texttt{rgeos} package to 'dissolve' the circles (remove boundaries were circles overlap). 
 
 And then we take a random sample of points within the polygons. We only want one point per grid cell.
 
@@ -1065,8 +1061,7 @@ points(backg_train, pch='-', cex=0.25)
 Support Vector Machines (SVMs; Vapnik, 1998) apply a simple linear method to the data but in a high-dimensional feature space non-linearly
 related to the input space, but in practice, it does not involve any computations in that high-dimensional space. This simplicity combined with state of the art performance on many learning problems (classification, regression, and novelty detection) has contributed to the popularity of the SVM (Karatzoglou \textit{et al}., 2006). They were first used in species distribution modeling by Guo \textit{et al}. (2005). 
 
-There are a number of implementations of svm in \R. The most useful implementations in our context are probably function 'ksvm' in package 'kernlab'
-and the 'svm' function in package 'e1071'. 'ksvm' includes many different SVM formulations and kernels and provides useful options and features like a method for plotting, but it lacks a proper model selection tool. The 'svm' function in package 'e1071' includes a model selection tool: the 'tune' function (Karatzoglou \textit{et al}., 2006)
+There are a number of implementations of svm in \R. The most useful implementations in our context are probably function 'ksvm' in package 'kernlab' and the 'svm' function in package 'e1071'. 'ksvm' includes many different SVM formulations and kernels and provides useful options and features like a method for plotting, but it lacks a proper model selection tool. The 'svm' function in package 'e1071' includes a model selection tool: the 'tune' function (Karatzoglou \textit{et al}., 2006)
 
 <<sdm81, fig=TRUE, width=9, height=6>>=
 library(kernlab)

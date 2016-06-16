@@ -5,7 +5,8 @@
 
 # adapted from code by Carson Farmer
 # http://www.carsonfarmer.com/?p=455
-voronoi <- function(xy){
+
+voronoi <- function(xy, ext=NULL, eps=1e-09, ...){
 
 	if (!requireNamespace('deldir')) { stop('you need to first install the deldir libary') }
 
@@ -28,22 +29,29 @@ voronoi <- function(xy){
 		xy <- unique(xy)
 	}
 	
-	z <- deldir::deldir(xy[,1], xy[,2])
+	if (!is.null(ext)) {
+		ext <- as.vector(ext)
+	}
+	
+	z <- deldir::deldir(xy[,1], xy[,2], rw=ext, eps=eps, suppressMsge=TRUE)
+	index <- z$ind.orig
 	w <- deldir::tile.list(z)
 	polys <- vector(mode='list', length=length(w))
 	for (i in seq(along=polys)) {
-		pcrds <- cbind(w[[i]]$x, w[[i]]$y)
-		pcrds <- rbind(pcrds, pcrds[1,])
-		polys[[i]] <- Polygons(list(Polygon(pcrds)), as.character(i))
+		pc <- cbind(w[[i]]$x, w[[i]]$y)
+		pc <- rbind(pc, pc[1,])
+		polys[[i]] <- Polygons(list(Polygon(pc)), as.character(index[i]))
 	}
 	if (sp) {
 		polys <- SpatialPolygons(polys, proj4string=CRS(prj))
 	} else {
 		polys <- SpatialPolygons(polys)
 	}
-	
+
 	if (is.null(dat)) {
-		dat <- data.frame(id=1:nrow(xy), xy)
+		dat <- data.frame(id=index)
+	} else {
+		dat <- dat[index, ,drop=FALSE]
 	}
 	rownames(dat) <- row.names(polys)
 	polys <- SpatialPolygonsDataFrame(polys, data=dat)

@@ -137,7 +137,7 @@ setMethod('maxent', signature(x='missing', p='missing'),
 )
 
 setMethod('maxent', signature(x='SpatialGridDataFrame', p='ANY'), 
-	function(x, p, a=NULL,...) {
+	function(x, p, a=NULL, removeDuplicates=TRUE, nbg=10000, ...) {
 		factors = NULL
 		for (i in 1:ncol(x@data)) {
 			if (is.factor(x@data[,i]) | is.character(x@data[,i])) { 
@@ -150,7 +150,7 @@ setMethod('maxent', signature(x='SpatialGridDataFrame', p='ANY'),
 			a <- .getMatrix(a) 
 		}
 		# Signature = raster, ANY
-		maxent(x, p, a, factors=factors, ...)
+		maxent(x, p, a, factors=factors, removeDuplicates=removeDuplicates, nbg=nbg, ...)
 	}
 )
 
@@ -254,7 +254,7 @@ setMethod('maxent', signature(x='Raster', p='ANY'),
 
 
 .getreps <- function(args) {
-	if (is.null(args)) { return(1) }
+	if (is.null(args)) { return(1) } 
 	args <- trim(args)
 	i <- which(substr(args,1,10) == 'replicates')
 	if (! isTRUE(i > 0)) {
@@ -322,7 +322,7 @@ setMethod('maxent', signature(x='data.frame', p='vector'),
 
 		mxe <- rJava::.jnew("mebridge")
 		
-		
+		names(args) = NULL
 		replicates <- .getreps(args) 
 		args <- c("-z", args)
 

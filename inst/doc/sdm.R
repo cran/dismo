@@ -247,17 +247,11 @@ projection(ac) <- CRS('+proj=longlat +datum=WGS84')
 ###################################################
 # circles with a radius of 50 km
 x <- circles(ac, d=50000, lonlat=TRUE)
+pol <- polygons(x)
 
 
 ###################################################
-### code chunk number 24: sdm18
-###################################################
-library(rgeos)
-pol <-  gUnaryUnion(x@polygons)
-
-
-###################################################
-### code chunk number 25: sdm19
+### code chunk number 24: sdm19
 ###################################################
 # sample randomly from all circles
 samp1 <- spsample(pol, 250, type='random', iter=25)
@@ -270,14 +264,14 @@ xy <- xyFromCell(mask, cells)
 
 
 ###################################################
-### code chunk number 26: sdm20
+### code chunk number 25: sdm20
 ###################################################
 plot(pol, axes=TRUE)
 points(xy, cex=0.75, pch=20, col='blue')
 
 
 ###################################################
-### code chunk number 27: sdm21a
+### code chunk number 26: sdm21a
 ###################################################
 spxy <- SpatialPoints(xy, proj4string=CRS('+proj=longlat +datum=WGS84'))
 o <- over(spxy, geometry(x))
@@ -285,7 +279,7 @@ xyInside <- xy[!is.na(o), ]
 
 
 ###################################################
-### code chunk number 28: sdm21b
+### code chunk number 27: sdm21b
 ###################################################
 # extract cell numbers for the circles
 v <- extract(mask, x@polygons, cellnumbers=T)
@@ -305,7 +299,7 @@ plot(x@polygons, add=T)
 
 
 ###################################################
-### code chunk number 29: sdm22
+### code chunk number 28: sdm22
 ###################################################
 files <- list.files(path=paste(system.file(package="dismo"), 
               '/ex', sep=''), pattern='grd', full.names=TRUE )
@@ -320,7 +314,7 @@ plot(predictors)
 
 
 ###################################################
-### code chunk number 30: sdm23a
+### code chunk number 29: sdm23a
 ###################################################
 library(maptools)
 data(wrld_simpl)
@@ -331,7 +325,7 @@ bradypus  <- bradypus[,-1]
 
 
 ###################################################
-### code chunk number 31: sdm23b
+### code chunk number 30: sdm23b
 ###################################################
 # first layer of the RasterStack
 plot(predictors, 1)
@@ -343,7 +337,7 @@ points(bradypus, col='blue')
 
 
 ###################################################
-### code chunk number 32: sdm24a
+### code chunk number 31: sdm24a
 ###################################################
 presvals <- extract(predictors, bradypus)
 # setting random seed to always create the same
@@ -360,7 +354,7 @@ summary(sdmdata)
 
 
 ###################################################
-### code chunk number 33: sdm24b
+### code chunk number 32: sdm24b
 ###################################################
 # pairs plot of the values of the climate data 
 # at the bradypus occurrence sites.
@@ -368,7 +362,7 @@ pairs(sdmdata[,2:5], cex=0.1, fig=TRUE)
 
 
 ###################################################
-### code chunk number 34: sdm25
+### code chunk number 33: sdm25
 ###################################################
 m1 <- glm(pb ~ bio1 + bio5 + bio12, data=sdmdata)
 class(m1)
@@ -379,7 +373,7 @@ m2
 
 
 ###################################################
-### code chunk number 35: sdm26
+### code chunk number 34: sdm26
 ###################################################
 bc <- bioclim(presvals[,c('bio1', 'bio5', 'bio12')])
 class(bc)
@@ -388,7 +382,7 @@ pairs(bc)
 
 
 ###################################################
-### code chunk number 36: sdm27a
+### code chunk number 35: sdm27a
 ###################################################
 bio1 = c(40, 150, 200)
 bio5 = c(60, 115, 290)
@@ -400,13 +394,13 @@ predict(bc, pd)
 
 
 ###################################################
-### code chunk number 37: sdm27b
+### code chunk number 36: sdm27b
 ###################################################
 response(bc)
 
 
 ###################################################
-### code chunk number 38: sdm27c
+### code chunk number 37: sdm27c
 ###################################################
 names(predictors)
 p <- predict(predictors, m1)
@@ -414,7 +408,7 @@ plot(p)
 
 
 ###################################################
-### code chunk number 39: sdm28
+### code chunk number 38: sdm28
 ###################################################
 p <- rnorm(50, mean=0.7, sd=0.3)
 a <- rnorm(50, mean=0.4, sd=0.4)
@@ -429,7 +423,7 @@ boxplot(comb~group, col=c('blue', 'red'))
 
 
 ###################################################
-### code chunk number 40: sdm29
+### code chunk number 39: sdm29
 ###################################################
 group = c(rep(1, length(p)), rep(0, length(a))) 
 cor.test(comb, group)$estimate
@@ -439,7 +433,7 @@ auc
 
 
 ###################################################
-### code chunk number 41: sdm40
+### code chunk number 40: sdm40
 ###################################################
 e <- evaluate(p=p, a=a)
 class(e)
@@ -450,7 +444,7 @@ boxplot(e, col=c('blue', 'red'))
 
 
 ###################################################
-### code chunk number 42: sdm41
+### code chunk number 41: sdm41
 ###################################################
 samp <- sample(nrow(sdmdata), round(0.75 * nrow(sdmdata)))
 traindata <- sdmdata[samp,]
@@ -463,14 +457,14 @@ plot(e, 'ROC')
 
 
 ###################################################
-### code chunk number 43: sdm42
+### code chunk number 42: sdm42
 ###################################################
 pres <- sdmdata[sdmdata[,1] == 1, 2:9]
 back <- sdmdata[sdmdata[,1] == 0, 2:9]
 
 
 ###################################################
-### code chunk number 44: sdm43
+### code chunk number 43: sdm43
 ###################################################
 k <- 5
 group <- kfold(pres, k)
@@ -479,7 +473,7 @@ unique(group)
 
 
 ###################################################
-### code chunk number 45: sdm44
+### code chunk number 44: sdm44
 ###################################################
 e <- list()
 for (i in 1:k) {
@@ -491,7 +485,7 @@ for (i in 1:k) {
 
 
 ###################################################
-### code chunk number 46: sdm45a
+### code chunk number 45: sdm45a
 ###################################################
 auc <- sapply( e, function(x){slot(x, 'auc')} )
 auc
@@ -503,7 +497,7 @@ mean(auc)
 
 
 ###################################################
-### code chunk number 47: sdm45b
+### code chunk number 46: sdm45b
 ###################################################
 nr <- nrow(bradypus)
 s <- sample(nr, 0.25 * nr)
@@ -517,14 +511,14 @@ back_test <- backgr[s, ]
 
 
 ###################################################
-### code chunk number 48: sdm45b
+### code chunk number 47: sdm45b
 ###################################################
 sb <- ssb(pres_test, back_test, pres_train)
 sb[,1] / sb[,2]
 
 
 ###################################################
-### code chunk number 49: sdm45c
+### code chunk number 48: sdm45c
 ###################################################
 i <- pwdSample(pres_test, back_test, pres_train, n=1, tr=0.1)
 pres_test_pwd <- pres_test[!is.na(i[,1]), ]
@@ -534,7 +528,7 @@ sb2[1]/ sb2[2]
 
 
 ###################################################
-### code chunk number 50: sdm45d
+### code chunk number 49: sdm45d
 ###################################################
 bc <- bioclim(predictors, pres_train)
 evaluate(bc, p=pres_test, a=back_test, x=predictors)
@@ -542,7 +536,7 @@ evaluate(bc, p=pres_test_pwd, a=back_test_pwd, x=predictors)
 
 
 ###################################################
-### code chunk number 51: sdm46a
+### code chunk number 50: sdm46a
 ###################################################
 files <- list.files(path=paste(system.file(package="dismo"), 
               '/ex', sep=''), pattern='grd', full.names=TRUE )
@@ -561,13 +555,13 @@ sdmdata[,'biome'] = as.factor(sdmdata[,'biome'])
 
 
 ###################################################
-### code chunk number 52: sdm46b
+### code chunk number 51: sdm46b
 ###################################################
 pred_nf <- dropLayer(predictors, 'biome')
 
 
 ###################################################
-### code chunk number 53: sdm47
+### code chunk number 52: sdm47
 ###################################################
 group <- kfold(bradypus, 5)
 pres_train <- bradypus[group != 1, ]
@@ -575,13 +569,13 @@ pres_test <- bradypus[group == 1, ]
 
 
 ###################################################
-### code chunk number 54: sdm48
+### code chunk number 53: sdm48
 ###################################################
 ext = extent(-90, -32, -33, 23)
 
 
 ###################################################
-### code chunk number 55: sdm49
+### code chunk number 54: sdm49
 ###################################################
 backg <- randomPoints(pred_nf, n=1000, ext=ext, extf = 1.25)
 colnames(backg) = c('lon', 'lat')
@@ -591,7 +585,7 @@ backg_test <- backg[group == 1, ]
 
 
 ###################################################
-### code chunk number 56: sdm50
+### code chunk number 55: sdm50
 ###################################################
 r = raster(pred_nf, 1)
 plot(!is.na(r), col=c('white', 'light grey'), legend=FALSE)
@@ -603,28 +597,28 @@ points(pres_test, pch='+', col='blue')
 
 
 ###################################################
-### code chunk number 57: sdm60
+### code chunk number 56: sdm60
 ###################################################
 bc <- bioclim(pred_nf, pres_train)
 plot(bc, a=1, b=2, p=0.85)
 
 
 ###################################################
-### code chunk number 58: sdm61a
+### code chunk number 57: sdm61a
 ###################################################
 e <- evaluate(pres_test, backg_test, bc, pred_nf)
 e
 
 
 ###################################################
-### code chunk number 59: sdm61b
+### code chunk number 58: sdm61b
 ###################################################
 tr <- threshold(e, 'spec_sens')
 tr
 
 
 ###################################################
-### code chunk number 60: sdm62
+### code chunk number 59: sdm62
 ###################################################
 pb <- predict(pred_nf, bc, ext=ext, progress='')
 pb
@@ -637,7 +631,7 @@ points(pres_train, pch='+')
 
 
 ###################################################
-### code chunk number 61: sdm63
+### code chunk number 60: sdm63
 ###################################################
 dm <- domain(pred_nf, pres_train)
 e <- evaluate(pres_test, backg_test, dm, pred_nf)
@@ -653,7 +647,7 @@ points(pres_train, pch='+')
 
 
 ###################################################
-### code chunk number 62: sdm64
+### code chunk number 61: sdm64
 ###################################################
 mm <- mahal(pred_nf, pres_train)
 e <- evaluate(pres_test, backg_test, mm, pred_nf)
@@ -670,7 +664,7 @@ points(pres_train, pch='+')
 
 
 ###################################################
-### code chunk number 63: sdm65
+### code chunk number 62: sdm65
 ###################################################
 train <- rbind(pres_train, backg_train)
 pb_train <- c(rep(1, nrow(pres_train)), rep(0, nrow(backg_train)))
@@ -686,7 +680,7 @@ testbackg[ ,'biome'] = factor(testbackg[ ,'biome'], levels=1:14)
 
 
 ###################################################
-### code chunk number 64: sdm66
+### code chunk number 63: sdm66
 ###################################################
 # logistic regression:
 gm1 <- glm(pa ~ bio1 + bio5 + bio6 + bio7 + bio8 + bio12 + bio16 + bio17, 
@@ -704,7 +698,7 @@ ge2
 
 
 ###################################################
-### code chunk number 65: sdm67
+### code chunk number 64: sdm67
 ###################################################
 pg <- predict(predictors, gm2, ext=ext)
 par(mfrow=c(1,2))
@@ -718,7 +712,7 @@ points(backg_train, pch='-', cex=0.25)
 
 
 ###################################################
-### code chunk number 66: sdm68a
+### code chunk number 65: sdm68a
 ###################################################
 # checking if the jar file is present. If not, skip this bit
 jar <- paste(system.file(package="dismo"), "/java/maxent.jar", sep='')
@@ -732,7 +726,7 @@ if (file.exists(jar)) {
 
 
 ###################################################
-### code chunk number 67: sdm68b
+### code chunk number 66: sdm68b
 ###################################################
 if (file.exists(jar)) {
 	response(xm)
@@ -743,7 +737,7 @@ if (file.exists(jar)) {
 
 
 ###################################################
-### code chunk number 68: sdm69
+### code chunk number 67: sdm69
 ###################################################
 if (file.exists(jar)) {
 	e <- evaluate(pres_test, backg_test, xm, predictors)
@@ -762,7 +756,7 @@ if (file.exists(jar)) {
 
 
 ###################################################
-### code chunk number 69: sdm80
+### code chunk number 68: sdm80
 ###################################################
 library(randomForest)
 model <- pa ~ bio1 + bio5 + bio6 + bio7 + bio8 + bio12 + bio16 + bio17
@@ -787,7 +781,7 @@ points(backg_train, pch='-', cex=0.25)
 
 
 ###################################################
-### code chunk number 70: sdm81
+### code chunk number 69: sdm81
 ###################################################
 library(kernlab)
 svm <- ksvm(pa ~ bio1+bio5+bio6+bio7+bio8+bio12+bio16+bio17, data=envtrain)
@@ -806,7 +800,7 @@ points(backg_train, pch='-', cex=0.25)
 
 
 ###################################################
-### code chunk number 71: sdm82
+### code chunk number 70: sdm82
 ###################################################
 models <- stack(pb, pd, pm, pg, pr, ps)
 names(models) <- c("bioclim", "domain", "mahal", "glm", "rf", "svm")
@@ -814,14 +808,14 @@ plot(models)
 
 
 ###################################################
-### code chunk number 72: sdm83
+### code chunk number 71: sdm83
 ###################################################
 m <- mean(models)
 plot(m, main='average score')
 
 
 ###################################################
-### code chunk number 73: sdm84
+### code chunk number 72: sdm84
 ###################################################
 auc <- sapply(list(ge2, erf, esv), function(x) x@auc)
 w <- (auc-0.5)^2
@@ -830,7 +824,7 @@ plot(m2, main='weighted mean of three models')
 
 
 ###################################################
-### code chunk number 74: sdm100
+### code chunk number 73: sdm100
 ###################################################
 # first create a mask to predict to, and to use as a mask 
 # to only predict to land areas
@@ -853,7 +847,7 @@ points(backg_train, pch='-', cex=0.25)
 
 
 ###################################################
-### code chunk number 75: sdm102
+### code chunk number 74: sdm102
 ###################################################
 hull <- convHull(pres_train, lonlat=TRUE)
 e <- evaluate(hull, p=pres_test, a=backg_test)
@@ -868,7 +862,7 @@ points(backg_train, pch='-', cex=0.25)
 
 
 ###################################################
-### code chunk number 76: sdm104
+### code chunk number 75: sdm104
 ###################################################
 circ <- circles(pres_train, lonlat=TRUE)
 pc <- predict(seamask, circ, mask=TRUE)
@@ -887,7 +881,7 @@ points(backg_train, pch='-', cex=0.25)
 
 
 ###################################################
-### code chunk number 77: sdm106
+### code chunk number 76: sdm106
 ###################################################
 idwm <- geoIDW(p=pres_train, a=data.frame(back_train))
 
@@ -909,7 +903,7 @@ points(backg_train, pch='-', cex=0.25)
 
 
 ###################################################
-### code chunk number 78: sdm108
+### code chunk number 77: sdm108
 ###################################################
 # take a smallish sample of the background training data
 va <- data.frame(back_train[sample(nrow(back_train), 100), ])

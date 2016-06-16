@@ -1,4 +1,4 @@
-\name{Circles}
+\name{CirclesRange}
 
 \alias{circles}
 \alias{circles,SpatialPoints-method}
@@ -11,7 +11,7 @@
 
 
 \description{
-The circles model predicts that a species is present at sites within a certain distance from a training point, and absent further away.
+The Circles Range model predicts that a species is present at sites within a certain distance from a training point, and absent further away.
 }
 
 
@@ -58,15 +58,20 @@ cc <- circles(train, lonlat=FALSE)
 predict(cc, test)
 
 plot(r)
-plot(geometry(cc), border='red', lwd=2, add=TRUE)
+plot(cc, border='red', lwd=2, add=TRUE)
 points(train, col='red', pch=20, cex=2)
 points(test, col='black', pch=20, cex=2)
 
-pr = predict(cc, r, progress='')
+pr <- predict(cc, r, progress='')
 plot(r, legend=FALSE)
 plot(pr, add=TRUE, col='blue')
 points(test, col='black', pch=20, cex=2)
 points(train, col='red', pch=20, cex=2)
+
+
+# to get the polygons:
+p <- polygons(cc)
+p
 }
 
 \keyword{spatial}

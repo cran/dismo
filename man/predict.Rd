@@ -9,6 +9,7 @@
 \alias{predict,MaxEnt-method}
 \alias{predict,MaxEntReplicates-method}
 \alias{predict,ConvexHull-method}
+\alias{predict,RectangularHull-method}
 \alias{predict,CirclesRange-method}
 \alias{predict,GeographicDistance-method}
 \alias{predict,InvDistWeightModel-method}

@@ -14,38 +14,48 @@
 \description{
 Build a "MaxEnt" (Maximum Entropy) species distribution model (see references below). The function uses environmental data for locations of known presence and for a large number of 'background' locations. Environmental data can be extracted from raster files. The result is a model object that can be used to predict the suitability of other locations, for example, to predict the entire range of a species. 
 
+Background points are sampled randomly from the cells that are not \code{NA} in the first predictor variable, unless background points are specified with argument \code{a}. 
+
 This function uses the MaxEnt species distribution model software, which is a java program that you can download \href{http://www.cs.princeton.edu/~schapire/maxent/}{here}. Put the file 'maxent.jar' in the 'java' folder of this package. That is the folder returned by \code{system.file("java", package="dismo")}. You need MaxEnt version 3.3.3b or higher. Please note that this program (maxent.jar) cannot be redistributed or used for commercial or for-profit purposes.
 }
 
 \usage{
-maxent(x, p, ...)
+\S4method{maxent}{Raster,ANY}(x, p, a=NULL, factors=NULL, removeDuplicates=TRUE, nbg=10000, ...)
+\S4method{maxent}{SpatialGridDataFrame,ANY}(x, p, a=NULL, removeDuplicates=TRUE, nbg=10000, ...)
+\S4method{maxent}{data.frame,vector}(x, p, args=NULL, path, silent=FALSE, ...)
+\S4method{maxent}{missing,missing}(x, p, silent=FALSE, ...)
 }
 
 \arguments{
-\item{x}{Predictors. Raster* object or SpatialGridDataFrame, containing grids with predictor variables. These will be used to extract values from for the point locations. \code{x} can also be a data.frame, in which case each column should be a predictor variable and each row a presence or background record. }
+\item{x}{Predictors. Raster* object or SpatialGridDataFrame, containing grids with predictor variables. These will be used to extract values from for the point locations. \code{x} can also be a data.frame, in which case each column should be a predictor variable and each row a presence or background record}
 
-\item{p}{Occurrence data. This can be a data.frame, matrix, SpatialPoints* object, or a vector. If \code{p} is a data.frame or matrix it represents a set of point locations; and it must have two columns with the first being the x-coordinate (longitude) and the second the y-coordinate (latitude). Coordinates can also be specified with a SpatialPoints* object (defined in the sp package). Background points are sampled randomly from the cells that are not NA in the first predictor variable, unless background points are specified with an additional argument \code{a} (see Details). If \code{x} is a data.frame, \code{p} should be a vector with a length equal to \code{nrow(x)} and contain 0 (background) and 1 (presence) values, to indicate which records (rows) in data.frame \code{x} are presence records, and which are background records. }
+\item{p}{Occurrence data. This can be a data.frame, matrix, SpatialPoints* object, or a vector. If \code{p} is a data.frame or matrix it represents a set of point locations; and it must have two columns with the first being the x-coordinate (longitude) and the second the y-coordinate (latitude). Coordinates can also be specified with a SpatialPoints* object
 
-\item{...}{Additional arguments. See Details}
+If \code{x} is a data.frame, \code{p} should be a vector with a length equal to \code{nrow(x)} and contain 0 (background) and 1 (presence) values, to indicate which records (rows) in data.frame \code{x} are presence records, and which are background records}
+
+\item{a}{Background points. Only used if \code{p} is and not a vector and not missing}
+
+\item{nbg}{Number of background points to use. These are sampled randomly from the cells that are not \code{NA} in the first predictor variable. Ignored if background points are specified with argument \code{a}} 
+
+\item{factors}{character. Which (if any) variables should be considered as categorical? Either by (layer)name or by index. Only used when argument 'x' is a Raster* object because it is not needed in other cases as you can set the appropriate class to the variables in the data.frame}
+
+\item{args}{charater. Additional argument that can be passed to MaxEnt. See the MaxEnt help for more information. The R maxent function only uses the arguments relevant to model fitting. There is no point in using args='outputformat=raw' when *fitting* the model; but you can use arguments relevant for *prediction* when using the predict function. Some other arguments do not apply at all to the R implementation. An example is 'outputfiletype', because the 'predict' function has its own 'filename' argument for that}
+
+\item{removeDuplicates}{Boolean. If \code{TRUE}, duplicate presence points (that fall in the same grid cell) are removed}
+
+\item{path}{character. Optional argument to set where you want the MaxEnt output files to be stored. This allows you to permanently keep these files. If not supplied the MaxEnt files will be stored in a temporary file. These are the files that are shown in a browser when typing the model name or when you use "show(model)"}
+
+\item{silent}{Boolean. If \code{TRUE} a message is printed}
+
+\item{...}{Additional arguments}
 }
 
-\details{
-Additional arguments:
-\tabular{rll}{
-\tab \code{a} \tab Background points. Only used if 'p' is not missing, and not a vector.  \cr
-\tab \code{factors} \tab Which (if any) variables should be considered as categorical? Either by (layer)name or by index. Only used when argument 'x' is a Raster* object because it is not needed in other cases as you can set the appropriate class to the variables in the data.frame \cr 
-\tab \code{args} \tab Additional argument that can be passed to MaxEnt. See the MaxEnt help for more information. The R maxent function only uses the arguments relevant to model fitting. There is no point in using args='outputformat=raw' when *fitting* the model; but you can use arguments relevant for *prediction* when using the predict function. Some other arguments do not apply at all to the R implementation. An example is 'outputfiletype', because the 'predict' function has its own 'filename' argument for that\cr
-\tab \code{removeDuplicates} \tab Boolean. If TRUE, duplicate presence points (that fall in the same grid cell) are removed. \cr
-\tab \code{path} \tab Optional. Where do you want the MaxEnt output files to be stored. This allows you to permanently keep these files. If not supplied the MaxEnt files will be stored in a temporary file. These are the files that are shown in a browser when typing the model name or when you use "show(model)" \cr
-}
-}
 
 
 \note{
 If you want to give MaxEnt (the Java virtual machine that runs it) more memory, you can do that by running something like this (for 1 GB) \bold{before} you load the dismo library.
 
 \code{options(java.parameters = "-Xmx1g" )} 
-
 
 Some people have reported problems when using this function on a Mac (Apple) computer. Specifically, the following error message occurs:
 
@@ -60,7 +70,7 @@ This is a known problem with certain Java applications on Macs. There are two wo
 
 
 \value{
-An object of class 'MaxEnt' (inherits from \code{\link{DistModel-class}}). Or a 'MaxEntReplicates' object if you use 'replicates=' as part of the \code{args} argument.
+An object of class 'MaxEnt' (inherits from \code{\link{DistModel-class}}). Or a 'MaxEntReplicates' object if you use 'replicates=' as part of the \code{args} argument. If the function is run without any arguments a boolean value is returned (\code{TRUE} if maxent.jar was found).
 }
 
 \seealso{
@@ -152,6 +162,7 @@ e3
 threshold(e3)
 
 plot(e3, 'ROC')
+
 }
 }
 

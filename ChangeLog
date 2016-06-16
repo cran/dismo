@@ -1,3 +1,7 @@
+--- Current version
+Several minor bug fixes
+New null model RectHull
+
 --- 14-March-2015, version 1.0-13
 Updated gbif function to work with new GBIF web service
 
