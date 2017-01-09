@@ -1,17 +1,12 @@
 # Author: Robert J. Hijmans
 # contact: r.hijmans@gmail.com
-# Date : February 2010
+# Date : August 2016
 # Version 0.1
 # Licence GPL v3
 
 
 
-if (!isGeneric("predict")) {
-	setGeneric("predict", function(object, ...)
-		standardGeneric("predict"))
-}	
-
-setMethod('predict', signature(object='ConvexHull'), 
+setMethod('predict', signature(object='CircleHull'), 
 	function(object, x, ext=NULL, mask=FALSE, filename='',  ...) {
 	
 		nc <- nrow(object@polygons@data)

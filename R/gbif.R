@@ -79,7 +79,12 @@ gbif <- function(genus, species='', ext=NULL, args=NULL, geo=TRUE, sp=FALSE, rem
 		if (cnt == 0) {
 			return(NULL)
 		}
+		if (cnt > 200000) {
+			stop('The number of records is larger than the maximum for download via this service (200,000)')
+		}		
 	}
+
+	
 	
 	start <- max(1, start)
 	stopifnot(start <= end)

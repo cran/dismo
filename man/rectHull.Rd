@@ -1,4 +1,4 @@
-\name{Rectangular Hull}
+\name{rectHull}
 
 \alias{rectHull}
 \alias{rectHull,SpatialPoints-method}
@@ -26,7 +26,7 @@ rectHull(p, ...)
 
 
 \details{
-You can supply an argument n (>= 1) to get n convex hulls around subset of the points. You can also set n=1:x, to get a set of overlapping polygons consisting of 1 to x parts. I.e. the first polygon has 1 part, the second has 2 parts, and x has x parts.
+You can supply an argument n (>= 1) to get n hulls around subset of the points. This uses k-means to form clusters. To reproduce the clusters you may need to use \code{set.seed}.  
 }
 
 
@@ -36,11 +36,11 @@ An object of class 'RectangularHull' (inherits from \code{\link{DistModel-class}
 
 
 \author{
-Robert J. Hijmans
+Robert J. Hijmans. Using an algorithm by whuber and Bangyou on gis.stackexchange.com
 }
 
 \seealso{
-\code{\link[dismo]{predict}, \link[dismo]{geoDist}, \link[dismo]{maxent}, \link[dismo]{domain}, \link[dismo]{mahal}}
+\code{\link[dismo]{predict}, \link[dismo]{circleHull}, \link[dismo]{convHull}, \link[dismo]{maxent}, \link[dismo]{domain}, \link[dismo]{mahal}}
 }
 
 

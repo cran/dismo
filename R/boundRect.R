@@ -8,8 +8,16 @@
 	} else {
 		crs <- NA	
 	}
-	ch <- convHull(p)
-	xy <- geom(polygons(ch))[, c('x', 'y')]
+	if (nrow(p) < 2) {
+		stop("cannot make a rectangle from a single point")
+	} else if (nrow(p) == 2) {
+		xy <- .pointsToMatrix(p)
+		r <- rbind(xy[1, ,drop=FALSE], cbind(xy[1,1], xy[2,2]), xy[2, ,drop=FALSE], cbind(xy[2,1], xy[1,2]))
+		spPolygons(r, crs=crs)		
+	} else {
+		ch <- convHull(p)
+		xy <- geom(polygons(ch))[, c('x', 'y')]
+	}
 	edges <- cbind(xy[-nrow(xy), ], xy[-1,])
 	edgedir <- edges[, 1:2] - edges[,3:4]
     norms <- apply(edgedir, 1, function(x) sqrt(x %*% x)) # Edge lengths

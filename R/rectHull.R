@@ -1,4 +1,4 @@
-# Author: Robert J. Hijmans
+# Author: Robert Hijmans
 # Date : June 2016
 # Version 1.0
 # Licence GPL v3
@@ -74,6 +74,9 @@ setMethod('rectHull', signature(p='SpatialPoints'),
 
 
 .generate_k_RectHulls <- function(xy, k, dissolve=FALSE) {
+	if (k > (nrow(xy) / 2)) {
+		stop('too many clusters (there should be at least two times as many points)')
+	}
 	cl <- kmeans(xy, k, 100)$cluster
 	clusters <- unique(cl)
 	subp <- list()
@@ -89,7 +92,7 @@ setMethod('rectHull', signature(p='SpatialPoints'),
 
 .generateRectHulls <- function(xy, n=1, dissolve=FALSE) {
 	xy <- unique(  stats::na.omit(xy[, 1:2]) )
-    if (nrow(xy) < 2) { stop ('Insuficient number of points to make a Rectangular Hull; you need at least 2 unique points' ) }
+    if (nrow(xy) < 2) { stop ('Insufficient number of points to make a Rectangular Hull; you need at least 2 unique points' ) }
     n <- pmax(1, round(n))
     n <- pmin(n, floor(nrow(xy) / 3))
     n <- unique(n)

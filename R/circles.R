@@ -31,7 +31,7 @@
 		d <- dd
 	}
 	
-	xy <- as.matrix(xy[,1:2])
+	xy <- as.matrix(xy[,1:2,drop=FALSE])
 	n <- max(4, round(n))
 	toRad <- pi/180
 	brng <- 1:n * 360/n

@@ -23,7 +23,7 @@ The Circles Range model predicts that a species is present at sites within a cer
  
 \arguments{
   \item{p}{point locations (presence). Two column matrix, data.frame or SpatialPoints* object}
- \item{d}{numeric. The radius of each circle in meters. A single number of a vector with elements corresponding to rows in \code{p}. If missing the diameter is computed from the mean inter-point distance}
+ \item{d}{numeric. The radius of each circle in meters. A single number or a vector with elements corresponding to rows in \code{p}. If missing the diameter is computed from the mean inter-point distance}
  \item{lonlat}{logical. Are these longitude/latitude data? If missing this is taken from the \code{p} if it is a SpatialPoints* object}
  \item{n}{integer. How many vertices in the circle? Default is 360}
   \item{r}{numeric. Radius of the earth. Only relevant for longitude/latitude data. Default is 6378137 m}
@@ -72,6 +72,19 @@ points(train, col='red', pch=20, cex=2)
 # to get the polygons:
 p <- polygons(cc)
 p
+
+# to compute the Circular Area Range of a species (see Hijmans and Spooner, 2001)
+pts <- train*10
+ca100 <- polygons(circles(pts, d=100, lonlat=FALSE))
+ca150 <- polygons(circles(pts, d=150, lonlat=FALSE))
+sum(area(ca150)) / (pi*150^2)
+sum(area(ca100)) / (pi*100^2)
+par(mfrow=c(1,2))
+plot(ca100); points(pts)
+plot(ca150); points(pts)
+
+
+
 }
 
 \keyword{spatial}
