@@ -74,6 +74,7 @@ setMethod('convHull', signature(p='SpatialPoints'),
 	for (i in clusters) {
 		pts <- xy[cl==i, ]
 		h <- pts[chull(pts), ]
+		h <- rbind(h, h[1,,drop=FALSE])
 		r <- spPolygons(h)
 		subp <- c(subp, r)
 	}
@@ -93,6 +94,7 @@ setMethod('convHull', signature(p='SpatialPoints'),
 	if (length(n) == 1) {
 		if (n == 1) {
 			h <- xy[chull(xy), ]
+			h <- rbind(xy, xy[1,,drop=FALSE])
 			r <- spPolygons(h)
 		} else {
 			r <- .generate_k_ConvexHulls(xy, n, dissolve=dissolve)

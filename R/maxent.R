@@ -108,19 +108,19 @@ if (!isGeneric("maxent")) {
 }
 
 .getMeVersion <- function() {
-	jar <- paste(system.file(package="dismo"), "/java/maxent.jar", sep='')
-	if (!file.exists(jar)) {
-		stop('file missing:\n', jar, '.\nPlease download it here: http://www.cs.princeton.edu/~schapire/maxent/')
-	}
+#	jar <- paste(system.file(package="dismo"), "/java/maxent.jar", sep='')
+#	if (!file.exists(jar)) {
+#		stop('file missing:\n', jar, '.\nPlease download it here: http://biodiversityinformatics.amnh.org/open_source/maxent/')
+#	}
 	.rJava()
 	mxe <- rJava::.jnew("meversion") 
 	v <- try(rJava::.jcall(mxe, "S", "meversion") )
 	if (class(v) == 'try-error') {
-		stop('"dismo" needs a more recent version of Maxent (3.3.3b or later) \nPlease download it here: http://www.cs.princeton.edu/~schapire/maxent/
+		stop('"dismo" needs a more recent version of Maxent (3.3.3b or later) \nPlease download it here: http://biodiversityinformatics.amnh.org/open_source/maxent/
 		\n and put it in this folder:\n',
 		system.file("java", package="dismo"))
 	} else if (v == '3.3.3a') { 
-		stop("please update your maxent program to version 3.3.3b or later. This version is no longer supported. \nYou can download it here: http://www.cs.princeton.edu/~schapire/maxent/'")
+		stop("please update your maxent program to version 3.3.3b or later. This version is no longer supported. \nYou can download it here: http://biodiversityinformatics.amnh.org/open_source/maxent/")
 	}
 	return(v)
 }
@@ -178,10 +178,16 @@ setMethod('maxent', signature(x='Raster', p='ANY'),
 		p <- .getMatrix(p)
 		if (removeDuplicates) {
 			cells <- unique(cellFromXY(x, p))
-			pv <- data.frame(extract(x, cells))
+			pv <- extract(x, cells)
 		} else {
-			pv <- data.frame(extract(x, p))
+			pv <- extract(x, p)
 		}
+		if (is.null(dim(pv))) {
+			pv <- matrix(pv, ncol=1)
+			colnames(pv) <- names(x)
+		}
+		pv <- data.frame(pv)
+		
 
 		lpv <- nrow(pv)
 		pv <- stats::na.omit(pv)
@@ -196,7 +202,13 @@ setMethod('maxent', signature(x='Raster', p='ANY'),
 		
 		if (! is.null(a) ) {
 			a <- .getMatrix(a)
-			av <- data.frame(extract(x, a))
+			av <- extract(x, a)
+			if (is.null(dim(av))) {
+				av <- matrix(av, ncol=1)
+				colnames(av) <- names(x)
+			}
+			av <- data.frame(av)
+			
 			avr <- nrow(av)
 			av <- stats::na.omit(av)
 			nas <- length(as.vector(attr(av, "na.action")))
@@ -224,7 +236,14 @@ setMethod('maxent', signature(x='Raster', p='ANY'),
 			} else {
 				xy <- randomPoints(x, nbg, p, warn=0 )			
 			}
-			av <- data.frame(extract(x, xy))
+			av <- extract(x, xy)
+			if (is.null(dim(av))) {
+				av <- matrix(av, ncol=1)
+				colnames(av) <- names(x)
+			}
+			av <- data.frame(av)
+			
+			
 			av <- stats::na.omit(av)
 			if (nrow(av) == 0) {
 				stop('could not get valid background point values; is there a layer with only NA values?')

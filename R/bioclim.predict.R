@@ -67,7 +67,7 @@ function(object, x, tails=NULL, ext=NULL, filename='', useC=TRUE, ...) {
 			maxcomp <- object@max
 			maxcomp[tails=='low'] <- Inf
 			
-			bc <- .Call('percRank', as.double(pres), 
+			bc <- .Call('_percRank', as.double(pres), 
 									as.integer(dim(pres)),
 									as.double(x),
 									as.integer(dim(x)),
@@ -127,7 +127,7 @@ function(object, x, tails=NULL, ext=NULL, filename='', useC=TRUE, ...) {
 			vals <- getValuesBlock(x, row=rr, nrows=tr$nrows[i], firstcol, ncols)[, ln, drop=FALSE]
 	
 			if (useC) {
-				res <- .Call('percRank', as.double(pres), 
+				res <- .Call('_percRank', as.double(pres), 
 										 as.integer(dim(pres)),
 										 as.double(vals),
 										 as.integer(dim(vals)),

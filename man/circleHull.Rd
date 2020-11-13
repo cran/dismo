@@ -35,7 +35,7 @@ Robert J. Hijmans
 }
 
 \seealso{
-\code{\link[dismo]{circles}, \link[dismo]{convexHull}, \link[dismo]{rectHull}, \link[dismo]{predict}}
+\code{\link[dismo]{circles}, \link[dismo]{convHull}, \link[dismo]{rectHull}, \link[dismo]{predict}}
 }
 
 

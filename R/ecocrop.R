@@ -55,12 +55,13 @@ setMethod ('show' , 'ECOCROPcrop',
 
 
 setMethod ('plot', signature(x='ECOCROPcrop', y='missing'),
-	function(x, ...) {
+	function(x, ..., col=c("red", "blue"), lwd=1) {
 		graphics::par(mfrow=c(2, 1))
-		plot(c(0,1,1,0) ~ c(x@TMIN, x@TOPMN, x@TOPMX, x@TMAX), xlab='temperature', ylab='response')
-		lines(c(0,1,1,0) ~ c(x@TMIN, x@TOPMN, x@TOPMX, x@TMAX), col='red')
-		plot(c(0,1,1,0) ~ c(x@RMIN, x@ROPMN, x@ROPMX, x@RMAX), xlab='precipitation', ylab='response')
-		lines(c(0,1,1,0) ~ c(x@RMIN, x@ROPMN, x@ROPMX, x@RMAX), xlab='precipitation', ylab='', col='blue')
+		col = rep(col, length.out=2)
+		plot(c(0,1,1,0) ~ c(x@TMIN, x@TOPMN, x@TOPMX, x@TMAX), xlab='temperature', ylab='response', ...)
+		lines(c(0,1,1,0) ~ c(x@TMIN, x@TOPMN, x@TOPMX, x@TMAX), col=col[1], lwd=lwd)
+		plot(c(0,1,1,0) ~ c(x@RMIN, x@ROPMN, x@ROPMX, x@RMAX), xlab='precipitation', ylab='response', ...)
+		lines(c(0,1,1,0) ~ c(x@RMIN, x@ROPMN, x@ROPMX, x@RMAX), xlab='precipitation', ylab='', col=col[2], lwd=lwd)
 	}
 )
 
@@ -236,42 +237,88 @@ ecocrop <- function(crop, tmin, tavg, prec, rainfed=TRUE, ...) {
 }
 
 
-.ecoSpat <- function(crop, tmin, tavg, prec, rainfed, div=10, filename='', ...) { 
-
-	outr <- raster(tmin)
-	filename <- trim(filename)
-	v <- vector(length=ncol(outr))
-	if (filename=='') {
-		vv <- matrix(ncol=nrow(outr), nrow=ncol(outr))
-	}
-	for (r in 1:nrow(outr)){
-		v[] <- NA
-		tmp <- getValues(tavg, r) / div
-        tmn <- getValues(tmin, r) / div
-        if (rainfed) { 
-			pre <- getValues(prec, r)
-		}
-        nac <- which(!is.na(tmn[,1]))
-        for (c in nac) {
-            if(sum(is.na(tmp)) == 0) {
-				e <- .doEcocrop(crop, tmn, tmp, pre, rainfed=rainfed)
-                v[c] <- e@maxper[1]
-            }
+.ecoSpat <- function(crop, tmin, tavg, prec, rainfed, filename='', ...) { 
+  
+  out <- raster(tmin)
+  filename <- trim(filename)
+  
+  big <- !canProcessInMemory(out, 3)
+  
+  if (big & filename == '') {
+    filename <- rasterTmpFile()
+  }
+  
+  if (filename != '') {
+    out <- writeStart(out, filename, ...)
+    todisk <- TRUE
+  } else {
+    vv <- matrix(ncol=nrow(out), nrow=ncol(out))
+    todisk <- FALSE
+  }
+  
+  bs <- blockSize(tmin)
+  pb <- pbCreate(bs$n)
+  
+  if (todisk) {
+    for (i in 1:bs$n) {
+      
+      tmp <- getValues(tavg, row=bs$row[i], nrows=bs$nrows[i])
+      tmn <- getValues(tmin, row=bs$row[i], nrows=bs$nrows[i])
+      if (rainfed) { 
+        pre <- getValues(prec, row=bs$row[i], nrows=bs$nrows[i])
+      }
+      
+      v <- vector(length=nrow(tmp))
+      v[] <- NA
+      
+      nac <- which(!is.na(tmn[,1]))
+      
+      for (j in nac) {
+        if(sum(is.na(tmp[j,])) == 0) {
+          e <- .doEcocrop(crop, tmn[j,], tmp[j,], pre[j,], rainfed=rainfed)
+          # TODO: change if wanted to return month
+          s <- e@maxper[1]
+          v[j] <- e@suitability[s]  
         }
-        if (filename=='') {
-            vv[,r] <- v
-        } else {
-            outr <- setValues(outr, v, r)
-            outr <- writeRaster(outr, filename, ...)
-        }
+      }
+      
+      out <- writeValues(out, v, bs$row[i])
+      pbStep(pb, i)
     }
     
-	if (filename=='') { 
-		outr <- setValues(outr, as.vector(vv))  
-	}
-	
-    return(outr)
- }
-
+    out <- writeStop(out)
+    
+  } else {
+    
+    for (i in 1:bs$n) {
+      tmp <- getValues(tavg, row=bs$row[i], nrows=bs$nrows[i])
+      tmn <- getValues(tmin, row=bs$row[i], nrows=bs$nrows[i])
+      if (rainfed) { 
+        pre <- getValues(prec, row=bs$row[i], nrows=bs$nrows[i])
+      }
+      
+      v <- vector(length=nrow(tmp))
+      v[] <- NA
+      
+      nac <- which(!is.na(tmn[,1]))
+      
+      for (j in nac) {
+        if(sum(is.na(tmp[j,])) == 0) {
+          e <- .doEcocrop(crop, tmn[j,], tmp[j,], pre[j,], rainfed=rainfed)
+          # TODO: change if wanted to return month
+          s <- e@maxper[1]
+          v[j] <- e@suitability[s]  
+        }
+      }
+      
+      cols <- bs$row[i]:(bs$row[i]+bs$nrows[i]-1)
+      vv[,cols] <- matrix(v, nrow=out@ncols)
+      pbStep(pb, i)
+    }
+    out <- setValues(out, as.vector(vv))
+  }
+  pbClose(pb)
+  return(out)
+}
 
  

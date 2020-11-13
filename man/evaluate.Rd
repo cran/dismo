@@ -26,7 +26,7 @@ evaluate(p, a, model, x, tr, ...)
 			
 			Or, a matrix with values to compute predictions for}
 			
-  \item{model}{any fitted model, including objects inherting from 'DistModel'; not used when \code{x} is missing}
+  \item{model}{any fitted model, including objects inheriting from 'DistModel'; not used when \code{x} is missing (and both a and p are vectors)}
 
   \item{x}{Optional. Predictor variables (object of class Raster*). If present, \code{p} and \code{a} are interpreted as (spatial) points }
   
@@ -55,7 +55,7 @@ Fielding, A.H. and J.F. Bell, 1997. A review of methods for the assessment of pr
 # p has the predicted values for 50 known cases (locations) 
 # with presence of the phenomenon (species)
 p <- rnorm(50, mean=0.7, sd=0.3)
-# b has the predicted values for 50 background locations (or absence)
+# a has the predicted values for 50 background locations (or absence)
 a <- rnorm(50, mean=0.4, sd=0.4)
 e <- evaluate(p=p, a=a)
 

@@ -8,7 +8,7 @@
 #define min( a, b ) ( ((a) < (b)) ? (a) : (b) )
 
 
-SEXP percRank(SEXP x, SEXP dimx, SEXP y, SEXP dimy, SEXP minc, SEXP maxc, SEXP tail) {
+SEXP _percRank(SEXP x, SEXP dimx, SEXP y, SEXP dimy, SEXP minc, SEXP maxc, SEXP tail) {
 					
 	R_len_t v, i, ii, j, jj;
 	SEXP val;
