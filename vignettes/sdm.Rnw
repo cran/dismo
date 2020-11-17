@@ -2,20 +2,13 @@
 
 \usepackage{hyperref}
 
-
-% \VignetteIndexEntry{Species distribution modeling with R}
+% \VignetteIndexEntry{SDM}
 % \VignetteDepends{dismo}
-% \VignetteKeyword{spatial}
-
 
 \begin{document}
 
-\title{Species distribution modeling with \R}
-\author{Robert J. Hijmans and Jane Elith}
-\maketitle
+This document is now available here:
 
-
-This document is now available on \url{https://rspatial.org/raster/sdm} 
-
+\url{https://rspatial.org/raster/sdm} 
 
 \end{document}
