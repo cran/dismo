@@ -116,7 +116,7 @@ setMethod('maxent', signature(x='missing', p='missing'),
 		if (is.null(getOption('dismo_maxent'))) {
 			mxe <- rJava::.jnew("meversion") 
 			v <- try(rJava::.jcall(mxe, "S", "meversion"), silent=TRUE)
-			if (class(v) == 'try-error') {
+			if (inherits(v, 'try-error')) {
 				if (!silent) {
 					cat("MaxEnt is missing or incompatible with your version of Java\n")
 				}
@@ -292,9 +292,9 @@ setMethod('maxent', signature(x='Raster', p='ANY'),
 
 
 setMethod('maxent', signature(x='data.frame', p='vector'), 
-	function(x, p, args=NULL, path, silent=FALSE, ...) {
+	function(x, p, args=NULL, path, ...) {
 	
-		stopifnot(maxent())
+		stopifnot(maxent(silent=TRUE))
 
 		x <- cbind(p, x)
 		x <- stats::na.omit(x)
